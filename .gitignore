@@ -124,6 +124,9 @@ dist
 
 # yarn v2
 .yarn/cache
+
+test.ps1
+test.sh
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz

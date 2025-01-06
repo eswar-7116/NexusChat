@@ -14,7 +14,7 @@ cd NexusChat
 npm install
 ```
 
-4. **Start the Application**:
+3. **Start the Application**:
 ```terminal
 npm start
 ```

@@ -127,6 +127,8 @@ dist
 
 test.ps1
 test.sh
+.idea
+
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz

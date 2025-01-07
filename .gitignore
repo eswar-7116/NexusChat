@@ -128,6 +128,8 @@ dist
 test.ps1
 test.sh
 .idea
+.devcontainer
+.github
 
 .yarn/unplugged
 .yarn/build-state.yml

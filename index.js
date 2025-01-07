@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 
 app.use('/users', userRoutes);
 
-mongoose.connect('mongodb://127.0.0.1:27017/rfp')
+mongoose.connect('mongodb://localhost:27017/rfp')
     .then(() => {
         app.listen(3000, '0.0.0.0', () => {
             console.log("Listening on http://localhost:3000 ...");

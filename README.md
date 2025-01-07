@@ -11,7 +11,7 @@ cd NexusChat
 
 2. **Install Dependencies**:
 ```terminal
-npm install
+npm i
 ```
 
 3. **Start the Application**:

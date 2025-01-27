@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
 
     createdAt: {
         type: Date,
-        default: Date.now,
+        default: new Date(),
         required: [true, 'Creation time is required']
     },
 
@@ -71,6 +71,6 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-const UserModel = mongoose.models.User || mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-export default UserModel;
+export default User;

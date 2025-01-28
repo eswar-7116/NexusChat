@@ -132,4 +132,44 @@ router.post('/signup', [
     }
 });
 
+// Verify user
+router.post('/verify-user', async (req, res) => {
+    try {
+        const { username, otp } = req.body;
+
+        // Check if user exists
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User doesn't exist"
+            });
+        }
+
+        if ((new Date()) > user.otpExpiry) {
+            return res.status(401).json({
+                success: false,
+                message: "OTP expired! Generate a new OTP"
+            });
+        }
+
+        if (user.otp !== otp) {
+            return res.status(402).json({
+                success: false,
+                message: "Incorrect OTP!"
+            });
+        }
+
+        user.isVerified = true;
+        user.save();
+    } catch(error) {
+        console.error('Error while verifying user:', error);
+        return res.status(500).json({
+            success: false,
+            message: "Error while verifying user",
+            error: String(error)
+        });
+    }
+});
+
 export default router;

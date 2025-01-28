@@ -2,7 +2,7 @@ import express from 'express';
 import { configDotenv } from 'dotenv';
 
 import { connectDB } from './db/db.js';
-import routes from './routes/auth/signup.js';
+import routes from './routes/auth/controller.js';
 
 configDotenv();
 connectDB();  // Connecting DB

@@ -133,7 +133,7 @@ router.post('/signup', [
 });
 
 // Verify user
-router.post('/verify-user', async (req, res) => {
+router.post('/verify-user-otp', async (req, res) => {
     try {
         const { username, otp } = req.body;
 

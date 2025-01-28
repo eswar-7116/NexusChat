@@ -146,6 +146,13 @@ router.post('/verify-user', async (req, res) => {
             });
         }
 
+        if (user.isVerified) {
+            return res.status(401).json({
+                success: false,
+                message: "User already verified"
+            });
+        }
+
         if ((new Date()) > user.otpExpiry) {
             return res.status(401).json({
                 success: false,
@@ -154,14 +161,19 @@ router.post('/verify-user', async (req, res) => {
         }
 
         if (user.otp !== otp) {
-            return res.status(402).json({
+            return res.status(401).json({
                 success: false,
                 message: "Incorrect OTP!"
             });
         }
 
         user.isVerified = true;
-        user.save();
+        await user.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "User verified"
+        });
     } catch(error) {
         console.error('Error while verifying user:', error);
         return res.status(500).json({

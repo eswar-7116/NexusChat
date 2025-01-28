@@ -2,7 +2,7 @@ import express from 'express';
 import { configDotenv } from 'dotenv';
 
 import { connectDB } from './db/db.js';
-import routes from './routes/auth/controller.js';
+import authRoutes from './routes/auth/controller.js';
 
 configDotenv();
 connectDB();  // Connecting DB
@@ -19,7 +19,7 @@ app.use('/', (req, _, next) => {
 });
 
 // Routes
-app.use('/api', routes);
+app.use('/api', authRoutes);
 
 // Starting server
 app.listen(port, host, () => {

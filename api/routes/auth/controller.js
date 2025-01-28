@@ -146,6 +146,7 @@ router.post('/verify-user', async (req, res) => {
             });
         }
 
+        // Check if user is already verified
         if (user.isVerified) {
             return res.status(401).json({
                 success: false,
@@ -153,6 +154,7 @@ router.post('/verify-user', async (req, res) => {
             });
         }
 
+        // Check if OTP is expired
         if ((new Date()) > user.otpExpiry) {
             return res.status(401).json({
                 success: false,
@@ -160,6 +162,7 @@ router.post('/verify-user', async (req, res) => {
             });
         }
 
+        // Verify OTP
         if (user.otp !== otp) {
             return res.status(401).json({
                 success: false,

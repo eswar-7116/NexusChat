@@ -53,8 +53,15 @@ router.post('/login',[
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET || "TEST_SECRET",
-            { expiresIn: '1h' }
+            { expiresIn: '7d' }
         );
+
+        res.cookie("jwt-token", token, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,      // Prevents XSS attacks
+            sameSite: 'strict',  // Prevents CSRF attacks
+            secure: process.env.NODE_ENV !== 'development'
+        });
 
         res.status(200).json({
             status: true,

@@ -1,8 +1,10 @@
 import express from 'express';
 import { config as configDotenv } from 'dotenv';
+
 import connectDB from './db/db.js';
 import signupRoute from './routes/auth/signup.js';
 import verifyUserOtp from './routes/auth/verifyUserOtp.js';
+import login from './routes/auth/login.js';
 
 configDotenv();  // Load environment variables from .env
 connectDB();     // Connect to the database
@@ -24,6 +26,7 @@ app.use('/', (req, _, next) => {
 // Routes
 app.use('/api', signupRoute);
 app.use('/api', verifyUserOtp);
+app.use('/api', login);
 
 // Starting server
 app.listen(port, host, () => {

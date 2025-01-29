@@ -80,7 +80,7 @@ router.post('/signup', [
             existingUsername.otp = otp;
             existingUsername.otpExpiry = otpExpiry;
             await existingUsername.save();
-            return res.status(201).json({
+            return res.status(200).json({
                 success: true,
                 message: "User registered successfully"
             });
@@ -95,7 +95,7 @@ router.post('/signup', [
             existingEmail.otp = otp;
             existingEmail.otpExpiry = otpExpiry;
             await existingEmail.save();
-            return res.status(201).json({
+            return res.status(200).json({
                 success: true,
                 message: "User registered successfully"
             });
@@ -114,7 +114,7 @@ router.post('/signup', [
             isVerified: false
         }).save();
 
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
             message: "User registered successfully"
         });

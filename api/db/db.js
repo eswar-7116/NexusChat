@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export async function connectDB() {
+export default async function connectDB() {
     try {
         if (mongoose.connection.readyState === 1) {
             console.log("DB already connected!");

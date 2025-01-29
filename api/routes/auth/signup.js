@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 
@@ -7,23 +7,22 @@ import { sendVerificationOtp } from "../../helpers/otpSender.js";
 
 const router = Router();
 
-// Signup
 router.post('/signup', [
     // Validate username
     body('username')
-      .not().isEmpty().withMessage('Username is required')
-      .matches(/^[a-zA-Z][a-zA-Z0-9._-]{3,32}$/).withMessage('Username must start with a letter and contain only letters, numbers, dots, underscores, or hyphens, and be between 4 and 33 characters long'),
-    
+        .not().isEmpty().withMessage('Username is required')
+        .matches(/^[a-zA-Z][a-zA-Z0-9._-]{3,32}$/).withMessage('Username must start with a letter and contain only letters, numbers, dots, underscores, or hyphens, and be between 4 and 33 characters long'),
+
     // Validate email
     body('email').isEmail().withMessage('Invalid email format'),
-  
+
     // Validate password
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-    .matches(/[a-zA-Z]/).withMessage('Password must contain at least one alphabet')
-    .matches(/\d/).withMessage('Password must contain at least one number')
-  ], async (req, res) => {
+        .matches(/[a-zA-Z]/).withMessage('Password must contain at least one alphabet')
+        .matches(/\d/).withMessage('Password must contain at least one number')
+], async (req, res) => {
     try {
-        // Validate input
+        // Validate payload
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
@@ -64,14 +63,14 @@ router.post('/signup', [
 
         // Send the OTP
         const senderResponse = await sendVerificationOtp(username, email, otp);
-        if (! senderResponse.success) {
+        if (!senderResponse.success) {
             return res.status(400).json({
                 success: false,
                 message: "Failed to send OTP"
             });
         }
 
-        // If username exists but it is not verified
+        // Handle existing user cases (username or email already exists but not verified)
         if (existingUsername && !existingUsername.isVerified) {
             existingUsername.email = email;
             existingUsername.password = password;
@@ -80,15 +79,13 @@ router.post('/signup', [
             existingUsername.lastSeen = new Date();
             existingUsername.otp = otp;
             existingUsername.otpExpiry = otpExpiry;
-            (await existingUsername).save();
-
+            await existingUsername.save();
             return res.status(201).json({
                 success: true,
                 message: "User registered successfully"
             });
         }
 
-        // If email is registered but not verified
         if (existingEmail && !existingEmail.isVerified) {
             existingEmail.username = username;
             existingEmail.password = password;
@@ -97,16 +94,15 @@ router.post('/signup', [
             existingEmail.lastSeen = new Date();
             existingEmail.otp = otp;
             existingEmail.otpExpiry = otpExpiry;
-            (await existingEmail).save();
-
+            await existingEmail.save();
             return res.status(201).json({
                 success: true,
                 message: "User registered successfully"
             });
         }
 
-        // Save the new user
-        (await new User({
+        // Save the new user if username and email don't exist
+        await new User({
             username,
             email,
             password,
@@ -116,72 +112,17 @@ router.post('/signup', [
             otp,
             otpExpiry,
             isVerified: false
-        })).save();
+        }).save();
 
         return res.status(201).json({
             success: true,
             message: "User registered successfully"
         });
-    } catch(error) {
+    } catch (error) {
         console.error('Error while signing up:', error);
         return res.status(500).json({
             success: false,
             message: "Error while signing up",
-            error: String(error)
-        });
-    }
-});
-
-// Verify user
-router.post('/verify-user-otp', async (req, res) => {
-    try {
-        const { username, otp } = req.body;
-
-        // Check if user exists
-        const user = await User.findOne({ username });
-        if (!user) {
-            return res.status(400).json({
-                success: false,
-                message: "User doesn't exist"
-            });
-        }
-
-        // Check if user is already verified
-        if (user.isVerified) {
-            return res.status(401).json({
-                success: false,
-                message: "User already verified"
-            });
-        }
-
-        // Check if OTP is expired
-        if ((new Date()) > user.otpExpiry) {
-            return res.status(401).json({
-                success: false,
-                message: "OTP expired! Generate a new OTP"
-            });
-        }
-
-        // Verify OTP
-        if (user.otp !== otp) {
-            return res.status(401).json({
-                success: false,
-                message: "Incorrect OTP!"
-            });
-        }
-
-        user.isVerified = true;
-        await user.save();
-
-        return res.status(201).json({
-            success: true,
-            message: "User verified"
-        });
-    } catch(error) {
-        console.error('Error while verifying user:', error);
-        return res.status(500).json({
-            success: false,
-            message: "Error while verifying user",
             error: String(error)
         });
     }

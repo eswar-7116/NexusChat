@@ -1,10 +1,19 @@
 import { Router } from 'express';
 
+import User from '../../models/User.js';
+import checkAuth from '../../middleware/authMiddleware.js';
+
 const router = Router();
 
-router.post('/logout', (req, res) => {
+router.post('/logout', checkAuth, async (req, res) => {
     try {
-        res.cookie('jwtToken', '');
+        // Set user status to offline
+        const loggedInUser = await User.findOne({ username: req.user.username });
+        loggedInUser.status = 'offline';
+        await loggedInUser.save();
+
+        // Clear the token in the cookie
+        res.clearCookie('jwtToken');
 
         return res.status(200).json({
             success: true,

@@ -29,6 +29,14 @@ router.post('/login',[
             });
         }
 
+        // Check if an account is already logged in
+        if (req.cookies.jwtToken) {
+            return res.status(401).json({
+                status: false,
+                message: 'An account is already logged in'
+            });
+        }
+
         const { username, password } = req.body;
 
         // Check if username exists

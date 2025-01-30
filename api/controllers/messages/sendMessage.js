@@ -6,6 +6,14 @@ export default async function sendMessage(req, res) {
         const { id: receiverId } = req.params;
         const { message } = req.body;
 
+        // Check if message is sent
+        if (!message) {
+            return res.status(400).json({
+                success: false,
+                message: "Please pass a message to send"
+            });
+        }
+
         // Save the message to the DB
         const newMessage = Message({
             senderId: currentUserId,
@@ -19,7 +27,7 @@ export default async function sendMessage(req, res) {
 
         return res.status(201).json({
             success: true,
-            message: newMessage
+            chat: newMessage
         });
     } catch (error) {
         return res.status(500).json({

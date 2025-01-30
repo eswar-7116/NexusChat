@@ -56,7 +56,7 @@ router.post('/login',[
             { expiresIn: '7d' }
         );
 
-        res.cookie("jwt-token", token, {
+        res.cookie("jwtToken", token, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,      // Prevents XSS attacks
             sameSite: 'strict',  // Prevents CSRF attacks

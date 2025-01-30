@@ -4,7 +4,7 @@ const router = Router();
 
 router.post('/logout', (req, res) => {
     try {
-        res.cookie('jwt-token', '');
+        res.cookie('jwtToken', '');
 
         return res.status(200).json({
             success: true,

@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'isVerified is required']
     },
 
-    recentChats: {
+    recentUsers: {
         type: [
             {
                 userId: {

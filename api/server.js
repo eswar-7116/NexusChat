@@ -3,11 +3,12 @@ import { config as configDotenv } from 'dotenv';
 import cookieParser from 'cookie-parser';
 
 import connectDB from './db/db.js';
-import signupRoute from './routes/auth/signup.js';
+import signup from './routes/auth/signup.js';
 import verifyUserOtp from './routes/auth/verifyUserOtp.js';
 import login from './routes/auth/login.js';
 import logout from './routes/auth/logout.js';
 import checkAuth from './middleware/authMiddleware.js';
+import messageRoutes from './routes/messages/routes.js';
 
 configDotenv();  // Load environment variables from .env
 connectDB();     // Connect to the database
@@ -30,19 +31,13 @@ app.use('/', (req, _, next) => {
 });
 
 // Auth routes
-app.use('/api/auth', signupRoute);
+app.use('/api/auth', signup);
 app.use('/api/auth', verifyUserOtp);
 app.use('/api/auth', login);
 app.use('/api/auth', logout);
 
 // Message routes
-app.post('/user', checkAuth, (req, res) => {
-    return res.status(200).json({
-        status: true,
-        message: "Got access",
-        user: req.user
-    });
-});
+app.use('/messaging', checkAuth, messageRoutes);
 
 // Starting server
 app.listen(port, host, () => {

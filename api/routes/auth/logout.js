@@ -23,8 +23,8 @@ router.post('/logout', checkAuth, async (req, res) => {
         console.error("Error while logging out");
         return res.status(500).json({
             success: false,
-            message: "Error while logging out "+error,
-            error: error
+            message: "Error while logging out",
+            error: String(error)
         });
     }
 });

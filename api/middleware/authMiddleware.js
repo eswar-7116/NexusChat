@@ -21,7 +21,7 @@ export default async function checkAuth(req, res, next) {
             });
         }
 
-        const user = await User.findById(decrypted.id);
+        const user = await User.findById(decrypted.id).select('-password');
         if (!user) {
             return res.status(401).json({
                 success: false,

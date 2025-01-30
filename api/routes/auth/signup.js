@@ -79,7 +79,9 @@ router.post('/signup', [
             existingUsername.lastSeen = new Date();
             existingUsername.otp = otp;
             existingUsername.otpExpiry = otpExpiry;
+           
             await existingUsername.save();
+           
             return res.status(200).json({
                 success: true,
                 message: "User registered successfully"
@@ -94,7 +96,9 @@ router.post('/signup', [
             existingEmail.lastSeen = new Date();
             existingEmail.otp = otp;
             existingEmail.otpExpiry = otpExpiry;
+            
             await existingEmail.save();
+            
             return res.status(200).json({
                 success: true,
                 message: "User registered successfully"

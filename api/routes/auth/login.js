@@ -64,12 +64,17 @@ router.post('/login',[
             { expiresIn: '7d' }
         );
 
+        // Save the token in cookie
         res.cookie("jwtToken", token, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,      // Prevents XSS attacks
             sameSite: 'strict',  // Prevents CSRF attacks
             secure: process.env.NODE_ENV !== 'development'
         });
+
+        // Set user status to online and save
+        user.status = 'online';
+        await user.save();
 
         res.status(200).json({
             status: true,

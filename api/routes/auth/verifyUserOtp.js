@@ -59,6 +59,7 @@ router.post('/verify-user-otp', [
             });
         }
 
+        // Set isVerified to true for the user and save
         user.isVerified = true;
         await user.save();
 

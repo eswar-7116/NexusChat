@@ -36,10 +36,11 @@ app.use('/api/auth', login);
 app.use('/api/auth', logout);
 
 // Message routes
-app.post('/user', checkAuth, (_, res) => {
+app.post('/user', checkAuth, (req, res) => {
     return res.status(200).json({
         status: true,
-        message: "Got access"
+        message: "Got access",
+        user: req.user
     });
 });
 

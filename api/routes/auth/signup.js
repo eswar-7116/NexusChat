@@ -32,7 +32,7 @@ router.post('/signup', [
             });
         }
 
-        const { username, email } = req.body;
+        const { fullName, username, email } = req.body;
         let password = req.body.password;
 
         // Check if username exists and is verified
@@ -72,6 +72,7 @@ router.post('/signup', [
 
         // Handle existing user cases (username or email already exists but not verified)
         if (existingUsername && !existingUsername.isVerified) {
+            existingUsername.fullName = fullName;
             existingUsername.email = email;
             existingUsername.password = password;
             existingUsername.createdAt = new Date();
@@ -89,6 +90,7 @@ router.post('/signup', [
         }
 
         if (existingEmail && !existingEmail.isVerified) {
+            existingUsername.fullName = fullName;
             existingEmail.username = username;
             existingEmail.password = password;
             existingEmail.createdAt = new Date();
@@ -107,6 +109,7 @@ router.post('/signup', [
 
         // Save the new user if username and email don't exist
         await new User({
+            fullName,
             username,
             email,
             password,

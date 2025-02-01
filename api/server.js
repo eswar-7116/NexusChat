@@ -3,7 +3,7 @@ import { config as configDotenv } from 'dotenv';
 import cookieParser from 'cookie-parser';
 
 import connectDB from './db/db.js';
-import signup from './routes/auth/signup.js';
+import signup from './routes/auth/signUp.js';
 import verifyUserOtp from './routes/auth/verifyUserOtp.js';
 import login from './routes/auth/login.js';
 import logout from './routes/auth/logout.js';

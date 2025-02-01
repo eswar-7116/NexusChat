@@ -26,7 +26,7 @@ export async function sendVerificationOtp(username, toEmail, otp) {
         return { success: true, message: "OTP Sent successfully" };
     } catch (err) {
         // Catch and log any errors that occur while sending the email
-        console.error("Error sending verification OTP:", err);
-        return { success: false, message: "Failed to send OTP" };
+        console.error("Error sending verification OTP: "+err.message);
+        return { success: false, message: "Internal Server Error" };
     }
 }

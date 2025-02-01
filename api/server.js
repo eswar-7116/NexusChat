@@ -36,6 +36,19 @@ app.use('/api/auth', verifyUserOtp);
 app.use('/api/auth', login);
 app.use('/api/auth', logout);
 
+// Route that checks if user is logged in
+app.use('/check', checkAuth, (req, res) => {
+    try {
+        res.status(200).json({ success: true, user: req.user });
+    } catch(error) {
+        console.error('Error while checking user login:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+});
+
 // Message routes
 app.use('/messaging', checkAuth, messageRoutes);
 

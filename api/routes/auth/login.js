@@ -82,11 +82,10 @@ router.post('/login',[
             token
         });
     } catch (error) {
-        console.error('Error while logging in:', error);
+        console.error('Error while logging in:', error.message);
         return res.status(500).json({
             success: false,
-            message: "Error while logging in",
-            error: String(error)
+            message: "Internal Server Error"
         });
     }
 });

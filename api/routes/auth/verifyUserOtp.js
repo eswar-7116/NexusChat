@@ -68,11 +68,10 @@ router.post('/verify-user-otp', [
             message: "User verified"
         });
     } catch (error) {
-        console.error('Error while verifying user:', error);
+        console.error('Error while verifying user:', error.message);
         return res.status(500).json({
             success: false,
-            message: "Error while verifying user",
-            error: String(error)
+            message: "Internal Server Error"
         });
     }
 });

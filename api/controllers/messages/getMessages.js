@@ -18,11 +18,10 @@ export default async function getMessages(req, res) {
             messages
         });
     } catch (error) {
-        console.error("Error while getting messages: "+error);
+        console.error("Error while getting messages: "+error.message);
         return res.status(500).json({
-            status: true,
-            message: "Error while getting recent users",
-            error: String(error)
+            success: false,
+            message: "Internal Server Error"
         });
     }
 }

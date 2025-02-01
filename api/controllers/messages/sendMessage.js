@@ -30,10 +30,10 @@ export default async function sendMessage(req, res) {
             chat: newMessage
         });
     } catch (error) {
+        console.error("Error while sending message: "+error.message)
         return res.status(500).json({
             success: false,
-            message: "Error while sending message",
-            error: String(error)
+            message: "Internal Server Error"
         });
     }
 }

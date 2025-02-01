@@ -15,11 +15,10 @@ export default async function getUsers(req, res) {
             users
         });
     } catch (error) {
-        console.error("Error while getting recent users: "+error);
+        console.error("Error while getting recent users: "+error.message);
         return res.status(500).json({
             success: false,
-            message: "Error while getting recent users",
-            error: String(error)
+            message: "Internal Server Error"
         });
     }
 }

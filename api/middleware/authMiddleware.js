@@ -32,11 +32,10 @@ export default async function checkAuth(req, res, next) {
         req.user = user;
         next();
     } catch (error) {
-        console.error('Error in checkAuth: '+error);
+        console.error('Error in checkAuth: '+error.message);
         res.status(500).json({
             success: false,
-            message: "Error in checkAuth",
-            error: error
+            message: "Internal Server Error"
         });
     }
 }

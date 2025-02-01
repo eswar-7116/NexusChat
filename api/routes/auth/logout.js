@@ -20,11 +20,10 @@ router.post('/logout', checkAuth, async (req, res) => {
             message: "Logged out successfully"
         });
     } catch (error) {
-        console.error("Error while logging out");
+        console.error("Error while logging out: "+error.message);
         return res.status(500).json({
             success: false,
-            message: "Error while logging out",
-            error: String(error)
+            message: "Internal Server Error"
         });
     }
 });

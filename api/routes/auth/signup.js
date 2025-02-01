@@ -126,11 +126,10 @@ router.post('/signup', [
             message: "User registered successfully"
         });
     } catch (error) {
-        console.error('Error while signing up:', error);
+        console.error('Error while signing up:', error.message);
         return res.status(500).json({
             success: false,
-            message: "Error while signing up",
-            error: String(error)
+            message: "Internal Server Error"
         });
     }
 });

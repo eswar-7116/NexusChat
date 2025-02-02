@@ -21,11 +21,11 @@ function SignUpPage() {
     if (!formData.fullName.trim())
       return toast.error("Full Name is required");
 
-    if (!formData.email.trim())
-      return toast.error("Email is required");
-
     if (!formData.username.trim())
       return toast.error("Username is required");
+    
+    if (!formData.email.trim())
+      return toast.error("Email is required");
 
     if (!formData.password.trim())
       return toast.error("Password is required");

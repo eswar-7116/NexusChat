@@ -9,6 +9,7 @@ import login from './routes/auth/login.js';
 import logout from './routes/auth/logout.js';
 import checkAuth from './middleware/authMiddleware.js';
 import messageRoutes from './routes/messages/routes.js';
+import cors from 'cors';
 
 configDotenv();  // Load environment variables from .env
 connectDB();     // Connect to the database
@@ -23,6 +24,12 @@ app.use(express.json());
 
 // Middleware to parse requests with cookies.
 app.use(cookieParser());
+
+// Use CORS
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 
 // Middleware to log each request method and URL
 app.use('/', (req, _, next) => {

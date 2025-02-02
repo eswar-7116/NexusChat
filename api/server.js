@@ -37,7 +37,7 @@ app.use('/auth', login);
 app.use('/auth', logout);
 
 // Route that checks if user is logged in
-app.use('/check', checkAuth, (req, res) => {
+app.get('/check', checkAuth, (req, res) => {
     try {
         res.status(200).json({ success: true, user: req.user });
     } catch(error) {

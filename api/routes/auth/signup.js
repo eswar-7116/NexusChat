@@ -90,7 +90,7 @@ router.post('/signup', [
         }
 
         if (existingEmail && !existingEmail.isVerified) {
-            existingUsername.fullName = fullName;
+            existingEmail.fullName = fullName;
             existingEmail.username = username;
             existingEmail.password = password;
             existingEmail.createdAt = new Date();
@@ -127,6 +127,7 @@ router.post('/signup', [
         });
     } catch (error) {
         console.error('Error while signing up:', error.message);
+        throw error;
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

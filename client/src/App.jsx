@@ -7,10 +7,11 @@ import { Toaster } from 'react-hot-toast';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import SignUpPage from './pages/SignUpPage';
+import OtpVerification from './pages/OtpVerification';
 import LoginPage from './pages/LoginPage';
 
 function App() {
-  const { user, checkAuth, isCheckingAuth } = useAuthStore();
+  const { user, checkAuth, isCheckingAuth, otpSent } = useAuthStore();
 
   useEffect(() => {
     checkAuth()
@@ -33,6 +34,7 @@ function App() {
       <Routes>
         <Route path='/' element={ user ? <HomePage /> : <LoginPage /> } />
         <Route path='/signup' element={ <SignUpPage /> } />
+        <Route path='/verify' element={ user ? <HomePage /> : otpSent ? <OtpVerification /> : <SignUpPage /> } />
         <Route path='/login' element={ <LoginPage /> } />
       </Routes>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { User, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 function SignUpPage() {
@@ -15,6 +15,7 @@ function SignUpPage() {
     confirmPassword: "",
   });  
 
+  const navigate = useNavigate();
   const { signup, isSigningUp } = useAuthStore();
 
   const validateForm = () => {
@@ -48,7 +49,7 @@ function SignUpPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const isInputValid = validateForm();
-    if (isInputValid === true) signup(formData);
+    if (isInputValid === true) signup(formData, navigate);
   }
 
   return (
@@ -76,6 +77,7 @@ function SignUpPage() {
               <input
                 type="text"
                 className="input input-bordered w-full pl-10"
+                name='fullName'
                 placeholder="Enter Full Name"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
@@ -94,6 +96,7 @@ function SignUpPage() {
               <input
                 type="text"
                 className="input input-bordered w-full pl-10"
+                name='username'
                 placeholder="Enter Username"
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
@@ -112,6 +115,7 @@ function SignUpPage() {
               <input
                 type="email"
                 className="input input-bordered w-full pl-10"
+                name='email'
                 placeholder="Enter E-mail"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -130,6 +134,7 @@ function SignUpPage() {
               <input
                 type={showPass ? "text" : "password"}
                 className="input input-bordered w-full pl-10"
+                name='password'
                 placeholder="Enter Password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -202,4 +207,4 @@ function SignUpPage() {
   )
 }
 
-export default SignUpPage
+export default SignUpPage;

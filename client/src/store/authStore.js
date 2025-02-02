@@ -2,11 +2,14 @@ import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import { toast } from 'react-hot-toast';
 
-export const useAuthStore = create((set) => ({
+export const useAuthStore = create((set, get) => ({
   user: null,
   isCheckingAuth: true,
   isSigningUp: false,
   isLoggingIn: false,
+  otpSent: false,
+  isVerifying: false,
+  temp: "",
 
   checkAuth: async () => {
     try {
@@ -20,19 +23,40 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  signup: async (data) => {
+  signup: async (data, navigate) => {
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post('/auth/signup', data);
-      console.log("Data:", data);
-      console.log("Response:", res);
-      toast.success(res.data.message);
-      set({ user: res.data });
+      if (res.data.success) {
+        toast.success("Verify the OTP to register");
+        set({ otpSent: true, temp: data.username });
+        navigate('/verify');
+      } else {
+        toast.error(res.data.message);
+      }
     } catch (err) {
       console.log("Error while signing up:", err);
-      toast.error(err.response.data.message);
+      toast.error(err.response?.data?.message || 'Signup failed');
     } finally {
       set({ isSigningUp: false });
+    }
+  },
+
+  verify: async (otp, navigate) => {
+    set({ isVerifying: true });
+    try {
+      const res = await axiosInstance.post('/auth/verify-user-otp', { otp, username: get().temp });
+      if (res.data.success) {
+        toast.success(res.data.message);
+        navigate('/login');
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      console.log("Error while verifying OTP:", err);
+      toast.error(err.response?.data?.message || 'Verification failed');
+    } finally {
+      set({ isVerifying: false });
     }
   }
 }));

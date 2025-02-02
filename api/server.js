@@ -31,10 +31,10 @@ app.use('/', (req, _, next) => {
 });
 
 // Auth routes
-app.use('/api/auth', signup);
-app.use('/api/auth', verifyUserOtp);
-app.use('/api/auth', login);
-app.use('/api/auth', logout);
+app.use('/auth', signup);
+app.use('/auth', verifyUserOtp);
+app.use('/auth', login);
+app.use('/auth', logout);
 
 // Route that checks if user is logged in
 app.use('/check', checkAuth, (req, res) => {

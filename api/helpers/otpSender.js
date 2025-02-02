@@ -12,14 +12,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-export async function sendVerificationOtp(username, toEmail, otp) {
+export async function sendVerificationOtp(fullname, toEmail, otp) {
     try {
         // Send the email
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: toEmail,
             subject: 'NexusChat User Verification OTP',
-            text: `Hello, ${username}, your OTP for NexusChat's user registration is: ${otp}. It will expire in 10 minutes. Do not share with anyone.`
+            text: `Hello, ${fullname}, your OTP for NexusChat's user registration is: ${otp}. It will expire in 10 minutes. Do not share with anyone.`
         });
         
         // Return success after sending email

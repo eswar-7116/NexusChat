@@ -62,7 +62,7 @@ router.post('/signup', [
         otpExpiry.setMinutes(otpExpiry.getMinutes() + 10);
 
         // Send the OTP
-        const senderResponse = await sendVerificationOtp(username, email, otp);
+        const senderResponse = await sendVerificationOtp(fullName, email, otp);
         if (!senderResponse.success) {
             return res.status(400).json({
                 success: false,

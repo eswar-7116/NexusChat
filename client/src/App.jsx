@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import { useEffect } from 'react';
 import { PropagateLoader } from 'react-spinners';
+import { Toaster } from 'react-hot-toast';
 
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
@@ -30,10 +31,12 @@ function App() {
       <NavBar />
 
       <Routes>
-        <Route path='/' element={ <HomePage /> } />
+        <Route path='/' element={ user ? <HomePage /> : <LoginPage /> } />
         <Route path='/signup' element={ <SignUpPage /> } />
         <Route path='/login' element={ <LoginPage /> } />
       </Routes>
+
+      <Toaster />
     </div>
   )
 }

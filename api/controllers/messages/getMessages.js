@@ -1,12 +1,21 @@
-import User from "../../models/User.js";
+import Message from "../../models/Message.js";
+import mongoose from "mongoose";
 
 export default async function getMessages(req, res) {
     try {
         const currentUserId = req.user._id;
         const { id: receiverId } = req.params;
-        
-        // Get messages b/w user and receiver
-        const messages = await User.find({
+
+        // Validate that the receiverId is a valid ObjectId string.
+        if (!mongoose.isValidObjectId(receiverId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid receiver ID"
+            });
+        }
+
+        // Get messages b/w current user and receiver
+        const messages = await Message.find({
             $or: [
                 { senderId: currentUserId, receiverId },
                 { senderId: receiverId, receiverId: currentUserId }
@@ -18,7 +27,7 @@ export default async function getMessages(req, res) {
             messages
         });
     } catch (error) {
-        console.error("Error while getting messages: "+error.message);
+        console.error("Error while getting messages: " + error.message);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

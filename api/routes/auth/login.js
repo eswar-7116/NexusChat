@@ -73,12 +73,13 @@ router.post('/login',[
         });
 
         // Set user status to online and save
-        user.status = 'online';
+        user.status = 'offline';
         await user.save();
 
         res.status(200).json({
             success: true,
             message: `${username} logged in`,
+            user,
             token
         });
     } catch (error) {

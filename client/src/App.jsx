@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import { useEffect } from 'react';
 import { PropagateLoader } from 'react-spinners';
@@ -30,10 +30,19 @@ function App() {
       { user && <NavBar /> }
 
       <Routes>
-        <Route path='/' element={ user ? <HomePage /> : <LoginPage /> } />
-        <Route path='/signup' element={ <SignUpPage /> } />
-        <Route path='/verify' element={ user ? <HomePage /> : otpSent ? <OtpVerification /> : <SignUpPage /> } />
-        <Route path='/login' element={ <LoginPage /> } />
+        <Route path='/' element={user ? <HomePage /> : <Navigate to="/login" />} />
+        <Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to="/" />} />
+        <Route 
+          path='/verify' 
+          element={
+            user ? 
+            <HomePage /> : 
+            otpSent ? 
+              <OtpVerification /> : 
+              <Navigate to="/signup" />
+          } 
+        />
+        <Route path='/login' element={!user ? <LoginPage /> : <Navigate to="/" />} />
       </Routes>
 
       <Toaster />

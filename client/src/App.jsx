@@ -17,8 +17,6 @@ function App() {
     checkAuth()
   }, [checkAuth]);
 
-  console.log(user);
-
   if (isCheckingAuth && !user) {
     return (
       <div className='flex items-center justify-center h-screen'>
@@ -29,7 +27,7 @@ function App() {
 
   return (
     <div>
-      <NavBar />
+      { user && <NavBar /> }
 
       <Routes>
         <Route path='/' element={ user ? <HomePage /> : <LoginPage /> } />

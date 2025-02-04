@@ -77,7 +77,7 @@ router.post('/login',[
         await user.save();
 
         res.status(200).json({
-            status: true,
+            success: true,
             message: `${username} logged in`,
             token
         });

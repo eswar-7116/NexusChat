@@ -31,7 +31,7 @@ router.post('/signup', [
                 errors: errors.array()
             });
         }
-
+        
         const { fullName, username, email } = req.body;
         let password = req.body.password;
 
@@ -127,7 +127,6 @@ router.post('/signup', [
         });
     } catch (error) {
         console.error('Error while signing up:', error.message);
-        throw error;
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

@@ -14,7 +14,7 @@ export const useAuthStore = create((set, get) => ({
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get('/check');
-      set({ user: res.data });
+      set({ user: res.data.user });
     } catch(error) {
       console.log("Error while check auth:", error);
       set({ user: null });
@@ -57,6 +57,25 @@ export const useAuthStore = create((set, get) => ({
       toast.error(err.response?.data?.message || 'Verification failed');
     } finally {
       set({ isVerifying: false });
+    }
+  },
+
+  login: async (data, navigate) => {
+    set({ isLoggingIn: true });
+    try {
+      const res = await axiosInstance.post('/auth/login', { username: data.username, password: data.password });
+      if (res.data.success) {
+        set({ user: res.data.user });
+        toast.success('Successfully logged in');
+        navigate('/');
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      console.log("Error while logging in:", err);
+      toast.error(err.response?.data?.message || 'Login failed');
+    } finally {
+      set({ isLoggingIn: false });
     }
   }
 }));

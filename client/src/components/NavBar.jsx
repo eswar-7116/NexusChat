@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { MoreVertical, KeyRound, LogOut } from 'lucide-react';
+import { MoreVertical, KeyRound, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -29,9 +29,10 @@ function Navbar() {
       <div className="relative">
         <button 
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="btn btn-ghost btn-circle hover:bg-base-300 m-2"
+          className="btn btn-ghost hover:bg-base-300 m-2"
         >
-          <MoreVertical />
+          <User />
+          <span>{user.fullName}</span>
         </button>
 
         {isDropdownOpen && (

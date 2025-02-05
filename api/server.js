@@ -1,15 +1,16 @@
 import express from 'express';
 import { config as configDotenv } from 'dotenv';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 import connectDB from './db/db.js';
 import signup from './routes/auth/signUp.js';
 import verifyUserOtp from './routes/auth/verifyUserOtp.js';
 import login from './routes/auth/login.js';
 import logout from './routes/auth/logout.js';
+import changePassword from './routes/auth/changePassword.js';
 import checkAuth from './middleware/authMiddleware.js';
 import messageRoutes from './routes/messages/routes.js';
-import cors from 'cors';
 
 configDotenv();  // Load environment variables from .env
 connectDB();     // Connect to the database
@@ -42,6 +43,7 @@ app.use('/auth', signup);
 app.use('/auth', verifyUserOtp);
 app.use('/auth', login);
 app.use('/auth', logout);
+app.use('/auth', changePassword);
 
 // Route that checks if user is logged in
 app.get('/check', checkAuth, (req, res) => {

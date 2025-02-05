@@ -28,7 +28,7 @@ function LoginPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const isValid = validateForm();
-    if (isValid === true) {
+    if (isValid) {
       login(formData, navigate);
     }
   };

@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';
 import SignUpPage from './pages/SignUpPage';
 import OtpVerification from './pages/OtpVerification';
 import LoginPage from './pages/LoginPage';
+import ChangePassPage from './pages/ChangePassPage';
 
 function App() {
   const { user, checkAuth, isCheckingAuth, otpSent } = useAuthStore();
@@ -43,6 +44,7 @@ function App() {
           } 
         />
         <Route path='/login' element={!user ? <LoginPage /> : <Navigate to="/" />} />
+        <Route path='/change-pass' element={user ? <ChangePassPage /> : <Navigate to="/" />} />
       </Routes>
 
       <Toaster />

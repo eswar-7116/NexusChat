@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { axiosInstance } from '../lib/axios';
+import { axiosInstance } from '../helpers/axios';
 import { toast } from 'react-hot-toast';
 
 export const useAuthStore = create((set, get) => ({
@@ -9,6 +9,7 @@ export const useAuthStore = create((set, get) => ({
   isLoggingIn: false,
   otpSent: false,
   isVerifying: false,
+  isChangingPass: false,
   temp: "",
 
   checkAuth: async () => {
@@ -26,6 +27,7 @@ export const useAuthStore = create((set, get) => ({
   signup: async (data, navigate) => {
     set({ isSigningUp: true });
     try {
+      delete data.confirmPassword;
       const res = await axiosInstance.post('/auth/signup', data);
       if (res.data.success) {
         toast.success("Verify the OTP to register");
@@ -92,6 +94,25 @@ export const useAuthStore = create((set, get) => ({
     } catch (err) {
       console.log("Error while logging in:", err);
       toast.error(err.response?.data?.message || 'Logout failed');
+    }
+  },
+
+  changePass: async (data, navigate) => {
+    set({ isChangingPass: true });
+    try {
+      delete data.confirmPassword;
+      const res = await axiosInstance.post('/auth/change-password', data);
+      if (res.data.success) {
+        toast.success(res.data.message);
+        navigate('/');
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      console.log("Error while changing password:", err);
+      toast.error(err.response?.data?.message || 'Password change failed');
+    } finally {
+      set({ isChangingPass: false });
     }
   }
 }));

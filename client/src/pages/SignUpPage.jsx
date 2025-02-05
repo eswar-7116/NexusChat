@@ -3,6 +3,7 @@ import { useAuthStore } from '../store/authStore';
 import { User, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { isPassNotValid } from '../helpers/passwordValidation';
 
 function SignUpPage() {
   const [showPass, setShowPass] = useState(false);
@@ -31,14 +32,9 @@ function SignUpPage() {
     if (!formData.password.trim())
       return toast.error("Password is required");
 
-    if (formData.password.length < 8)
-      return toast.error("Password must be at least 8 characters long");
-    
-    if (formData.password.search(/[a-zA-Z]/) === -1)
-      return toast.error("Password must contain at least one alphabet");
-
-    if (formData.password.search(/\d/) === -1)
-      return toast.error("Password must contain at least one number");
+    const passwordError = isPassNotValid(formData.password);
+    if (passwordError)
+      return toast.error(passwordError);
 
     if (formData.password !== formData.confirmPassword)
       return toast.error("Passwords do not match");
@@ -49,7 +45,7 @@ function SignUpPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const isInputValid = validateForm();
-    if (isInputValid === true) signup(formData, navigate);
+    if (isInputValid) signup(formData, navigate);
   }
 
   return (

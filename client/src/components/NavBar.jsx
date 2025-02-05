@@ -14,8 +14,8 @@ function Navbar() {
   };
 
   const handleChangePassword = () => {
-    // TODO: navigate('/change-password');
     setIsDropdownOpen(false);
+    navigate('/change-pass');
   };
 
   return (

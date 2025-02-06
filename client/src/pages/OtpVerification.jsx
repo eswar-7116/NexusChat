@@ -1,6 +1,6 @@
 import React from 'react';
 import { Mail, Loader2, ArrowRight } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../stores/authStore';
 import { useNavigate } from 'react-router-dom';
 
 const OtpVerification = () => {

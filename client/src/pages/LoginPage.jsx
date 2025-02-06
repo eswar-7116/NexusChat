@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { User, Lock, Eye, EyeOff, Loader2, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../stores/authStore';
 
 function LoginPage() {
   const [showPass, setShowPass] = useState(false);

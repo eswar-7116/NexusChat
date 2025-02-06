@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthStore } from './store/authStore';
+import { useAuthStore } from './stores/authStore';
 import { useEffect } from 'react';
 import { PropagateLoader } from 'react-spinners';
 import { Toaster } from 'react-hot-toast';

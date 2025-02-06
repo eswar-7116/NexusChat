@@ -46,7 +46,7 @@ function ChangePassPage() {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="h-[calc(100vh-4.5rem)] flex items-center justify-center overflow-hidden">
       <div className="w-full max-w-md space-y-2 p-6 sm:p-12">
         <div className="text-center mb-8">
           <div className="flex flex-col items-center gap-2 group">

@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { MoreVertical, KeyRound, LogOut, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { KeyRound, LogOut, User, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { logout, user } = useAuthStore();
+  const { logout, user, theme, changeTheme } = useAuthStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const handleLogout = () => {
     logout(navigate);
@@ -27,6 +31,16 @@ function Navbar() {
         <span className="text-xl font-bold">NexusChat</span>
       </div>      
       <div className="relative">
+        <button 
+          onClick={changeTheme}
+          className="btn btn-ghost btn-circle hover:bg-base-300"
+        >
+          {theme === 'dark' ? (
+            <Sun className="size-5" />
+          ) : (
+            <Moon className="size-5" />
+          )}
+        </button>
         <button 
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="btn btn-ghost hover:bg-base-300 m-2"

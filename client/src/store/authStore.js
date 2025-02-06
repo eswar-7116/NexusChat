@@ -11,6 +11,16 @@ export const useAuthStore = create((set, get) => ({
   isVerifying: false,
   isChangingPass: false,
   temp: "",
+  theme: localStorage.getItem("theme") === null ?
+    window.matchMedia("(prefers-color-scheme: dark)").matches ?
+      "dark" : "light" :
+    localStorage.getItem("theme"),
+
+  changeTheme: () => {
+    const theme = get().theme === "light" ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+    set({ theme: theme });
+  },
 
   checkAuth: async () => {
     try {

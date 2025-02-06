@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { KeyRound, LogOut, User, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../stores/authStore';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

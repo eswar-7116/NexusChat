@@ -34,6 +34,11 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Creation time is required']
     },
 
+    profilePic: {
+        type: String,
+        default: "",
+    },
+
     status: {
         type: String,
         enum: ['online', 'offline']

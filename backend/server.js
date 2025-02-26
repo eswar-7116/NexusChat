@@ -9,6 +9,7 @@ import verifyUserOtp from './routes/auth/verifyUserOtp.js';
 import login from './routes/auth/login.js';
 import logout from './routes/auth/logout.js';
 import changePassword from './routes/auth/changePassword.js';
+import editProfile from './routes/auth/editProfile.js';
 import checkAuth from './middleware/authMiddleware.js';
 import messageRoutes from './routes/messages/routes.js';
 
@@ -42,8 +43,9 @@ app.use('/', (req, _, next) => {
 app.use('/auth', signup);
 app.use('/auth', verifyUserOtp);
 app.use('/auth', login);
-app.use('/auth', logout);
-app.use('/auth', changePassword);
+app.use('/auth', checkAuth, logout);
+app.use('/auth', checkAuth, changePassword);
+app.use('/auth', checkAuth, editProfile);
 
 // Route that checks if user is logged in
 app.get('/check', checkAuth, (req, res) => {

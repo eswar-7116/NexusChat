@@ -5,7 +5,7 @@ import checkAuth from '../../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.post('/logout', checkAuth, async (req, res) => {
+router.post('/logout', async (req, res) => {
     try {
         // Set user status to offline
         const loggedInUser = await User.findOne({ username: req.user.username });

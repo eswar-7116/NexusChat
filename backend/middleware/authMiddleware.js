@@ -13,15 +13,15 @@ export default async function checkAuth(req, res, next) {
             });
         }
 
-        const decrypted = jwt.verify(token, process.env.JWT_SECRET);
-        if (!decrypted) {
+        const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
+        if (!verifiedUser) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized - Invalid Token"
             });
         }
 
-        const user = await User.findById(decrypted.id).select('-password');
+        const user = await User.findById(verifiedUser.id).select('-password');
         if (!user) {
             return res.status(401).json({
                 success: false,

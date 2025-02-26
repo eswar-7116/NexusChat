@@ -4,13 +4,16 @@ import { toast } from 'react-hot-toast';
 
 export const useAuthStore = create((set, get) => ({
   user: null,
+  temp: "",
+  
   isCheckingAuth: true,
   isSigningUp: false,
   isLoggingIn: false,
   otpSent: false,
   isVerifying: false,
   isChangingPass: false,
-  temp: "",
+  isUpdatingProfilePic: false,
+  
   theme: localStorage.getItem("theme") === null ?
     window.matchMedia("(prefers-color-scheme: dark)").matches ?
       "dark" : "light" :
@@ -123,6 +126,24 @@ export const useAuthStore = create((set, get) => ({
       toast.error(err.response?.data?.message || 'Password change failed');
     } finally {
       set({ isChangingPass: false });
+    }
+  },
+
+  updateProfilePic: async (data) => {
+    set({ isUpdatingProfilePic: true });
+    try {
+      const res = await axiosInstance.post('/auth/edit-profile', data);
+      if (res.data.success) {
+        set({ user: res.data.user });
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      console.log("Error while updating profile pic:", err);
+      toast.error(err.response?.data?.message || 'Profile pic update failed');
+    } finally {
+      set({ isUpdatingProfilePic: false });
     }
   }
 }));

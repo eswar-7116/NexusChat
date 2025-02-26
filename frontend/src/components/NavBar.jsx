@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { KeyRound, LogOut, User, Sun, Moon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { KeyRound, LogOut, ArrowLeft, Sun, Moon, UserRoundPen } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { logout, user, theme, changeTheme } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -22,13 +23,25 @@ function Navbar() {
     navigate('/change-pass');
   };
 
+  const handleEditProfile = () => {
+    setIsDropdownOpen(false);
+    navigate('/edit-profile');
+  }
+
   return (
     <nav className="flex justify-between items-center p-1 shadow-sm">
       <div className='flex items-center'>
-        <div className="w-16 h-16 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-4 scale-80">
-          <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-120"/>
-        </div>
-        <span className="text-xl font-bold">NexusChat</span>
+        {location.pathname === '/' ? (
+          <>
+          <div className="w-16 h-16 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-4 scale-80">
+            <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-120" />
+          </div>
+          <span className="text-xl font-bold">NexusChat</span>
+          </>) : (
+          <button onClick={() => navigate(-1)} className="m-2 btn btn-ghost btn-circle hover:bg-base-300">
+            <ArrowLeft />
+          </button>
+        )}
       </div>      
       <div className="relative">
         <button 
@@ -45,12 +58,18 @@ function Navbar() {
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="btn btn-ghost hover:bg-base-300 m-2"
         >
-          <User />
+          <img src={user.profilePic || "/profile.png"} alt="Profile picture" className='w-8 h-8 rounded-full object-cover'/>
           <span>{user.fullName}</span>
         </button>
 
         {isDropdownOpen && (
           <ul className="menu dropdown-content z-[1] absolute right-0 mt-2 w-48 bg-base-100 rounded-box shadow-lg p-2">
+            <li>
+              <button onClick={handleEditProfile} className="flex items-center">
+              <UserRoundPen />
+                Change Profile Pic
+              </button>
+            </li>
             <li>
               <button onClick={handleChangePassword} className="flex items-center">
                 <KeyRound className="size-5" />

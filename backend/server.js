@@ -22,7 +22,7 @@ const host = process.env.HOST || '0.0.0.0';  // Default to 'localhost' if HOST i
 const port = process.env.PORT || 5000;       // Default to 5000 if PORT is not defined in .env
 
 // Middleware to parse requests with JSON payloads.
-app.use(express.json());
+app.use(express.json({limit: '10mb'}));
 
 // Middleware to parse requests with cookies.
 app.use(cookieParser());

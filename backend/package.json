@@ -1,7 +1,7 @@
 {
-  "name": "nexuschat-api",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "API for NexusChat",
+  "description": "Backend API for NexusChat",
   "license": "ISC",
   "author": "",
   "type": "module",

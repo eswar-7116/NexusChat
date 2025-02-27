@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -34,5 +34,6 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "vite": "^6.0.5"
-  }
+  },
+  "description": "Frontend for NexusChat application"
 }

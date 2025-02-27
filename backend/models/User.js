@@ -39,11 +39,6 @@ const userSchema = new mongoose.Schema({
         default: "",
     },
 
-    status: {
-        type: String,
-        enum: ['online', 'offline']
-    },
-
     lastSeen: {
         type: Date
     },
@@ -63,23 +58,6 @@ const userSchema = new mongoose.Schema({
         default: false,
         required: [true, 'isVerified is required']
     },
-
-    recentUsers: {
-        type: [
-            {
-                userId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'UserModel',
-                    required: true
-                },
-                lastMessageAt: {
-                    type: Date,
-                    required: true,
-                    default: Date.now
-                }
-            }
-        ]
-    }
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);

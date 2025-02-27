@@ -8,7 +8,6 @@ export const useChatStore = create((set, get) => ({
     users: [],
     isFetchingUsers: false,
     isFetchingMessages: false,
-    isSendingMessage: false,
     selectedUser: null,
 
     fetchUsers: async () => {
@@ -36,4 +35,6 @@ export const useChatStore = create((set, get) => ({
             set({ isFetchingMessages: false });
         }
     },
+
+    setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));

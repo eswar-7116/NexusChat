@@ -72,10 +72,6 @@ router.post('/login',[
             secure: process.env.NODE_ENV !== 'development'
         });
 
-        // Set user status to online and save
-        user.status = 'online';
-        await user.save();
-
         res.status(200).json({
             success: true,
             message: `${username} logged in`,

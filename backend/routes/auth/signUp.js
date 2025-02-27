@@ -76,7 +76,6 @@ router.post('/signup', [
             existingUsername.email = email;
             existingUsername.password = password;
             existingUsername.createdAt = new Date();
-            existingUsername.status = 'offline';
             existingUsername.lastSeen = new Date();
             existingUsername.otp = otp;
             existingUsername.otpExpiry = otpExpiry;
@@ -94,7 +93,6 @@ router.post('/signup', [
             existingEmail.username = username;
             existingEmail.password = password;
             existingEmail.createdAt = new Date();
-            existingEmail.status = 'offline';
             existingEmail.lastSeen = new Date();
             existingEmail.otp = otp;
             existingEmail.otpExpiry = otpExpiry;
@@ -114,7 +112,6 @@ router.post('/signup', [
             email,
             password,
             createdAt: new Date(),
-            status: 'offline',
             lastSeen: new Date(),
             otp,
             otpExpiry,

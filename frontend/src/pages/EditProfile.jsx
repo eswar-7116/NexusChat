@@ -1,5 +1,5 @@
 import React from "react";
-import { Camera } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthStore } from "../stores/authStore";
@@ -96,13 +96,12 @@ function EditProfile() {
               onClick={handleUpdateProfilePic}
               disabled={isUpdatingProfilePic}
             >
-              {isUpdatingProfilePic ? "Updating..." : "Update Profile Pic"}
-            </button>
-            <button
-              className="btn btn-ghost mx-2"
-              onClick={() => navigate(-1)}
-            >
-              Cancel
+              {isUpdatingProfilePic ?
+              <>
+                <Loader2 className="size-5 animate-spin" />
+                Updating...
+              </>
+              : "Update Profile Pic"}
             </button>
           </div>
         </div>

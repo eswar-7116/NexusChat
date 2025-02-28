@@ -1,14 +1,13 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../helpers/axios";
-import { useAuthStore } from "./authStore";
 
 export const useChatStore = create((set, get) => ({
     messages: [],
     users: [],
     isFetchingUsers: false,
     isFetchingMessages: false,
-    selectedUser: null,
+    selectedUser: JSON.parse(localStorage.getItem("selectedUser")) || null,
 
     fetchUsers: async () => {
         set({ isFetchingUsers: true });
@@ -36,5 +35,8 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    setSelectedUser: (selectedUser) => set({ selectedUser }),
+    setSelectedUser: (selectedUser) => {
+        set({ selectedUser })
+        localStorage.setItem("selectedUser", JSON.stringify(selectedUser));
+    },
 }));

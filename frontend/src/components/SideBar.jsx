@@ -16,7 +16,7 @@ function SideBar() {
     return (
       <aside
         className="h-full w-20 lg:w-72 border-r border-base-300
-        flex flex-col transition-all duration-200 bg-red"
+        flex flex-col transition-all duration-200"
       >
         {/* Users */}
         <div className="overflow-y-auto w-full py-3">
@@ -41,16 +41,16 @@ function SideBar() {
 
   return (
     <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
-      <div className="border-b border-base-300 w-full p-5">
+      <div className="border-b border-base-200 w-full p-5">
         <div className="overflow-y-auto w-full py-3">
         {users.map((user) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`
-              w-full p-3 flex items-center gap-3
-              hover:bg-base-300 transition-colors
-              ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}
+              w-full p-2 flex items-center gap-3
+              hover:bg-base-200 transition-colors
+              ${selectedUser?._id === user._id ? "bg-base-200 ring-1 ring-base-200" : ""}
             `}
           >
             <div className="relative mx-auto lg:mx-0">

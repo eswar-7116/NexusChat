@@ -5,7 +5,19 @@ import ChatWindow from '../components/ChatWindow';
 import NoUserSelected from '../components/NoUserSelected';
 
 function HomePage() {
-  const { selectedUser } = useChatStore();
+  const { selectedUser, setSelectedUser } = useChatStore();
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setSelectedUser(null);
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className="h-[calc(100vh-4.5rem)] bg-base-200 flex items-center justify-center p-4 overflow-hidden">

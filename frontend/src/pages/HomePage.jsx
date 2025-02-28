@@ -21,7 +21,7 @@ function HomePage() {
 
   return (
     <div className="h-[calc(100vh-4.5rem)] bg-base-200 flex items-center justify-center p-4 overflow-hidden">
-      <div className="bg-base-100 rounded-lg shadow-cl w-full max-w-8xl h-full flex overflow-hidden">
+      <div className="bg-base-100 rounded-lg shadow-cl w-full max-w-8xl h-full flex overflow-hidden border border-base-300">
         <SideBar />
         {selectedUser ? <ChatWindow /> : <NoUserSelected />}
       </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthStore } from "../stores/authStore";
@@ -32,34 +32,33 @@ function EditProfile() {
     navigate(-1);
   }
 
-
   return (
-    <div className="h-screen pt-20">
-      <div className="max-w-2xl mx-auto p-4 py-8">
-        <div className="bg-base-300 rounded-xl p-6 space-y-8">
+    <div className="h-full flex-grow flex flex-col p-4">
+      <div className="max-w-md w-full mx-auto">
+        <div className="bg-base-300 rounded-xl p-4 sm:p-6 space-y-6">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold ">{ user.fullName }</h1>
+            <h1 className="text-xl sm:text-2xl font-semibold">{user.fullName}</h1>
           </div>
         
           {/* Profile Picture */}
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-3">
             <div className="relative">
               <img
                 src={selectedPic || user.profilePic || "/profile.png"}
                 alt="Profile"
-                className="size-32 rounded-full object-cover border-4 "
+                className="size-24 sm:size-32 rounded-full object-cover border-4"
               />
               <label
                 htmlFor="avatar-upload"
                 className={`
                   absolute bottom-0 right-0 
                   bg-base-content hover:scale-105
-                  p-2 rounded-full cursor-pointer 
+                  p-1.5 sm:p-2 rounded-full cursor-pointer 
                   transition-all duration-200
                   ${isUpdatingProfilePic ? "animate-pulse pointer-events-none" : ""}
                 `}
               >
-                <Camera className="w-5 h-5 text-base-200" />
+                <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-base-200" />
                 <input
                   type="file"
                   id="avatar-upload"
@@ -70,36 +69,38 @@ function EditProfile() {
                 />
               </label>
             </div>
-            <p className="text-sm text-zinc-400">
-              {isUpdatingProfilePic ? "Uploading..." : "Click the camera icon to update your photo"}
+            <p className="text-xs sm:text-sm text-zinc-400 text-center">
+              {isUpdatingProfilePic ? "Uploading..." : "Tap the camera icon to update your photo"}
             </p>
           </div>
 
-          <div className="flex flex-col items-start py-2 px-8">
-            <div className="flex items-center gap-2 mb-2">
-              <span><b>Username: </b></span>
-              <span>{user.username}</span>
+          <div className="flex flex-col items-start py-2 px-2 sm:px-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3 w-full">
+              <span className="font-medium">Username:</span>
+              <span className="text-sm sm:text-base">{user.username}</span>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <span><b>E-mail: </b></span>
-              <span>{user.email}</span>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3 w-full">
+              <span className="font-medium">Email:</span>
+              <span className="text-sm sm:text-base break-all">{user.email}</span>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <span><b>Member Since: </b></span>
-              <span>{user.createdAt?.split("T")[0]}</span>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3 w-full">
+              <span className="font-medium">Member Since:</span>
+              <span className="text-sm sm:text-base">{user.createdAt?.split("T")[0]}</span>
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center pt-2">
             <button
-              className="btn btn-primary mx-2"
+              className="btn btn-primary w-full sm:w-auto"
               onClick={handleUpdateProfilePic}
               disabled={isUpdatingProfilePic}
             >
               {isUpdatingProfilePic ?
               <>
-                <Loader2 className="size-5 animate-spin" />
-                Updating...
+                <Loader2 className="size-4 sm:size-5 animate-spin" />
+                <span>Updating...</span>
               </>
               : "Update Profile Pic"}
             </button>

@@ -38,9 +38,12 @@ function Navbar() {
           </div>
           <span className="text-xl font-bold">NexusChat</span>
           </>) : (
-          <button onClick={() => navigate(-1)} className="m-2 btn btn-ghost btn-circle hover:bg-base-300">
-            <ArrowLeft />
-          </button>
+          <button 
+          onClick={() => navigate(-1)} 
+          className="flex items-center gap-1 m-2 text-sm font-medium opacity-70 hover:opacity-100"
+        >
+          <ArrowLeft className="size-4" /> Back
+        </button>
         )}
       </div>      
       <div className="relative">

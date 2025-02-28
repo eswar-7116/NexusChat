@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
-import { Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { isPassNotValid } from '../helpers/passwordValidation';
 
@@ -46,30 +46,30 @@ function ChangePassPage() {
   };
   
   return (
-    <div className="h-[calc(100vh-4.5rem)] flex items-center justify-center overflow-hidden">
-      <div className="w-full max-w-md space-y-2 p-6 sm:p-12">
-        <div className="text-center mb-8">
-          <div className="flex flex-col items-center gap-2 group">
-            <div className="w-32 h-30 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-4 scale-80">
-              <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-80"/>
+    <div className="h-full flex-grow flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-2">
+        <div className="text-center mb-6">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-24 h-24 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-3">
+              <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="w-full h-full object-contain"/>
             </div>
-            <h1 className="text-2xl font-bold mt-2">Change Password</h1>
-            <p className="text-base-content/60">Update your account password</p>
+            <h1 className="text-xl sm:text-2xl font-bold mt-2">Change Password</h1>
+            <p className="text-sm text-base-content/60">Update your account password</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="form-control">
             <label className="label">
               <span className="label-text font-medium">Old Password</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="size-5 text-base-content/40" />
+                <Lock className="size-4 sm:size-5 text-base-content/40" />
               </div>
               <input
                 type={showOldPass ? "text" : "password"}
-                className="input input-bordered w-full pl-10"
+                className="input input-bordered w-full pl-10 text-sm sm:text-base py-2"
                 placeholder="Enter Old Password"
                 value={formData.oldPassword}
                 onChange={(e) => setFormData({ ...formData, oldPassword: e.target.value })}
@@ -80,9 +80,9 @@ function ChangePassPage() {
                 onClick={() => setShowOldPass(!showOldPass)}
               >
                 {showOldPass ? (
-                  <EyeOff className="size-5 text-base-content/40" />
+                  <EyeOff className="size-4 sm:size-5 text-base-content/40" />
                 ) : (
-                  <Eye className="size-5 text-base-content/40" />
+                  <Eye className="size-4 sm:size-5 text-base-content/40" />
                 )}
               </button>
             </div>
@@ -94,11 +94,11 @@ function ChangePassPage() {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="size-5 text-base-content/40" />
+                <Lock className="size-4 sm:size-5 text-base-content/40" />
               </div>
               <input
                 type={showNewPass ? "text" : "password"}
-                className="input input-bordered w-full pl-10"
+                className="input input-bordered w-full pl-10 text-sm sm:text-base py-2"
                 placeholder="Enter New Password"
                 value={formData.newPassword}
                 onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
@@ -109,9 +109,9 @@ function ChangePassPage() {
                 onClick={() => setShowNewPass(!showNewPass)}
               >
                 {showNewPass ? (
-                  <EyeOff className="size-5 text-base-content/40" />
+                  <EyeOff className="size-4 sm:size-5 text-base-content/40" />
                 ) : (
-                  <Eye className="size-5 text-base-content/40" />
+                  <Eye className="size-4 sm:size-5 text-base-content/40" />
                 )}
               </button>
             </div>
@@ -123,11 +123,11 @@ function ChangePassPage() {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="size-5 text-base-content/40" />
+                <Lock className="size-4 sm:size-5 text-base-content/40" />
               </div>
               <input
                 type={showConfirmPass ? "text" : "password"}
-                className="input input-bordered w-full pl-10"
+                className="input input-bordered w-full pl-10 text-sm sm:text-base py-2"
                 placeholder="Confirm New Password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -138,9 +138,9 @@ function ChangePassPage() {
                 onClick={() => setShowConfirmPass(!showConfirmPass)}
               >
                 {showConfirmPass ? (
-                  <EyeOff className="size-5 text-base-content/40" />
+                  <EyeOff className="size-4 sm:size-5 text-base-content/40" />
                 ) : (
-                  <Eye className="size-5 text-base-content/40" />
+                  <Eye className="size-4 sm:size-5 text-base-content/40" />
                 )}
               </button>
             </div>
@@ -148,13 +148,13 @@ function ChangePassPage() {
 
           <button 
             type="submit" 
-            className="btn btn-primary w-full" 
+            className="btn btn-primary w-full mt-6" 
             disabled={isChangingPass}
           >
             {isChangingPass ? (
               <>
-                <Loader2 className="size-5 animate-spin" />
-                Updating...
+                <Loader2 className="size-4 sm:size-5 animate-spin" />
+                <span>Updating...</span>
               </>
             ) : (
               "Change Password"

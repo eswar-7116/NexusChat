@@ -87,7 +87,13 @@ function EditProfile() {
             
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3 w-full">
               <span className="font-medium">Member Since:</span>
-              <span className="text-sm sm:text-base">{user.createdAt?.split("T")[0]}</span>
+              <span className="text-sm sm:text-base">
+                {new Date(user.createdAt).toLocaleDateString("en-US", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
             </div>
           </div>
 

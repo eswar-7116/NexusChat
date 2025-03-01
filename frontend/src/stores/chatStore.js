@@ -7,7 +7,7 @@ export const useChatStore = create((set, get) => ({
     users: [],
     isFetchingUsers: false,
     isFetchingMessages: false,
-    selectedUser: JSON.parse(localStorage.getItem("selectedUser")) || null,
+    selectedUser: null,
 
     fetchUsers: async () => {
         set({ isFetchingUsers: true });
@@ -35,8 +35,5 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    setSelectedUser: (selectedUser) => {
-        set({ selectedUser })
-        localStorage.setItem("selectedUser", JSON.stringify(selectedUser));
-    },
+    setSelectedUser: (selectedUser) => set({ selectedUser })
 }));

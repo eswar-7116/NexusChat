@@ -1,13 +1,15 @@
 import React from 'react';
 import { useChatStore } from '../stores/chatStore';
 import { useAuthStore } from '../stores/authStore';
-import { Send, SendHorizontal, SendIcon, X } from 'lucide-react';
+import { Send, X } from 'lucide-react';
+import Modal from './Modal';
 
 function ChatWindow() {
-  const { user, onlineUsers } = useAuthStore();
-  const { selectedUser } = useChatStore();
+  const { onlineUsers } = useAuthStore();
+  const { selectedUser, users } = useChatStore();
 
   const [message, setMessage] = React.useState("");
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const textareaRef = React.useRef(null);
 
   const handleSubmit = (e) => {
@@ -16,7 +18,15 @@ function ChatWindow() {
     setMessage("");
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-    }    
+    }
+  };
+
+  const handleProfilePicClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -25,24 +35,29 @@ function ChatWindow() {
       <div className="p-2.5 border-b border-base-300 bg-base-300">
         <div className="flex items-center justify-between p-1">
           <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div className="avatar">
-              <div className="size-10 rounded-full relative">
+            {/* Avatar with status dot */}
+            <div className="avatar" onClick={handleProfilePicClick}>
+              <div className="size-10 rounded-full relative cursor-pointer">
                 <img src={selectedUser.profilePic || "/profile.png"} alt={selectedUser.fullName} />
               </div>
+              {onlineUsers.some(onlineUser => onlineUser._id === selectedUser._id) && (
+                <span
+                  className="absolute bottom-0 right-0 size-2.5 sm:size-3 bg-green-500 rounded-full ring-2 ring-zinc-900"
+                />
+              )}
             </div>
 
             {/* User info */}
             <div>
               <h3 className="font-medium">{selectedUser.fullName}</h3>
               <p className="text-sm text-base-content/70">
-                {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
+                {selectedUser.username}
               </p>
             </div>
           </div>
         </div>
       </div>
-        
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-2 space-y-4">
         Messages
@@ -74,7 +89,7 @@ function ChatWindow() {
               className="w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
             />
           </div>
-          
+
           {/* Send button */}
           <button 
             type="submit" 
@@ -87,8 +102,15 @@ function ChatWindow() {
         </form>
       </div>
 
+      {/* Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        user={selectedUser}
+        isOnline={onlineUsers.some(onlineUser => onlineUser._id === selectedUser._id)}
+      />
     </div>
-  )
+  );
 }
 
 export default ChatWindow;

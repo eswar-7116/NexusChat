@@ -2,11 +2,12 @@ import React from 'react';
 import { useChatStore } from '../stores/chatStore';
 import { useAuthStore } from '../stores/authStore';
 import { Send, X } from 'lucide-react';
+import { PropagateLoader } from 'react-spinners';
 import Modal from './Modal';
 
 function ChatWindow() {
   const { onlineUsers } = useAuthStore();
-  const { selectedUser, users } = useChatStore();
+  const { selectedUser, messages, isFetchingMessages, fetchMessages } = useChatStore();
 
   const [message, setMessage] = React.useState("");
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -59,9 +60,11 @@ function ChatWindow() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-2 space-y-4">
+      {isFetchingMessages ? <div className='flex items-center justify-center h-full w-full'>
+        <PropagateLoader color="#b5b3b3" />
+      </div> : <div className="flex-1 overflow-y-auto px-2 space-y-4">
         Messages
-      </div>
+      </div>}
 
       {/* Message input */}
       <div className="p-3 bg-base-200 border-t border-base-300">

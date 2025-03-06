@@ -5,7 +5,7 @@ import { Users } from 'lucide-react';
 
 function SideBar() {
   const { onlineUsers } = useAuthStore();
-  const { fetchUsers, users, selectedUser, setSelectedUser, isFetchingUsers } = useChatStore();
+  const { fetchUsers, users, selectedUser, setSelectedUser, isFetchingUsers, fetchMessages, messages } = useChatStore();
 
   React.useEffect(() => {
     fetchUsers();
@@ -47,12 +47,15 @@ function SideBar() {
           <Users className="size-6 text-base-content/70" />
           <span className="hidden lg:block ml-2 font-semibold text-base-content/70">Contacts</span>
         </div>
-        
+
         <div className="overflow-y-auto w-full py-2 px-1 sm:px-2 lg:px-3">
           {users.map((user) => (
             <button
               key={user._id}
-              onClick={() => setSelectedUser(user)}
+              onClick={() => {
+                setSelectedUser(user);
+                fetchMessages(user._id);
+              }}
               className={`
                 w-full py-2 px-1 sm:px-2 mb-1 rounded-lg flex items-center gap-2 sm:gap-3
                 hover:bg-base-200 transition-colors
@@ -65,7 +68,7 @@ function SideBar() {
                   alt={user.fullName}
                   className="size-10 sm:size-12 lg:size-12 rounded-full object-cover"
                 />
-                { onlineUsers.includes(user) && (
+                {onlineUsers.includes(user) && (
                   <span
                     className="absolute bottom-0 right-0 size-2.5 sm:size-3 bg-green-500 rounded-full ring-2 ring-zinc-900"
                   />

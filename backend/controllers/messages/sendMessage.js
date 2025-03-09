@@ -1,5 +1,5 @@
 import Message from '../../models/Message.js';
-import { io, getSocketId } from '../../helpers/socketio.js';
+import { io, getSocketId, onlineUsers } from '../../helpers/socketio.js';
 
 export default async function sendMessage(req, res) {
     try {
@@ -22,6 +22,9 @@ export default async function sendMessage(req, res) {
             content: message,
             timestamp: new Date()
         });
+
+        if (receiverId in onlineUsers)
+            newMessage.isRead = true;
         await newMessage.save();
 
         const receiverSocketId = getSocketId(receiverId);

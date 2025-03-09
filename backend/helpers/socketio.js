@@ -2,6 +2,9 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import express from 'express';
 
+import User from '../models/User.js';
+import Message from '../models/Message.js';
+
 const app = express(); // Express server
 const server = createServer(app); // Socket.io server
 
@@ -21,7 +24,7 @@ export function getSocketId(userId) {
 }
 
 // Socket.io connection
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
     console.log('User connected', socket.id);
     
     // Get user ID from query
@@ -32,11 +35,20 @@ io.on('connection', (socket) => {
 
     io.emit('getOnlineUsers', Object.keys(onlineUsers));  // Send online users to client
 
-    socket.on('disconnect', () => {
+    await Message.updateMany(
+        { receiverId: userId, isRead: false }, // Find all unread messages for the user
+        { $set: { isRead: true } }  // Mark them as read to true
+    );
+
+    socket.on('disconnect', async () => {
         console.log('User disconnected', socket.id);
         delete onlineUsers[userId];  // Remove user from online users
         io.emit('getOnlineUsers', Object.keys(onlineUsers));  // Send online users to client
+
+        const user = await User.findById(userId);  // Find current user by ID
+        user.lastSeen = new Date(); // Set lastSeen to current date & time
+        await user.save(); // Save changes to database
     });
 });
 
-export { io, app, server };
+export { io, app, server, onlineUsers };

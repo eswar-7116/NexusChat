@@ -3,6 +3,7 @@ import { config as configDotenv } from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
+import { app, server } from './helpers/socketio.js';
 import connectDB from './db/db.js';
 import signup from './routes/auth/signUp.js';
 import verifyUserOtp from './routes/auth/verifyUserOtp.js';
@@ -15,8 +16,6 @@ import messageRoutes from './routes/messages/routes.js';
 
 configDotenv();  // Load environment variables from .env
 connectDB();     // Connect to the database
-
-const app = express();
 
 const host = process.env.HOST || '0.0.0.0';  // Default to 'localhost' if HOST is not defined in .env
 const port = process.env.PORT || 5000;       // Default to 5000 if PORT is not defined in .env
@@ -64,6 +63,6 @@ app.get('/check', checkAuth, (req, res) => {
 app.use('/messaging', checkAuth, messageRoutes);
 
 // Starting server
-app.listen(port, host, () => {
+server.listen(port, host, () => {
     console.log(`Server started at http://${host}:${port}`);
 });

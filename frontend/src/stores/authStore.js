@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { axiosInstance } from '../helpers/axios';
 import { toast } from 'react-hot-toast';
+import { io } from 'socket.io-client';
 
 export const useAuthStore = create((set, get) => ({
   user: null,
   temp: "",
   onlineUsers: [],
+  socket: null,
   
   isCheckingAuth: true,
   isSigningUp: false,
@@ -30,6 +32,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get('/check');
       set({ user: res.data.user });
+      get().connectSocket();
     } catch(error) {
       console.log("Error while check auth:", error);
       set({ user: null });
@@ -84,6 +87,7 @@ export const useAuthStore = create((set, get) => ({
         set({ user: res.data.user });
         toast.success('Successfully logged in');
         navigate('/');
+        get().connectSocket();
       } else {
         toast.error(res.data.message);
       }
@@ -102,6 +106,7 @@ export const useAuthStore = create((set, get) => ({
         set({ user: null });
         toast.success("Successfully logged out");
         navigate('/login');
+        get().disconnectSocket();
       } else {
         toast.error(res.data.message);
       }
@@ -145,6 +150,20 @@ export const useAuthStore = create((set, get) => ({
       toast.error(err.response?.data?.message || 'Profile pic update failed');
     } finally {
       set({ isUpdatingProfilePic: false });
+    }
+  },
+
+  connectSocket: () => {
+    const socket = io('http://localhost:5000');
+    socket.connect();
+    set({ socket });
+  },
+
+  disconnectSocket: () => {
+    const { socket } = get();
+    if (socket?.connected) {
+      socket.disconnect();
+      set({ socket: null });
     }
   }
 }));

@@ -11,8 +11,25 @@ function ChatWindow() {
 
   const [message, setMessage] = React.useState("");
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
   const textareaRef = React.useRef(null);
   const chatBoxBottomRef = React.useRef(null);
+
+  // Detect if the user is on a mobile device
+  React.useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Check initially
+    checkIfMobile();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -196,14 +213,21 @@ function ChatWindow() {
                 e.target.style.height = `${Math.min(e.target.scrollHeight, 128)}px`;
               }}
               onKeyDown={(e) => {
+                // Only use Enter to send on desktop devices
                 if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  if (message.trim()) {
-                    handleSubmit(e);
+                  if (isMobile) {
+                    // On mobile, we don't prevent default, allowing normal newline behavior
+                    return;
+                  } else {
+                    // On desktop, we prevent default and send the message
+                    e.preventDefault();
+                    if (message.trim()) {
+                      handleSubmit(e);
+                    }
                   }
                 }
               }}
-              placeholder="Type a message..."
+              placeholder={isMobile ? "Type a message (press Enter for new line)" : "Type a message (press Enter to send, Shift+Enter for new line)"}
               rows="1"
               className="w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
             />
@@ -220,6 +244,13 @@ function ChatWindow() {
           </button>
         </form>
       </div>
+
+      {/* Mobile keyboard tip */}
+      {isMobile && (
+        <div className="text-center text-xs text-base-content/50 pb-1">
+          Use the send button to submit your message
+        </div>
+      )}
 
       {/* Modal */}
       <Modal

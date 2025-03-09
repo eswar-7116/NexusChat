@@ -48,8 +48,7 @@ export const useChatStore = create((set, get) => ({
     },
 
     listenToUser: () => {
-        const { selectedUser, messages } = get();
-        console.log(messages)
+        const { selectedUser } = get();
         const { socket } = useAuthStore.getState();
         if (!selectedUser || !socket) return;
 

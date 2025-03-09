@@ -5,7 +5,7 @@ import { Users } from 'lucide-react';
 
 function SideBar() {
   const { onlineUsers } = useAuthStore();
-  const { fetchUsers, users, selectedUser, setSelectedUser, isFetchingUsers, fetchMessages, messages } = useChatStore();
+  const { fetchUsers, users, selectedUser, setSelectedUser, isFetchingUsers, fetchMessages } = useChatStore();
 
   React.useEffect(() => {
     fetchUsers();

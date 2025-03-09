@@ -1,4 +1,5 @@
 import Message from '../../models/Message.js';
+import { io, getSocketId } from '../../helpers/socketio.js';
 
 export default async function sendMessage(req, res) {
     try {
@@ -23,7 +24,10 @@ export default async function sendMessage(req, res) {
         });
         await newMessage.save();
 
-        // TODO: Use socket.io to send messages
+        const receiverSocketId = getSocketId(receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit('newMessage', newMessage);
+        }
 
         return res.status(201).json({
             success: true,

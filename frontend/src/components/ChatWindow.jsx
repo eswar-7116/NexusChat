@@ -7,7 +7,7 @@ import Modal from './Modal';
 
 function ChatWindow() {
   const { user, onlineUsers } = useAuthStore();
-  const { selectedUser, messages, isFetchingMessages, sendMessage } = useChatStore();
+  const { selectedUser, messages, isFetchingMessages, sendMessage, listenToUser, stopListeningToUser } = useChatStore();
 
   const [message, setMessage] = React.useState("");
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -50,6 +50,12 @@ function ChatWindow() {
       chatBoxBottomRef.current.scrollIntoView({ behavior: 'auto' });
     }
   }, []);
+
+  React.useEffect(() => {
+    listenToUser(selectedUser._id);
+
+    return () => stopListeningToUser();
+  }, [selectedUser._id, listenToUser, stopListeningToUser])
 
   return (
     <div className="flex-1 flex flex-col overflow-auto">

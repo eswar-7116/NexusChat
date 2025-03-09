@@ -15,6 +15,11 @@ const io = new Server(server, {
 
 const onlineUsers = {};  // Object to store online users
 
+// Get socket ID of a user
+export function getSocketId(userId) {
+    return onlineUsers[userId];
+}
+
 // Socket.io connection
 io.on('connection', (socket) => {
     console.log('User connected', socket.id);

@@ -83,6 +83,22 @@ function ChatWindow() {
               </p>
             </div>
           </div>
+          
+          {/* Last seen status - added to the right side of top bar */}
+          <div className="text-sm text-base-content/70">
+            {onlineUsers.some(onlineUser => onlineUser === selectedUser._id) 
+              ? "Online" 
+              : selectedUser.lastSeen 
+                ? `Last seen ${new Date(selectedUser.lastSeen).toLocaleString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true
+                  })}`
+                : "Offline"
+            }
+          </div>
         </div>
       </div>
 

@@ -154,9 +154,12 @@ export const useAuthStore = create((set, get) => ({
   },
 
   connectSocket: () => {
-    const socket = io('http://localhost:5000');
-    socket.connect();
-    set({ socket });
+    const { user, socket } = get();
+    if (!user || socket?.connected) return;
+
+    const newSocket = io('http://localhost:5000');
+    newSocket.connect();
+    set({ socket: newSocket });
   },
 
   disconnectSocket: () => {

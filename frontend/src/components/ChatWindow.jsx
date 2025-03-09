@@ -62,7 +62,7 @@ function ChatWindow() {
               <div className="size-10 rounded-full relative cursor-pointer">
                 <img src={selectedUser.profilePic || "/profile.png"} alt={selectedUser.fullName} />
               </div>
-              {onlineUsers.some(onlineUser => onlineUser._id === selectedUser._id) && (
+              {onlineUsers.some(onlineUser => onlineUser === selectedUser._id) && (
                 <span
                   className="absolute bottom-0 right-0 size-2.5 sm:size-3 bg-green-500 rounded-full ring-2 ring-zinc-900"
                 />
@@ -96,7 +96,7 @@ function ChatWindow() {
               let currentDate = null;
               return messages.map((message, idx) => {
                 // Format the message date (just the date part)
-                const messageDate = new Date(message.timestamp).toLocaleDateString();
+                const messageDate = new Date(message.timestamp).toLocaleDateString('en-IN');
 
                 // Check if we need to show a date divider
                 const showDateDivider = messageDate !== currentDate;
@@ -113,9 +113,9 @@ function ChatWindow() {
                       <div className="flex items-center justify-center my-4">
                         <div className="h-px bg-base-300 flex-grow"></div>
                         <div className="px-2 text-xs text-base-content/50 font-medium">
-                          {messageDate === new Date().toLocaleDateString()
+                          {messageDate === new Date().toLocaleDateString('en-IN')
                             ? 'Today'
-                            : messageDate === new Date(Date.now() - 86400000).toLocaleDateString()
+                            : messageDate === new Date(Date.now() - 86400000).toLocaleDateString('en-IN')
                               ? 'Yesterday'
                               : messageDate
                           }
@@ -204,7 +204,7 @@ function ChatWindow() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         user={selectedUser}
-        isOnline={onlineUsers.some(onlineUser => onlineUser._id === selectedUser._id)}
+        isOnline={onlineUsers.some(onlineUser => onlineUser === selectedUser._id)}
       />
     </div>
   );

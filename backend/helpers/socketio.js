@@ -2,9 +2,10 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import express from 'express';
 
-const app = express();
-const server = createServer(app);
+const app = express(); // Express server
+const server = createServer(app); // Socket.io server
 
+// Socket.io server
 const io = new Server(server, {
     cors: {
         origin: 'http://localhost:5173',
@@ -12,10 +13,24 @@ const io = new Server(server, {
     }
 });
 
+const onlineUsers = {};  // Object to store online users
+
+// Socket.io connection
 io.on('connection', (socket) => {
     console.log('User connected', socket.id);
+    
+    // Get user ID from query
+    const userId = socket.handshake.query.userId;
+    if (userId) { // If user is logged in, add user to online users
+        onlineUsers[userId] = socket.id;  // Add user to online users
+    }
+
+    io.emit('getOnlineUsers', Object.keys(onlineUsers));  // Send online users to client
+
     socket.on('disconnect', () => {
         console.log('User disconnected', socket.id);
+        delete onlineUsers[userId];  // Remove user from online users
+        io.emit('getOnlineUsers', Object.keys(onlineUsers));  // Send online users to client
     });
 });
 

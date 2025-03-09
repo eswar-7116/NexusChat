@@ -68,7 +68,7 @@ function SideBar() {
                   alt={user.fullName}
                   className="size-10 sm:size-12 lg:size-12 rounded-full object-cover"
                 />
-                {onlineUsers.includes(user) && (
+                {onlineUsers.includes(user._id) && (
                   <span
                     className="absolute bottom-0 right-0 size-2.5 sm:size-3 bg-green-500 rounded-full ring-2 ring-zinc-900"
                   />

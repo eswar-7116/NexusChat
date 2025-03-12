@@ -6,8 +6,8 @@ A real-time chat application built with Express.js, Node.js, React, Socket.io, a
 
 ### Prerequisites
 
-- Node.js (v14.0.0 or later)
-- npm or yarn
+- Node.js
+- npm
 - MongoDB (local or Atlas)
 - Git
 - Cloudinary account

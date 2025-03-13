@@ -17,7 +17,7 @@ import messageRoutes from './routes/messages/routes.js';
 configDotenv();  // Load environment variables from .env
 connectDB();     // Connect to the database
 
-const host = process.env.HOST || '0.0.0.0';
+const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 5000;  // Default to 5000 if PORT is not defined in .env
 
 // Middleware to parse requests with JSON payloads.

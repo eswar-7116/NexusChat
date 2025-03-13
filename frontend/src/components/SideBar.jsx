@@ -6,13 +6,13 @@ import { Users } from 'lucide-react';
 function SideBar() {
   const { onlineUsers } = useAuthStore();
   const { fetchUsers, users, selectedUser, setSelectedUser, isFetchingUsers, fetchMessages } = useChatStore();
-
+  
   React.useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
-
+  
   const skeletonContacts = Array(8).fill(null);
-
+  
   if (isFetchingUsers) {
     return (
       <aside
@@ -38,7 +38,17 @@ function SideBar() {
       </aside>
     );
   }
-
+  
+  // Sort users: online first, then offline
+  const sortedUsers = [...users].sort((a, b) => {
+    const aIsOnline = onlineUsers.includes(a._id);
+    const bIsOnline = onlineUsers.includes(b._id);
+    
+    if (aIsOnline && !bIsOnline) return -1;
+    if (!aIsOnline && bIsOnline) return 1;
+    return 0;
+  });
+  
   return (
     <aside className="h-full w-16 sm:w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
       <div className="w-full">
@@ -47,9 +57,8 @@ function SideBar() {
           <Users className="size-6 text-base-content/70" />
           <span className="hidden lg:block ml-2 font-semibold text-base-content/70">Contacts</span>
         </div>
-
         <div className="overflow-y-auto w-full py-2 px-1 sm:px-2 lg:px-3">
-          {users.map((user) => (
+          {sortedUsers.map((user) => (
             <button
               key={user._id}
               onClick={() => {

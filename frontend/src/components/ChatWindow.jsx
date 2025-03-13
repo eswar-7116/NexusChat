@@ -7,7 +7,6 @@ import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 
 function ChatWindow() {
-  const { user } = useAuthStore();
   const { selectedUser, messages, isFetchingMessages, sendMessage, listenToUser, stopListeningToUser } = useChatStore();
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -21,10 +20,10 @@ function ChatWindow() {
   };
 
   React.useEffect(() => {
-    listenToUser(selectedUser._id);
+    listenToUser();
 
     return () => stopListeningToUser();
-  }, [selectedUser._id, listenToUser, stopListeningToUser]);
+  }, [selectedUser?._id]);
 
   const handleSendMessage = async (messageData) => {
     await sendMessage(messageData);

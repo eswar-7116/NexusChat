@@ -64,13 +64,36 @@ export const useChatStore = create((set, get) => ({
         const { socket } = useAuthStore.getState();
         if (!selectedUser || !socket) return;
 
-        socket.on("newMessage", (message) => {
+        // Remove previous listeners to prevent duplicates
+        socket.off("newMessage");
+        socket.off("messagesRead");
+
+        socket.on("newMessage", async (message) => {
             const isMessageSentFromSelectedUser = message.senderId === selectedUser._id;
             if (!isMessageSentFromSelectedUser) return;
 
             set((state) => ({
                 messages: [...state.messages, message]
             }));
+
+            if (message.senderId === selectedUser._id) {
+                await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+            }
+        });
+
+        socket.on("messagesRead", (readByUserId) => {
+            console.log("Messages read by:", readByUserId);
+            const currentUserId = useAuthStore.getState().user._id;
+
+            if (readByUserId === get().selectedUser._id) {
+                set((state) => ({
+                    messages: state.messages.map(msg =>
+                        msg.senderId === currentUserId && !msg.isRead
+                            ? { ...msg, isRead: true }
+                            : msg
+                    )
+                }));
+            }
         });
     },
 
@@ -79,7 +102,11 @@ export const useChatStore = create((set, get) => ({
         if (!socket) return;
 
         socket.off("newMessage");
-    },    
+        socket.off("messagesRead");
+    },
 
-    setSelectedUser: async (selectedUser) => set({ selectedUser })
+    setSelectedUser: async (selectedUser) => {
+        set({ selectedUser });
+        await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+    }
 }));

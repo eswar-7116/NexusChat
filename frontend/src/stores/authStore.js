@@ -158,7 +158,7 @@ export const useAuthStore = create((set, get) => ({
     // If user is not logged in or socket is already connected, return
     if (!user || socket?.connected) return;
 
-    const newSocket = io('http://localhost:5000', {
+    const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
       query: { userId: user._id }
     });
     newSocket.connect();

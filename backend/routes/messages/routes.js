@@ -10,6 +10,6 @@ const router = Router();
 router.get('/get-users', getUsers);
 router.get('/get-messages/:id', getMessages);
 router.post('/send/:id', sendMessage);
-router.get('/read-unread', readUnread);
+router.get('/read-unread/:id', readUnread);
 
 export default router;

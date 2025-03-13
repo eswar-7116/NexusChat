@@ -14,7 +14,11 @@ export const useChatStore = create((set, get) => ({
         set({ isFetchingUsers: true });
         try {
             const res = await axiosInstance.get("/messaging/get-users");
-            set({ users: res.data.users });
+            if (res.data.success) {
+                set({ users: res.data.users });
+            } else {
+                toast.error("Failed to get messages");
+            }
         } catch (error) {
             console.log("Error while fetching users:", error);
             toast.error("Error while fetching users");
@@ -27,7 +31,11 @@ export const useChatStore = create((set, get) => ({
         set({ isFetchingMessages: true });
         try {
             const res = await axiosInstance.get(`/messaging/get-messages/${receiverId}`);
-            set({ messages: res.data.messages });
+            if (res.data.success) {
+                set({ messages: res.data.messages });
+            } else {
+                toast.error("Failed to get messages");
+            }
         } catch (error) {
             console.log("Error while fetching messages:", error);
             toast.error("Error while fetching messages");
@@ -40,7 +48,11 @@ export const useChatStore = create((set, get) => ({
         try {
             const { selectedUser, messages } = get();
             const res = await axiosInstance.post(`/messaging/send/${selectedUser._id}`, data);
-            set({ messages: [...messages, res.data.chat] });
+            if (res.data.success) {
+                set({ messages: [...messages, res.data.chat] });
+            } else {
+                toast.error("Failed to send message");
+            }
         } catch (error) {
             console.log("Error while sending message:", error);
             toast.error("Error while sending message");

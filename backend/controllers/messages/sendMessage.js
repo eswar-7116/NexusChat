@@ -23,8 +23,6 @@ export default async function sendMessage(req, res) {
             timestamp: new Date()
         });
 
-        if (receiverId in onlineUsers)
-            newMessage.isRead = true;
         await newMessage.save();
 
         const receiverSocketId = getSocketId(receiverId);

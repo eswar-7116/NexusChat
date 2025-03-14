@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MessageCircleOff } from 'lucide-react';
 import { PropagateLoader } from 'react-spinners';
 import { useAuthStore } from '../stores/authStore';
@@ -6,6 +6,7 @@ import { useAuthStore } from '../stores/authStore';
 function ChatMessages({ messages, isFetchingMessages }) {
   const { user } = useAuthStore();
   const chatBoxBottomRef = React.useRef(null);
+  const [expandedMessageId, setExpandedMessageId] = useState(null);
   
   React.useEffect(() => {
     if (chatBoxBottomRef.current) {
@@ -18,6 +19,10 @@ function ChatMessages({ messages, isFetchingMessages }) {
       chatBoxBottomRef.current.scrollIntoView({ behavior: 'auto' });
     }
   }, []);
+
+  const toggleTimeFormat = (messageId) => {
+    setExpandedMessageId(expandedMessageId === messageId ? null : messageId);
+  };
 
   if (isFetchingMessages) {
     return (
@@ -54,6 +59,22 @@ function ChatMessages({ messages, isFetchingMessages }) {
         currentDate = messageDate;
       }
 
+      const isExpanded = expandedMessageId === message._id;
+      const messageTime = new Date(message.timestamp).toLocaleString(undefined, {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+      });
+      const messageFullTime = new Date(message.timestamp).toLocaleString(undefined, {
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true,
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
       return (
         <React.Fragment key={idx}>
           {/* Date divider */}
@@ -75,12 +96,12 @@ function ChatMessages({ messages, isFetchingMessages }) {
           {/* Chat */}
           <div className={`chat ${message.senderId === user._id ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-header mb-1">
-              <time dateTime={message.timestamp} className='text-xs opacity-50 ml-1'>
-                {new Date(message.timestamp).toLocaleString(undefined, {
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: true
-                })}
+              <time 
+                dateTime={message.timestamp} 
+                className='text-xs opacity-50 ml-1 cursor-pointer hover:opacity-100 hover:underline'
+                onClick={() => toggleTimeFormat(message._id)}
+              >
+                {isExpanded ? messageFullTime : messageTime}
               </time>
             </div>
 

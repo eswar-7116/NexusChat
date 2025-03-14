@@ -2,77 +2,90 @@ import React from 'react';
 import { X } from 'lucide-react';
 
 function Modal({ isOpen, onClose, user, isOnline }) {
+  const [isAnimating, setIsAnimating] = React.useState(false);
+  
+  React.useEffect(() => {
+    if (isOpen) {
+      setIsAnimating(true);
+    }
+  }, [isOpen]);
+  
+  const handleClose = () => {
+    setIsAnimating(false);
+    setTimeout(() => onClose(), 200);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-base-100 rounded-xl max-w-md w-full shadow-xl overflow-hidden transform transition-all">
+    <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4 ${isAnimating ? 'animate-in fade-in' : 'animate-out fade-out'} duration-200`}>
+      <div className={`bg-base-100 rounded-xl max-w-xs sm:max-w-md w-full shadow-xl overflow-hidden transform transition-all ${isAnimating ? 'scale-100' : 'scale-95'}`}>
         {/* Modal header */}
-        <div className="bg-primary/90 p-6 text-primary-content relative">
+        <div className="bg-primary/90 p-4 sm:p-6 text-primary-content relative">
           <button 
-            onClick={onClose} 
-            className="absolute right-4 top-4 text-primary-content/80 hover:text-primary-content transition-colors"
+            onClick={handleClose} 
+            className="absolute right-2 top-2 sm:right-4 sm:top-4 text-primary-content/80 hover:text-primary-content transition-colors"
             aria-label="Close modal"
           >
-            <X className="size-5 cursor-pointer" />
+            <X className="size-4 sm:size-5 cursor-pointer" />
           </button>
           
           {/* Avatar */}
-          <div className="flex justify-center -mb-14">
+          <div className="flex justify-center -mb-12 sm:-mb-14">
             <div className="relative">
               <img
                 src={user.profilePic || "/profile.png"}
                 alt={user.fullName}
-                className="size-28 bg-base-300 rounded-full object-cover border-4 border-base-100 shadow-md"
+                className="size-24 sm:size-28 bg-base-300 rounded-full object-cover border-4 border-base-100 shadow-md"
               />
               {isOnline && (
-                <span className="absolute bottom-1 right-1 size-4 bg-green-500 rounded-full ring-2 ring-base-100" />
+                <span className="absolute bottom-1 right-1 size-3 sm:size-4 bg-green-500 rounded-full ring-2 ring-base-100" />
               )}
             </div>
           </div>
         </div>
         
         {/* Modal body */}
-        <div className="p-6 pt-16 space-y-6">
+        <div className="p-4 sm:p-6 pt-14 sm:pt-16 space-y-4 sm:space-y-6">
           {/* User identity */}
           <div className="text-center space-y-1">
-            <h3 className="text-xl font-bold">{user.fullName}</h3>
-            <p className="text-base-content/70">@{user.username}</p>
+            <h3 className="text-lg sm:text-xl font-bold truncate">{user.fullName}</h3>
+            <p className="text-sm sm:text-base text-base-content/70 truncate">@{user.username}</p>
           </div>
           
           {/* User Details */}
-          <div className="space-y-4 bg-base-200 rounded-lg p-4">
+          <div className="space-y-3 sm:space-y-4 bg-base-200 rounded-lg p-3 sm:p-4">
             {/* Status */}
-            <div className="flex items-center gap-3">
-              <div className="bg-base-300 p-2 rounded-full">
-                <div className={`size-2 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`}></div>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="bg-base-300 p-1.5 sm:p-2 rounded-full">
+                <div className={`size-1.5 sm:size-2 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`}></div>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Status</p>
-                <p className="text-sm text-base-content/70">
+                <p className="text-xs sm:text-sm font-medium">Status</p>
+                <p className="text-xs sm:text-sm text-base-content/70">
                   {isOnline ? "Online" : "Offline"}
                 </p>
               </div>
             </div>
             
             {/* Email */}
-            <div className="flex items-center gap-3">
-              <div className="bg-base-300 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="bg-base-300 p-1.5 sm:p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" className="size-3 sm:size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="20" height="16" x="2" y="4" rx="2" />
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                 </svg>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Email</p>
-                <p className="text-sm text-base-content/70 truncate">{user.email}</p>
+                <p className="text-xs sm:text-sm font-medium">Email</p>
+                <p className="text-xs sm:text-sm text-base-content/70 truncate">{user.email}</p>
               </div>
             </div>
             
             {/* Member Since */}
-            <div className="flex items-center gap-3">
-              <div className="bg-base-300 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="bg-base-300 p-1.5 sm:p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" className="size-3 sm:size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
                   <line x1="16" x2="16" y1="2" y2="6" />
                   <line x1="8" x2="8" y1="2" y2="6" />
@@ -80,8 +93,8 @@ function Modal({ isOpen, onClose, user, isOnline }) {
                 </svg>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Member Since</p>
-                <p className="text-sm text-base-content/70">
+                <p className="text-xs sm:text-sm font-medium">Member Since</p>
+                <p className="text-xs sm:text-sm text-base-content/70 truncate">
                   {new Date(user.createdAt).toLocaleDateString("en-US", {
                     day: "2-digit",
                     month: "long",
@@ -93,10 +106,10 @@ function Modal({ isOpen, onClose, user, isOnline }) {
           </div>
           
           {/* Action button */}
-          <div className="pt-2">
+          <div className="pt-1 sm:pt-2">
             <button 
-              className="w-full bg-primary hover:bg-primary-focus text-primary-content py-2.5 rounded-lg transition-colors font-medium"
-              onClick={onClose}
+              className="w-full bg-primary hover:bg-primary-focus text-primary-content py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base"
+              onClick={handleClose}
             >
               Send Message
             </button>

@@ -85,7 +85,7 @@ function ChatInput({ sendMessage }) {
       <div className="p-3 bg-base-200 border-t border-base-300">
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
           {/* Emoji button - now acts as a pure toggle */}
-          <button
+          {!isMobile && <button
             id="emoji-button"
             type="button"
             className={`p-2 rounded-full transition-colors ${showEmojiPicker ? 'bg-base-300' : 'bg-base-100 hover:bg-base-300'}`}
@@ -93,7 +93,7 @@ function ChatInput({ sendMessage }) {
             aria-label={showEmojiPicker ? "Close emoji picker" : "Open emoji picker"}
           >
             <Smile size={20} />
-          </button>
+          </button>}
           
           {/* Input field */}
           <div className="flex-1 relative">
@@ -120,13 +120,13 @@ function ChatInput({ sendMessage }) {
                   }
                 }
               }}
-              placeholder={isMobile ? "Type a message (press Enter for new line)" : "Type a message (press Enter to send, Shift+Enter for new line)"}
+              placeholder={isMobile ? "Type a message..." : "Type a message (press Enter to send, Shift+Enter for new line)"}
               rows="1"
-              className="w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
+              className="text-sm sm:text-md w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
             />
             
             {/* Emoji picker from the library */}
-            {showEmojiPicker && (
+            {showEmojiPicker && !isMobile && (
               <div 
                 ref={emojiPickerRef}
                 className="absolute bottom-full mb-2 z-10"
@@ -154,13 +154,6 @@ function ChatInput({ sendMessage }) {
           </button>
         </form>
       </div>
-
-      {/* Mobile keyboard tip */}
-      {isMobile && (
-        <div className="text-center text-xs text-base-content/50 pb-1">
-          Use the send button to submit your message
-        </div>
-      )}
     </>
   );
 }

@@ -85,12 +85,13 @@ function ChatMessages({ messages, isFetchingMessages }) {
             </div>
 
             <div
-              className={`chat-bubble whitespace-pre-wrap ${message.senderId === user._id
+              className={`chat-bubble whitespace-pre-wrap break-words max-w-xs sm:max-w-md md:max-w-lg ${
+                message.senderId === user._id
                   ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
                   : 'bg-blue-600 text-white dark:bg-blue-700'
-                }`}
+              }`}
             >
-              <p>{message.content}</p>
+              <p className="overflow-hidden text-wrap">{message.content}</p>
             </div>
 
             {message.senderId === user._id && (

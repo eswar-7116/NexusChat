@@ -20,7 +20,7 @@ Create a `.env` file in the backend directory with:
 ```
 DB_URL=your_mongodb_connection_string
 EMAIL_USER=your_email_address
-EMAIL_PASS=your_email_password
+EMAIL_PASS=your_email_app_password
 PORT=5000
 HOST=localhost
 JWT_SECRET=your_jwt_secret

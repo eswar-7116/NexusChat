@@ -105,7 +105,7 @@ function Navbar() {
             <li>
               <button 
                 onClick={handleLogout} 
-                className="flex items-center p-2 gap-2 text-error hover:bg-error hover:bg-opacity-10"
+                className="flex items-center p-2 gap-2 hover:text-error-content text-error hover:bg-error hover:bg-opacity-10"
               >
                 <LogOut className="size-4" />
                 <span>Logout</span>

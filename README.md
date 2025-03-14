@@ -15,20 +15,26 @@ A real-time chat application built with Express.js, Node.js, React, Socket.io, a
 
 ### Environment Variables
 
-Create a `.env` file in the backend directory with:
+1. Create a `.env` file in the backend directory with:
 
-```
-DB_URL=your_mongodb_connection_string
-EMAIL_USER=your_email_address
-EMAIL_PASS=your_email_app_password
-PORT=5000
-HOST=localhost
-JWT_SECRET=your_jwt_secret
-NODE_ENV=development
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_SECRET=your_cloudinary_api_secret
-```
+   ```
+   DB_URL=your_mongodb_connection_string
+   EMAIL_USER=your_email_address
+   EMAIL_PASS=your_email_app_password
+   FRONTEND_URL=the_frontend_url
+   PORT=5000
+   HOST=localhost
+   JWT_SECRET=your_jwt_secret
+   NODE_ENV=development
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_SECRET=your_cloudinary_api_secret
+   ```
+2. Create a `.env` file in the frontend directory with:
+   
+   ```
+   VITE_BACKEND_URL=the_backend_url
+   ```
 
 ### Option 1: Running Without Docker
 

@@ -14,7 +14,6 @@ import editProfile from './routes/auth/editProfile.js';
 import checkAuth from './middleware/authMiddleware.js';
 import messageRoutes from './routes/messages/routes.js';
 
-configDotenv();  // Load environment variables from .env
 connectDB();     // Connect to the database
 
 const host = process.env.HOST || 'localhost';
@@ -28,7 +27,7 @@ app.use(cookieParser());
 
 // Use CORS
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL,
     credentials: true
 }));
 

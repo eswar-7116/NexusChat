@@ -21,13 +21,24 @@ const messageSchema = new mongoose.Schema({
     
     timestamp: {
         type: Date,
-        default: new Date(),
+        default: () => new Date(),
         required: true
     },
 
     isRead: {
         type: Boolean,
         default: false
+    },
+
+    deletedFor: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User',
+        default: () => []
+    },
+
+    deletedForEveryoneBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 

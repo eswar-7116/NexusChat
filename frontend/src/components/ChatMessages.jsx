@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { MessageCircleOff, Trash2, MoreVertical } from 'lucide-react';
 import { PropagateLoader } from 'react-spinners';
 import { useAuthStore } from '../stores/authStore';
+import { useChatStore } from '../stores/chatStore';
 
 function ChatMessages({ messages, isFetchingMessages }) {
   const { user } = useAuthStore();
+  const { selectedUser, deleteForMe, removeMessageAt } = useChatStore();
   const chatBoxBottomRef = React.useRef(null);
   const [expandedMessageId, setExpandedMessageId] = useState(null);
   const [messageWithOpenMenu, setMessageWithOpenMenu] = useState(null);
@@ -14,12 +16,6 @@ function ChatMessages({ messages, isFetchingMessages }) {
       chatBoxBottomRef.current.scrollIntoView({ behavior: 'auto' });
     }
   }, [messages, isFetchingMessages]);
-
-  React.useEffect(() => {
-    if (chatBoxBottomRef.current) {
-      chatBoxBottomRef.current.scrollIntoView({ behavior: 'auto' });
-    }
-  }, []);
 
   React.useEffect(() => {
     const handleClickOutside = (event) => {
@@ -43,16 +39,18 @@ function ChatMessages({ messages, isFetchingMessages }) {
     setMessageWithOpenMenu(messageWithOpenMenu === messageId ? null : messageId);
   };
 
-  const handleDeleteForMe = (e, messageId) => {
+  const handleDeleteForMe = (e, messageId, messageIdx) => {
     e.stopPropagation();
-    console.log("Delete for me:", messageId);
+    deleteForMe(messageId);
     setMessageWithOpenMenu(null);
+    removeMessageAt(messageIdx);
   };
 
   const handleDeleteForEveryone = (e, messageId) => {
     e.stopPropagation();
     console.log("Delete for everyone:", messageId);
     setMessageWithOpenMenu(null);
+    // TODO: This should call the API to set message.deletedForEveryoneBy to user._id
   };
 
   if (isFetchingMessages) {
@@ -62,8 +60,15 @@ function ChatMessages({ messages, isFetchingMessages }) {
       </div>
     );
   }
+  
+  // Filter messages - hiding deleted ones for current user
+  const visibleMessages = messages
+  .filter(message => 
+    !message.deletedFor || !message.deletedFor.includes(user._id)
+  )
+  .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));  // Sort by timestamp
 
-  if (messages.length === 0) {
+  if (visibleMessages.length === 0) {
     return (
       <div className="flex items-center justify-center h-full w-full">
         <div className="flex flex-col items-center gap-2">
@@ -77,7 +82,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
   const renderMessages = () => {
     let currentDate = null;
     
-    return messages.map((message, idx) => {
+    return visibleMessages.map((message, idx) => {
       const messageDate = new Date(message.timestamp).toLocaleDateString('en-IN');
       const showDateDivider = messageDate !== currentDate;
       
@@ -103,6 +108,9 @@ function ChatMessages({ messages, isFetchingMessages }) {
       });
 
       const isUserMessage = message.senderId === user._id;
+      const isDeletedBySelectedUser = message.deletedFor && 
+        selectedUser && 
+        message.deletedFor.includes(selectedUser._id);
 
       return (
         <React.Fragment key={idx}>
@@ -137,28 +145,28 @@ function ChatMessages({ messages, isFetchingMessages }) {
                   className="p-1 hover:bg-base-200 rounded-full active:bg-base-300 touch-manipulation"
                   aria-label="Message options"
                 >
-                  <MoreVertical size={15} className="sm:size-5" />
+                  <MoreVertical size={15} className="sm:size-4" />
                 </button>
                 
                 {isMenuOpen && (
-                  <div className={`absolute z-10 mt-1 bg-base-100 shadow-lg rounded-lg overflow-hidden border border-base-300 w-40 sm:w-48 ${isUserMessage ? 'right-0' : 'left-0'}`}>
+                  <div className={`absolute z-10 mt-1 bg-base-100/90 font-bold shadow-lg rounded-lg overflow-hidden border border-base-300 w-40 sm:w-48 ${isUserMessage ? 'right-0' : 'left-0'}`}>
                     <ul className="py-1">
                       <li>
                         <button 
-                          className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200 active:bg-base-300 flex items-center gap-2 text-red-500 touch-manipulation"
-                          onClick={(e) => handleDeleteForMe(e, message._id)}
+                          className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2 text-red-500 touch-manipulation"
+                          onClick={(e) => handleDeleteForMe(e, message._id, messages.indexOf(message))}
                         >
-                          <Trash2 size={12} className="sm:size-14" />
+                          <Trash2 size={12} className="sm:size-5" />
                           Delete for me
                         </button>
                       </li>
                       {isUserMessage && (
                         <li>
                           <button 
-                            className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200 active:bg-base-300 flex items-center gap-2 text-red-600 touch-manipulation"
+                            className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2 text-red-600 touch-manipulation"
                             onClick={(e) => handleDeleteForEveryone(e, message._id)}
                           >
-                            <Trash2 size={12} className="sm:size-14" />
+                            <Trash2 size={12} className="sm:size-5" />
                             Delete for everyone
                           </button>
                         </li>
@@ -177,6 +185,11 @@ function ChatMessages({ messages, isFetchingMessages }) {
               }`}
             >
               <p className="overflow-hidden text-wrap">{message.content}</p>
+              {isDeletedBySelectedUser && (
+                <div className="text-xs italic mt-1 opacity-70">
+                  Deleted by {selectedUser.fullName}
+                </div>
+              )}
             </div>
 
             {isUserMessage && (

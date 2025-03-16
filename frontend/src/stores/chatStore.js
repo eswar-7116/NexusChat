@@ -67,7 +67,9 @@ export const useChatStore = create((set, get) => ({
         // Remove previous listeners to prevent duplicates
         socket.off("newMessage");
         socket.off("messagesRead");
+        socket.off("deleteForMe");
 
+        // Listen for new messages
         socket.on("newMessage", async (message) => {
             const isMessageSentFromSelectedUser = message.senderId === selectedUser._id;
             if (!isMessageSentFromSelectedUser) return;
@@ -81,6 +83,7 @@ export const useChatStore = create((set, get) => ({
             }
         });
 
+        // Listen if new messages are read
         socket.on("messagesRead", (readByUserId) => {
             console.log("Messages read by:", readByUserId);
             const currentUserId = useAuthStore.getState().user._id;
@@ -95,6 +98,23 @@ export const useChatStore = create((set, get) => ({
                 }));
             }
         });
+
+        // Listen if the other user deleted the msg for himself
+        socket.on("deleteForMe", (data) => {
+            const { msgId, deletedByUserId } = data;
+            set((state) => ({
+                messages: state.messages.map(msg =>
+                    msg._id === msgId
+                        ? {
+                            ...msg,
+                            deletedFor: msg.deletedFor
+                                ? [...msg.deletedFor, deletedByUserId]
+                                : [deletedByUserId]
+                        }
+                        : msg
+                )
+            }));
+        });
     },
 
     stopListeningToUser: () => {
@@ -108,5 +128,27 @@ export const useChatStore = create((set, get) => ({
     setSelectedUser: async (selectedUser) => {
         set({ selectedUser });
         await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+    },
+
+    deleteForMe: async (msgId) => {
+        try {
+            const res = await axiosInstance.put(`/messaging/delete-for-me/${msgId}`);
+            if (res.data.success) {
+                toast.success("Deleted the message for you")
+            } else {
+                toast.error("Failed to get messages");
+            }
+        } catch (error) {
+            console.log("Error while deleting for you:", error);
+            toast.error("Error while deleting for you");
+        }
+    },
+
+    removeMessageAt: (messageIdx) => {
+        set((state) => {
+            const messages = [...state.messages];
+            messages.splice(messageIdx, 1); // Remove the message at the given index
+            return { messages };
+        });
     }
 }));

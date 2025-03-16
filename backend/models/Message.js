@@ -4,13 +4,15 @@ const messageSchema = new mongoose.Schema({
     senderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
+        index: true
     },
 
     receiverId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
+        index: true
     },
 
     content: {
@@ -27,13 +29,15 @@ const messageSchema = new mongoose.Schema({
 
     isRead: {
         type: Boolean,
-        default: false
+        default: false,
+        index: true
     },
 
     deletedFor: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'User',
-        default: () => []
+        default: () => [],
+        index: true
     },
 
     deletedForEveryoneBy: {
@@ -41,6 +45,13 @@ const messageSchema = new mongoose.Schema({
         ref: 'User'
     }
 });
+
+messageSchema.methods.deleteForUser = async function(userId) {
+    if (!this.deletedFor.includes(userId)) {
+        this.deletedFor.push(userId);
+        await this.save();
+    }
+};  
 
 const Message = mongoose.models.Message || mongoose.model('Message', messageSchema);
 

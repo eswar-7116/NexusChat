@@ -187,7 +187,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
               <p className="overflow-hidden text-wrap">{message.content}</p>
               {isDeletedBySelectedUser && (
                 <div className="text-xs italic mt-1 opacity-70">
-                  Deleted by {selectedUser.fullName}
+                  Deleted for {selectedUser.fullName}
                 </div>
               )}
             </div>

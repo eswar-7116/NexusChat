@@ -11,7 +11,9 @@ export default async function readUnread(req, res) {
             { $set: { isRead: true } } // Update isRead to true
         );
         
-        io.to(getSocketId(senderId)).emit("messagesRead", userId);
+        const senderSocketId = getSocketId(senderId);
+        if (senderSocketId)
+            io.to(senderSocketId).emit("messagesRead", userId);
 
         return res.status(201).json({
             success: true,

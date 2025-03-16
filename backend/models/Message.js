@@ -51,7 +51,14 @@ messageSchema.methods.deleteForUser = async function(userId) {
         this.deletedFor.push(userId);
         await this.save();
     }
-};  
+};
+
+messageSchema.methods.deleteForEveryone = async function(userId) {
+    if (!this.deletedForEveryoneBy) {
+        this.deletedForEveryoneBy = userId;
+        await this.save();
+    }
+};
 
 const Message = mongoose.models.Message || mongoose.model('Message', messageSchema);
 

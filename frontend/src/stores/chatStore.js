@@ -68,6 +68,7 @@ export const useChatStore = create((set, get) => ({
         socket.off("newMessage");
         socket.off("messagesRead");
         socket.off("deleteForMe");
+        socket.off("deleteForEveryone");
 
         // Listen for new messages
         socket.on("newMessage", async (message) => {
@@ -85,7 +86,6 @@ export const useChatStore = create((set, get) => ({
 
         // Listen if new messages are read
         socket.on("messagesRead", (readByUserId) => {
-            console.log("Messages read by:", readByUserId);
             const currentUserId = useAuthStore.getState().user._id;
 
             if (readByUserId === get().selectedUser._id) {
@@ -115,6 +115,19 @@ export const useChatStore = create((set, get) => ({
                 )
             }));
         });
+
+        socket.on("deleteForEveryone", (data) => {
+            console.log("Received delete for everyone");
+            const { msgId, deletedByUserId } = data;
+            set((state) => {
+                const messages = [...state.messages];
+                const messageToUpdate = messages.find(msg => msg._id === msgId);
+                if (messageToUpdate) {
+                    messageToUpdate.deletedForEveryoneBy = deletedByUserId;
+                }
+                return { messages };
+            });
+        });
     },
 
     stopListeningToUser: () => {
@@ -123,6 +136,8 @@ export const useChatStore = create((set, get) => ({
 
         socket.off("newMessage");
         socket.off("messagesRead");
+        socket.off("deleteForMe");
+        socket.off("deleteForEveryone");
     },
 
     setSelectedUser: async (selectedUser) => {
@@ -130,25 +145,46 @@ export const useChatStore = create((set, get) => ({
         await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
     },
 
-    deleteForMe: async (msgId) => {
+    deleteForMe: async (msgId, msgIdx) => {
         try {
             const res = await axiosInstance.put(`/messaging/delete-for-me/${msgId}`);
             if (res.data.success) {
-                toast.success("Deleted the message for you")
+                toast.success("Deleted the message for you");
+                
+                set((state) => {
+                    const messages = [...state.messages];
+                    messages.splice(msgIdx, 1); // Remove the message at the given index
+                    return { messages };
+                });
             } else {
                 toast.error("Failed to get messages");
             }
         } catch (error) {
             console.log("Error while deleting for you:", error);
-            toast.error("Error while deleting for you");
+            toast.error("Unable to delete the message");
         }
     },
 
-    removeMessageAt: (messageIdx) => {
-        set((state) => {
-            const messages = [...state.messages];
-            messages.splice(messageIdx, 1); // Remove the message at the given index
-            return { messages };
-        });
+    deleteMessageForEveryone: async (messageId) => {
+        try {
+            const res = await axiosInstance.put(`/messaging/delete-for-everyone/${messageId}`);
+            if (res.data.success) {
+                toast.success("Deleted the message for everyone");
+    
+                set((state) => {
+                    const messages = [...state.messages];
+                    const messageToUpdate = messages.find(msg => msg._id === messageId);
+                    if (messageToUpdate) {
+                        messageToUpdate.deletedForEveryoneBy = useAuthStore.getState().user._id;
+                    }
+                    return { messages };
+                });
+            } else {
+                toast.error("Failed to delete message");
+            }
+        } catch (error) {
+            console.log("Error while deleting for everyone:", error);
+            toast.error("Unable to delete the message");
+        }
     }
 }));

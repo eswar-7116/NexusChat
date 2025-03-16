@@ -100,6 +100,7 @@ function ChatInput({ sendMessage }) {
             <textarea
               ref={textareaRef}
               value={message}
+              name='Message input field'
               onChange={(e) => {
                 setMessage(e.target.value);
                 e.target.style.height = 'auto';

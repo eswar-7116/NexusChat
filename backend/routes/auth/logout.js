@@ -1,8 +1,5 @@
 import { Router } from 'express';
 
-import User from '../../models/User.js';
-import checkAuth from '../../middleware/authMiddleware.js';
-
 const router = Router();
 
 router.post('/logout', async (req, res) => {

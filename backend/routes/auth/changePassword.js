@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
-import checkAuth from '../../middleware/authMiddleware.js';
 import User from '../../models/User.js';
 
 const router = Router();

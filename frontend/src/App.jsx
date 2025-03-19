@@ -11,6 +11,9 @@ import OtpVerification from './pages/OtpVerification';
 import LoginPage from './pages/LoginPage';
 import ChangePassPage from './pages/ChangePassPage';
 import EditProfile from './pages/EditProfile';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const { user, checkAuth, isCheckingAuth, otpSent } = useAuthStore();
@@ -52,6 +55,12 @@ function App() {
         <Route path='/change-pass' element={user ? <ChangePassPage /> : <Navigate to="/" />} />
         
         <Route path='/edit-profile' element={user ? <EditProfile /> : <Navigate to="/" />} />
+
+        <Route path='/forgot-password' element={!user ? <ForgotPasswordPage /> : <Navigate to="/" />} />
+
+        <Route path='/reset-password/:id/:token' element={!user ? <ResetPasswordPage /> : <Navigate to="/" />} />
+
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
 
       <Toaster />

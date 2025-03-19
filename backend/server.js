@@ -8,6 +8,7 @@ import connectDB from './db/db.js';
 import signup from './routes/auth/signUp.js';
 import verifyUserOtp from './routes/auth/verifyUserOtp.js';
 import login from './routes/auth/login.js';
+import forgotPassword from './routes/auth/forgotPassword.js';
 import logout from './routes/auth/logout.js';
 import changePassword from './routes/auth/changePassword.js';
 import editProfile from './routes/auth/editProfile.js';
@@ -41,6 +42,7 @@ app.use('/', (req, _, next) => {
 app.use('/auth', signup);
 app.use('/auth', verifyUserOtp);
 app.use('/auth', login);
+app.use('/auth', forgotPassword);
 app.use('/auth', checkAuth, logout);
 app.use('/auth', checkAuth, changePassword);
 app.use('/auth', checkAuth, editProfile);

@@ -38,7 +38,7 @@ export async function sendPasswordResetLink(fullname, toEmail, link) {
             from: process.env.EMAIL_USER,
             to: toEmail,
             subject: `Password Reset Link for ${fullname}'s NexusChat Account`,
-            text: `Hello, ${fullname}, your password reset link is ${link}. It will expire in 10 minutes. Do not share with anyone.`
+            text: `Hello, ${fullname}, your password reset link is ${link}. This link will expire in 10 minutes. Do not share with anyone.`
         });
 
         // Return success after sending email

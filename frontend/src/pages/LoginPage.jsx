@@ -122,9 +122,15 @@ function LoginPage() {
                 "Sign in"
               )}
             </button>
+            
+            <div className="text-center">
+              <Link to="/forgot-password" className="text-primary hover:underline text-sm">
+                Forgot your password?
+              </Link>
+            </div>
           </form>
 
-          <div className="text-center">
+          <div className="text-center mt-4">
             <p className="text-base-content/60">
               Don't have an account?{" "}
               <Link to="/signup" className="link link-primary">

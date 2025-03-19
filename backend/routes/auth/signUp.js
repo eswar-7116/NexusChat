@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 
 import User from '../../models/User.js';
-import { sendVerificationOtp } from "../../helpers/otpSender.js";
+import { sendVerificationOtp } from "../../helpers/mailers.js";
 
 const router = Router();
 

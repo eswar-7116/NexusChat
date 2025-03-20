@@ -13,7 +13,7 @@ function ResetPasswordPage() {
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetComplete, setResetComplete] = useState(false);
-  const { theme, changeTheme } = useAuthStore();
+  const { theme, changeTheme, resetPassword } = useAuthStore();
   const navigate = useNavigate();
   const { id, token } = useParams();
 
@@ -55,12 +55,11 @@ function ResetPasswordPage() {
     setIsSubmitting(true);
     
     try {
-      // Replace with your actual API call
-      // await resetPassword(id, token, formData.password);
-      
-      setResetComplete(true);
-      toast.success("Password reset successful");
+      if (resetPassword(id, formData.password, token)) {
+        setResetComplete(true);
+      }
     } catch (error) {
+      console.error("Failed to reset password: ", error.message);
       toast.error(error.message || "Failed to reset password. Please try again.");
     } finally {
       setIsSubmitting(false);

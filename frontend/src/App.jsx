@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
 import { useEffect } from 'react';
 import { PropagateLoader } from 'react-spinners';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
@@ -17,6 +17,24 @@ import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const { user, checkAuth, isCheckingAuth, otpSent } = useAuthStore();
+
+  useEffect(() => {
+    function handleOffline() {
+      toast.error("No Internet!");
+    }
+    
+    function handleOnline() {
+      toast.success("Back online!");
+    }
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.addEventListener("offline", handleOffline);
+      window.addEventListener("online", handleOnline);
+    }
+  }, []);
 
   useEffect(() => {
     checkAuth()

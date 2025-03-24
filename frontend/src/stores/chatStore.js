@@ -72,6 +72,11 @@ export const useChatStore = create((set, get) => ({
 
         // Listen for new messages
         socket.on("newMessage", async (message) => {
+            // Vibrate
+            if (useAuthStore.getState().canVibrate) {
+                navigator.vibrate(120);
+            }
+
             const isMessageSentFromSelectedUser = message.senderId === selectedUser._id;
             if (!isMessageSentFromSelectedUser) return;
 

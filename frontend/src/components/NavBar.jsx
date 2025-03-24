@@ -5,16 +5,17 @@ import { useAuthStore } from '../stores/authStore';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { logout, user, theme, changeTheme } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
+  const { logout, user, theme, changeTheme, canVibrate, toggleVibration } = useAuthStore();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   useEffect(() => {
+    console.log(localStorage.getItem("vibration"), canVibrate)
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
@@ -51,17 +52,17 @@ function Navbar() {
             <span className="text-lg sm:text-xl font-bold ml-1 sm:ml-2">NexusChat</span>
           </>
         ) : (
-          <button 
-            onClick={() => navigate(-1)} 
+          <button
+            onClick={() => navigate(-1)}
             className="flex items-center gap-1 m-1 sm:m-2 text-xs sm:text-sm font-medium opacity-70 hover:opacity-100"
           >
             <ArrowLeft className="size-4" /> Back
           </button>
         )}
       </div>
-      
+
       <div className="relative flex items-center" ref={dropdownRef}>
-        <button 
+        <button
           onClick={changeTheme}
           className="p-2 hover:bg-base-300 rounded-full"
           aria-label={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
@@ -72,14 +73,14 @@ function Navbar() {
             <Moon className="size-4 sm:size-5" />
           )}
         </button>
-        
-        <button 
+
+        <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="flex items-center gap-1 sm:gap-2 hover:bg-base-300 p-1 sm:p-2 rounded-lg ml-1 sm:ml-2"
         >
-          <img 
-            src={user.profilePic || "/profile.png"} 
-            alt="Profile" 
+          <img
+            src={user.profilePic || "/profile.png"}
+            alt="Profile"
             className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
           />
           <span className="hidden sm:inline text-sm">{user.fullName}</span>
@@ -103,8 +104,19 @@ function Navbar() {
               </button>
             </li>
             <li>
-              <button 
-                onClick={handleLogout} 
+              <label className="flex items-center p-2 gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  defaultChecked={canVibrate}
+                  className="toggle toggle-sm toggle-primary"
+                  onClick={toggleVibration}
+                />
+                <span>Vibration</span>
+              </label>
+            </li>
+            <li>
+              <button
+                onClick={handleLogout}
                 className="flex items-center p-2 gap-2 hover:text-error-content text-error hover:bg-error hover:bg-opacity-10"
               >
                 <LogOut className="size-4" />

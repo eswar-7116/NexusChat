@@ -8,6 +8,11 @@ export const useAuthStore = create((set, get) => ({
     temp: "",
     onlineUsers: [],
     socket: null,
+    theme: localStorage.getItem("theme") === null ?
+        window.matchMedia("(prefers-color-scheme: dark)").matches ?
+            "dark" : "light" :
+        localStorage.getItem("theme"),
+    canVibrate: localStorage.getItem("vibration") === "true" ? true : false,
 
     isCheckingAuth: true,
     isSigningUp: false,
@@ -18,15 +23,16 @@ export const useAuthStore = create((set, get) => ({
     isUpdatingProfilePic: false,
     isSendingResetLink: false,
 
-    theme: localStorage.getItem("theme") === null ?
-        window.matchMedia("(prefers-color-scheme: dark)").matches ?
-            "dark" : "light" :
-        localStorage.getItem("theme"),
-
     changeTheme: () => {
         const theme = get().theme === "light" ? "dark" : "light";
         localStorage.setItem("theme", theme);
-        set({ theme: theme });
+        set({ theme });
+    },
+
+    toggleVibration: () => {
+        const newCanVibrate = !get().canVibrate;
+        localStorage.setItem("vibration", newCanVibrate);
+        set({ canVibrate: newCanVibrate });
     },
 
     checkAuth: async () => {

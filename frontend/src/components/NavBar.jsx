@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { KeyRound, LogOut, ArrowLeft, Sun, Moon, UserRoundPen } from 'lucide-react';
+import { KeyRound, LogOut, ArrowLeft, Sun, Moon, UserRoundPen, Volume2, VolumeOff } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
+import { replyNotification } from '../stores/chatStore';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -9,6 +10,39 @@ function Navbar() {
   const location = useLocation();
   const dropdownRef = useRef(null);
   const { logout, user, theme, changeTheme, canVibrate, toggleVibration } = useAuthStore();
+  const [notificationVolume, setNotificationVolume] = useState(Number(localStorage.getItem('notificationVolume')));
+  const [isDragging, setIsDragging] = useState(false);
+
+  const playReplyNotification = (newVolume) => {
+    replyNotification.volume = newVolume;
+    replyNotification.play();
+  }
+
+  const handleVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    setNotificationVolume(newVolume);
+    setIsDragging(true);
+  };
+
+  const handleVolumeDragEnd = () => {
+    if (isDragging) {
+      playReplyNotification(notificationVolume);
+      localStorage.setItem('notificationVolume', notificationVolume);
+      setIsDragging(false);
+    }
+  };
+
+  const handleVolumeKeyDown = (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      const newVolume = Math.min(1, notificationVolume + 0.1);
+      setNotificationVolume(newVolume);
+      playReplyNotification(newVolume);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      const newVolume = Math.max(0, notificationVolume - 0.1);
+      setNotificationVolume(newVolume);
+      playReplyNotification(newVolume);
+    }
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -89,37 +123,74 @@ function Navbar() {
         </button>
 
         {isDropdownOpen && (
-          <ul className="menu dropdown-content z-10 absolute right-0 top-full mt-1 w-40 sm:w-48 bg-base-100 rounded-lg shadow-lg p-1 sm:p-2 border border-base-300 text-sm">
+          <ul className="menu dropdown-content z-[100] absolute top-full right-0 p-2 shadow-xl bg-base-100 rounded-box w-52 border border-base-200 space-y-1">
             <li>
-              <button onClick={handleEditProfile} className="flex items-center p-2 gap-2">
-                <UserRoundPen className="size-4" />
-                <span className="truncate">Change Profile Pic</span>
+              <button onClick={handleEditProfile} className="flex items-center hover:bg-base-200">
+                <UserRoundPen className="size-4 mr-2" />
+                Change Profile Pic
               </button>
             </li>
             <li>
-              <button onClick={handleChangePassword} className="flex items-center p-2 gap-2">
-                <KeyRound className="size-4" />
-                <span>Change Password</span>
+              <button onClick={handleChangePassword} className="flex items-center hover:bg-base-200">
+                <KeyRound className="size-4 mr-2" />
+                Change Password
               </button>
             </li>
             <li>
-              <label className="flex items-center p-2 gap-2 cursor-pointer">
+              <div className="flex items-center gap-2 hover:bg-base-200 p-2">
+                {(notificationVolume > 0) && <Volume2 className="size-4 shrink-0" onClick={
+                  () => {
+                    handleVolumeChange({
+                      target: {
+                        value: notificationVolume > 0 ? 0 :
+                          notificationVolume === 0 ? 1 : notificationVolume
+                      }
+                    });
+                  }
+                } />}
+                {(notificationVolume === 0) && <VolumeOff className="size-4 shrink-0" onClick={
+                  () => {
+                    handleVolumeChange({
+                      target: {
+                        value: notificationVolume > 0 ? 0 :
+                          notificationVolume === 0 ? 1 : notificationVolume
+                      }
+                    });
+                  }
+                } />}
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={notificationVolume}
+                  onChange={handleVolumeChange}
+                  onMouseUp={handleVolumeDragEnd}
+                  onTouchEnd={handleVolumeDragEnd}
+                  className="range range-primary range-xs flex-1"
+                  onKeyDown={handleVolumeKeyDown}
+                />
+                <span className="text-xs w-8 text-center">{Math.round(notificationVolume * 100)}%</span>
+              </div>
+            </li>
+            <li>
+              <label className="flex items-center cursor-pointer hover:bg-base-200 p-2">
                 <input
                   type="checkbox"
-                  defaultChecked={canVibrate}
-                  className="toggle toggle-sm toggle-primary"
-                  onClick={toggleVibration}
+                  checked={canVibrate}
+                  onChange={toggleVibration}
+                  className="toggle toggle-primary toggle-sm mr-2"
                 />
-                <span>Vibration</span>
+                Vibration
               </label>
             </li>
             <li>
               <button
                 onClick={handleLogout}
-                className="flex items-center p-2 gap-2 hover:text-error-content text-error hover:bg-error hover:bg-opacity-10"
+                className="flex items-center text-error hover:bg-error hover:bg-opacity-10 hover:text-error-content"
               >
-                <LogOut className="size-4" />
-                <span>Logout</span>
+                <LogOut className="size-4 mr-2" />
+                Logout
               </button>
             </li>
           </ul>

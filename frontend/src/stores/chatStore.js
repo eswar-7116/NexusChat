@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { axiosInstance } from "../helpers/axios";
 import { useAuthStore } from "./authStore";
 
-const replyNotification = new Audio("/notification.mp3");
+export const replyNotification = new Audio("/notification.mp3");
 
 export const useChatStore = create((set, get) => ({
     messages: [],

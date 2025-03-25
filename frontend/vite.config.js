@@ -8,4 +8,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // server: {
+  //   host: true,  // Ensure remote debugging works
+  // },
+  // build: {
+  //   sourcemap: true,  // Enable source maps
+  // }
 })

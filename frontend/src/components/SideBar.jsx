@@ -1,10 +1,10 @@
 import React from 'react';
-import { 
-  Users, 
-  ChevronLeft, 
-  ChevronRight, 
-  Search, 
-  X 
+import {
+  Users,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  X
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useChatStore } from '../stores/chatStore';
@@ -21,16 +21,24 @@ function SideBar() {
     isFetchingUsers,
     fetchMessages
   } = useChatStore();
-  
+
   const [isCollapsed, setIsCollapsed] = React.useState(window.innerWidth < 768);
   const [searchQuery, setSearchQuery] = React.useState('');
+
+  React.useEffect(() => {
+    console.log('collapsed = !collapsed');
+  }, [isCollapsed]);
 
   React.useEffect(() => {
     fetchRecentUsers();
     fetchAllUsers();
 
     const handleResize = () => {
-      setIsCollapsed(window.innerWidth < 768);
+      const isKeyboardOpen = window.innerHeight < window.screen.height * 0.9;
+      if (!isKeyboardOpen) {
+        console.log('collapsing in handleResize:', window.innerWidth < 768, "Is keyboard open?", isKeyboardOpen);
+        setIsCollapsed(window.innerWidth < 768);
+      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -43,7 +51,8 @@ function SideBar() {
     const lowercaseQuery = searchQuery.toLowerCase();
     return allUsers.filter(user =>
       user.username.toLowerCase().includes(lowercaseQuery) ||
-      user.fullName.toLowerCase().includes(lowercaseQuery)
+      user.fullName.toLowerCase().includes(lowercaseQuery) ||
+      user.email.toLowerCase().includes(lowercaseQuery)
     );
   }, [searchQuery, allUsers, recentUsers]);
 
@@ -61,9 +70,8 @@ function SideBar() {
   const handleUserSelect = (user) => {
     setSelectedUser(user);
     fetchMessages(user._id);
-    if (window.innerWidth < 768) {
-      setIsCollapsed(true);
-    }
+    console.log("Collapsing handleUserSelect:", window.innerWidth < 768);
+    setIsCollapsed(window.innerWidth < 768);
   };
 
   if (isFetchingUsers) {
@@ -109,11 +117,13 @@ function SideBar() {
       </button>
 
       {/* Mobile Header */}
-      <div className={`md:hidden flex items-center justify-between p-2 border-b border-base-300 ${
-        !isCollapsed && "w-screen"
-      }`}>
-        <button 
-          onClick={() => setIsCollapsed(!isCollapsed)} 
+      <div className={`md:hidden flex items-center justify-between p-2 border-b border-base-300 ${!isCollapsed && "w-screen"
+        }`}>
+        <button
+          onClick={() => {
+            console.log('Collapsing due to toggle:', !isCollapsed)
+            setIsCollapsed(!isCollapsed)
+          }}
           className="flex items-center"
         >
           <Users className="size-5" />
@@ -121,12 +131,12 @@ function SideBar() {
         </button>
       </div>
 
-      {/* Search Section */}
+      {/* Search Bar */}
       {!isCollapsed && (
         <div className="px-2 py-2 relative">
           <input
             type="text"
-            placeholder="Search contacts..."
+            placeholder="Search users..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-3 py-2 pl-8 rounded-lg bg-base-200 

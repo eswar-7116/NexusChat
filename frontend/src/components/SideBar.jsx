@@ -26,9 +26,6 @@ function SideBar() {
   const [searchQuery, setSearchQuery] = React.useState('');
 
   React.useEffect(() => {
-  }, [isCollapsed]);
-
-  React.useEffect(() => {
     fetchRecentUsers();
     fetchAllUsers();
 

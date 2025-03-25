@@ -1,7 +1,13 @@
 import React from 'react';
-import { useChatStore } from '../stores/chatStore';
+import { 
+  Users, 
+  ChevronLeft, 
+  ChevronRight, 
+  Search, 
+  X 
+} from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
-import { Users, ChevronRight, ChevronLeft } from 'lucide-react';
+import { useChatStore } from '../stores/chatStore';
 
 function SideBar() {
   const { onlineUsers } = useAuthStore();
@@ -15,30 +21,22 @@ function SideBar() {
     isFetchingUsers,
     fetchMessages
   } = useChatStore();
+  
   const [isCollapsed, setIsCollapsed] = React.useState(window.innerWidth < 768);
   const [searchQuery, setSearchQuery] = React.useState('');
 
   React.useEffect(() => {
     fetchRecentUsers();
-    fetchAllUsers(); // Ensure all users are loaded for search
+    fetchAllUsers();
 
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsCollapsed(true);
-      }
+      setIsCollapsed(window.innerWidth < 768);
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [fetchRecentUsers, fetchAllUsers]);
 
-  const skeletonContacts = Array(8).fill(null);
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
-  // Filter users based on search query
   const filteredUsers = React.useMemo(() => {
     if (!searchQuery) return recentUsers;
 
@@ -49,7 +47,6 @@ function SideBar() {
     );
   }, [searchQuery, allUsers, recentUsers]);
 
-  // Sort users: online first, then by search relevance or recency
   const sortedUsers = React.useMemo(() => {
     return [...filteredUsers].sort((a, b) => {
       const aIsOnline = onlineUsers.includes(a._id);
@@ -64,7 +61,6 @@ function SideBar() {
   const handleUserSelect = (user) => {
     setSelectedUser(user);
     fetchMessages(user._id);
-    // On mobile, collapse the sidebar after selection
     if (window.innerWidth < 768) {
       setIsCollapsed(true);
     }
@@ -72,32 +68,18 @@ function SideBar() {
 
   if (isFetchingUsers) {
     return (
-      <aside
-        className={`h-full border-r border-base-300 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-72'} relative`}
-      >
-        {/* Toggle button */}
-        <button
-          onClick={toggleSidebar}
-          className="absolute -right-3 top-1/2 transform -translate-y-1/2 bg-base-100 border border-base-300 rounded-full p-1 shadow-md z-10 md:flex hidden"
-        >
-          {isCollapsed ? (
-            <ChevronRight className="size-4" />
-          ) : (
-            <ChevronLeft className="size-4" />
-          )}
-        </button>
-
-        {/* Users */}
-        <div className="overflow-y-auto w-full py-2 sm:py-3">
-          {skeletonContacts.map((_, idx) => (
-            <div key={idx} className="w-full p-2 sm:p-3 flex items-center gap-2 sm:gap-3">
-              {/* Avatar */}
-              <div className="relative mx-auto lg:mx-0">
-                <div className="skeleton size-10 rounded-full" />
-              </div>
-              {/* User Info (Only visible when expanded) */}
+      <aside className={`
+        h-full border-r border-base-300 flex flex-col transition-all duration-300
+        ${isCollapsed ? 'w-16 md:w-20' : 'w-full md:w-80'}
+        relative bg-base-100
+      `}>
+        {/* Skeleton Loading State */}
+        <div className="overflow-y-auto w-full py-2">
+          {Array(8).fill(null).map((_, idx) => (
+            <div key={idx} className="w-full p-2 flex items-center gap-2">
+              <div className="skeleton size-10 rounded-full" />
               {!isCollapsed && (
-                <div className="text-left min-w-0 flex-1">
+                <div className="flex-1">
                   <div className="skeleton h-4 w-32 mb-2" />
                   <div className="skeleton h-3 w-16" />
                 </div>
@@ -110,90 +92,94 @@ function SideBar() {
   }
 
   return (
-    <aside
-      className={`h-full border-r border-base-300 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-18' : 'w-72'} relative`}
-    >
-      {/* Toggle button - visible on large screens */}
+    <aside className={`
+      h-full border-r border-base-300 flex flex-col transition-all duration-300
+      ${isCollapsed ? 'w-16 md:w-20' : 'w-full sm:w-69'}
+      relative bg-base-100
+    `}>
+      {/* Desktop Sidebar Toggle */}
       <button
-        onClick={toggleSidebar}
-        className="absolute -right-3 top-1/2 transform -translate-y-1/2 bg-base-100 border border-base-300 rounded-full p-1 shadow-md z-10 md:flex hidden"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute -right-3 top-1/2 transform -translate-y-1/2 
+        bg-base-100 border border-base-300 rounded-full p-1 
+        shadow-md z-10 hidden md:flex"
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
-        {isCollapsed ? (
-          <ChevronRight className="size-4" />
-        ) : (
-          <ChevronLeft className="size-4" />
-        )}
+        {isCollapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
       </button>
 
-      {/* Mobile toggle - visible at top of sidebar on small screens */}
-      <button
-        onClick={toggleSidebar}
-        className="md:hidden flex items-center justify-center p-2 w-full border-b border-base-300"
-        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        <Users className="size-5" />
-        {!isCollapsed && <span className="ml-2">Contacts</span>}
-      </button>
+      {/* Mobile Header */}
+      <div className={`md:hidden flex items-center justify-between p-2 border-b border-base-300 ${
+        !isCollapsed && "w-screen"
+      }`}>
+        <button 
+          onClick={() => setIsCollapsed(!isCollapsed)} 
+          className="flex items-center"
+        >
+          <Users className="size-5" />
+          {!isCollapsed && <span className="ml-2">Contacts</span>}
+        </button>
+      </div>
 
-      <div className="w-full flex-1 overflow-hidden flex flex-col">
-        {/* Search input (visible when not collapsed) */}
-        {!isCollapsed && (
-          <div className="px-2 sm:px-3 py-2">
-            <input
-              type="text"
-              placeholder="Search contacts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-base-200 border border-base-300 focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
-        )}
-
-        <div className="overflow-y-auto w-full flex-1 py-2 px-1 sm:px-2">
-          {sortedUsers.length > 0 ? (
-            sortedUsers.map((user) => (
-              <button
-                key={`user-${user._id}`}
-                onClick={() => handleUserSelect(user)}
-                className={`
-                  w-full py-2 px-1 sm:px-2 mb-1 rounded-lg flex items-center gap-2 sm:gap-3
-                  hover:bg-base-200 transition-colors
-                  ${selectedUser?._id === user._id ? "bg-base-200 ring-1 ring-base-300" : ""}
-                `}
-              >
-                {/* Existing user rendering code remains the same */}
-                <div className="relative mx-auto lg:mx-0">
-                  <img
-                    src={user.profilePic || "/profile.png"}
-                    alt={user.fullName}
-                    className="size-10 rounded-full object-cover"
-                  />
-                  {onlineUsers.includes(user._id) && (
-                    <span
-                      className="absolute bottom-0 right-0 size-2.5 bg-green-500 rounded-full ring-2 ring-zinc-900"
-                    />
-                  )}
-                </div>
-                {/* User Info (Only visible when expanded) */}
-                {!isCollapsed && (
-                  <div className="text-left min-w-0 flex-1">
-                    <div className="font-medium truncate">{user.fullName}</div>
-                    <div className="text-sm text-zinc-400 truncate">
-                      {user.username}
-                    </div>
-                  </div>
-                )}
-              </button>
-            ))
-          ) : (
-            !isCollapsed && (
-              <div className="text-center text-zinc-400 py-4">
-                No users found
-              </div>
-            )
-          )}
+      {/* Search Section */}
+      {!isCollapsed && (
+        <div className="px-2 py-2 relative">
+          <input
+            type="text"
+            placeholder="Search contacts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-3 py-2 pl-8 rounded-lg bg-base-200 
+            border border-base-300 focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 
+          text-zinc-400 size-4" />
         </div>
+      )}
+
+      {/* Contact List */}
+      <div className="overflow-y-auto flex-1 py-2 px-1">
+        {sortedUsers.length > 0 ? (
+          sortedUsers.map((user) => (
+            <button
+              key={user._id}
+              onClick={() => handleUserSelect(user)}
+              className={`
+                w-full py-2 px-2 mb-1 rounded-lg flex items-center 
+                hover:bg-base-200 transition-colors
+                ${selectedUser?._id === user._id ? "bg-base-200 ring-1 ring-base-300" : ""}
+              `}
+            >
+              <div className="relative flex-shrink-0">
+                <img
+                  src={user.profilePic || "/profile.png"}
+                  alt={user.fullName}
+                  className="size-10 rounded-full object-cover"
+                />
+                {onlineUsers.includes(user._id) && (
+                  <span
+                    className="absolute bottom-0 right-0 size-2.5 
+                    bg-green-500 rounded-full ring-2 ring-base-100"
+                  />
+                )}
+              </div>
+              {!isCollapsed && (
+                <div className="ml-3 text-left min-w-0 flex-1">
+                  <div className="font-medium truncate">{user.fullName}</div>
+                  <div className="text-sm text-zinc-400 truncate">
+                    {user.username}
+                  </div>
+                </div>
+              )}
+            </button>
+          ))
+        ) : (
+          !isCollapsed && (
+            <div className="text-center text-zinc-400 py-4">
+              No users found
+            </div>
+          )
+        )}
       </div>
     </aside>
   );

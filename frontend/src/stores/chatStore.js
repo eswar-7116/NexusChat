@@ -5,22 +5,37 @@ import { useAuthStore } from "./authStore";
 
 export const useChatStore = create((set, get) => ({
     messages: [],
-    users: [],
+    allUsers: [],
+    recentUsers: [],
     isFetchingUsers: false,
     isFetchingMessages: false,
     selectedUser: null,
 
-    fetchUsers: async () => {
-        set({ isFetchingUsers: true });
+    fetchAllUsers: async () => {
         try {
             const res = await axiosInstance.get("/messaging/get-users");
             if (res.data.success) {
-                set({ users: res.data.users });
+                set({ allUsers: res.data.users });
             } else {
-                toast.error("Failed to get messages");
+                toast.error("Failed to get all users");
             }
         } catch (error) {
-            console.log("Error while fetching users:", error);
+            console.log("Error while fetching all users:", error);
+            toast.error("Error while fetching all users");
+        }
+    },
+
+    fetchRecentUsers: async () => {
+        set({ isFetchingUsers: true });
+        try {
+            const res = await axiosInstance.get(`/messaging/get-recent-users`);
+            if (res.data.success) {
+                set({ recentUsers: res.data.recentUsers });
+            } else {
+                toast.error("Failed to get recent users");
+            }
+        } catch (error) {
+            console.log("Error while fetching recent users:", error);
             toast.error("Error while fetching users");
         } finally {
             set({ isFetchingUsers: false });
@@ -46,10 +61,29 @@ export const useChatStore = create((set, get) => ({
 
     sendMessage: async (data) => {
         try {
-            const { selectedUser, messages } = get();
+            const { selectedUser, messages, recentUsers, allUsers } = get();
             const res = await axiosInstance.post(`/messaging/send/${selectedUser._id}`, data);
+            
             if (res.data.success) {
-                set({ messages: [...messages, res.data.chat] });
+                const newChat = res.data.chat;
+                const receiverId = newChat.receiverId;
+    
+                // Check if the user is already in recent users
+                const existingUserIndex = recentUsers.findIndex(user => user._id === receiverId);
+    
+                let updatedRecentUsers;
+                if (existingUserIndex === -1) {
+                    // Find user in allUsers
+                    const newUser = allUsers.find(user => user._id === receiverId);
+                    updatedRecentUsers = newUser ? [newUser, ...recentUsers] : recentUsers;
+                } else {
+                    updatedRecentUsers = recentUsers;
+                }
+    
+                set({
+                    messages: [...messages, newChat],
+                    recentUsers: updatedRecentUsers
+                });
             } else {
                 toast.error("Failed to send message");
             }

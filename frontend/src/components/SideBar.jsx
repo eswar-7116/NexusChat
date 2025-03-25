@@ -5,34 +5,75 @@ import { Users, ChevronRight, ChevronLeft } from 'lucide-react';
 
 function SideBar() {
   const { onlineUsers } = useAuthStore();
-  const { fetchUsers, users, selectedUser, setSelectedUser, isFetchingUsers, fetchMessages } = useChatStore();
+  const {
+    fetchAllUsers,
+    fetchRecentUsers,
+    allUsers,
+    recentUsers,
+    selectedUser,
+    setSelectedUser,
+    isFetchingUsers,
+    fetchMessages
+  } = useChatStore();
   const [isCollapsed, setIsCollapsed] = React.useState(window.innerWidth < 768);
-  
+  const [searchQuery, setSearchQuery] = React.useState('');
+
   React.useEffect(() => {
-    fetchUsers();
-    
+    fetchRecentUsers();
+    fetchAllUsers(); // Ensure all users are loaded for search
+
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setIsCollapsed(true);
       }
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [fetchUsers]);
-  
+  }, [fetchRecentUsers, fetchAllUsers]);
+
   const skeletonContacts = Array(8).fill(null);
-  
+
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
-  
+
+  // Filter users based on search query
+  const filteredUsers = React.useMemo(() => {
+    if (!searchQuery) return recentUsers;
+
+    const lowercaseQuery = searchQuery.toLowerCase();
+    return allUsers.filter(user =>
+      user.username.toLowerCase().includes(lowercaseQuery) ||
+      user.fullName.toLowerCase().includes(lowercaseQuery)
+    );
+  }, [searchQuery, allUsers, recentUsers]);
+
+  // Sort users: online first, then by search relevance or recency
+  const sortedUsers = React.useMemo(() => {
+    return [...filteredUsers].sort((a, b) => {
+      const aIsOnline = onlineUsers.includes(a._id);
+      const bIsOnline = onlineUsers.includes(b._id);
+
+      if (aIsOnline && !bIsOnline) return -1;
+      if (!aIsOnline && bIsOnline) return 1;
+      return 0;
+    });
+  }, [filteredUsers, onlineUsers]);
+
+  const handleUserSelect = (user) => {
+    setSelectedUser(user);
+    fetchMessages(user._id);
+    // On mobile, collapse the sidebar after selection
+    if (window.innerWidth < 768) {
+      setIsCollapsed(true);
+    }
+  };
+
   if (isFetchingUsers) {
     return (
       <aside
-        className={`h-full border-r border-base-300 flex flex-col transition-all duration-300 ${
-          isCollapsed ? 'w-16' : 'w-72'
-        } relative`}
+        className={`h-full border-r border-base-300 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-72'} relative`}
       >
         {/* Toggle button */}
         <button
@@ -45,7 +86,7 @@ function SideBar() {
             <ChevronLeft className="size-4" />
           )}
         </button>
-        
+
         {/* Users */}
         <div className="overflow-y-auto w-full py-2 sm:py-3">
           {skeletonContacts.map((_, idx) => (
@@ -67,31 +108,10 @@ function SideBar() {
       </aside>
     );
   }
-  
-  // Sort users: online first, then offline
-  const sortedUsers = [...users].sort((a, b) => {
-    const aIsOnline = onlineUsers.includes(a._id);
-    const bIsOnline = onlineUsers.includes(b._id);
-    
-    if (aIsOnline && !bIsOnline) return -1;
-    if (!aIsOnline && bIsOnline) return 1;
-    return 0;
-  });
 
-  const handleUserSelect = (user) => {
-    setSelectedUser(user);
-    fetchMessages(user._id);
-    // On mobile, collapse the sidebar after selection
-    if (window.innerWidth < 768) {
-      setIsCollapsed(true);
-    }
-  };
-  
   return (
-    <aside 
-    className={`h-full border-r border-base-300 flex flex-col transition-all duration-300 ${
-      isCollapsed ? 'w-18' : 'w-72'
-    } relative`}
+    <aside
+      className={`h-full border-r border-base-300 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-18' : 'w-72'} relative`}
     >
       {/* Toggle button - visible on large screens */}
       <button
@@ -105,7 +125,7 @@ function SideBar() {
           <ChevronLeft className="size-4" />
         )}
       </button>
-      
+
       {/* Mobile toggle - visible at top of sidebar on small screens */}
       <button
         onClick={toggleSidebar}
@@ -117,48 +137,62 @@ function SideBar() {
       </button>
 
       <div className="w-full flex-1 overflow-hidden flex flex-col">
-        {/* Header (Only visible when expanded) */}
+        {/* Search input (visible when not collapsed) */}
         {!isCollapsed && (
-          <div className="hidden md:flex items-center px-5 pt-3 pb-2">
-            <Users className="size-6 text-base-content/70" />
-            <span className="ml-2 font-semibold text-base-content/70">Contacts</span>
+          <div className="px-2 sm:px-3 py-2">
+            <input
+              type="text"
+              placeholder="Search contacts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg bg-base-200 border border-base-300 focus:outline-none focus:ring-1 focus:ring-primary"
+            />
           </div>
         )}
-        
+
         <div className="overflow-y-auto w-full flex-1 py-2 px-1 sm:px-2">
-          {sortedUsers.map((user) => (
-            <button
-              key={user._id}
-              onClick={() => handleUserSelect(user)}
-              className={`
-                w-full py-2 px-1 sm:px-2 mb-1 rounded-lg flex items-center gap-2 sm:gap-3
-                hover:bg-base-200 transition-colors
-                ${selectedUser?._id === user._id ? "bg-base-200 ring-1 ring-base-300" : ""}
-              `}
-            >
-              <div className="relative mx-auto lg:mx-0">
-                <img
-                  src={user.profilePic || "/profile.png"}
-                  alt={user.fullName}
-                  className="size-10 rounded-full object-cover"
-                />
-                {onlineUsers.includes(user._id) && (
-                  <span
-                    className="absolute bottom-0 right-0 size-2.5 bg-green-500 rounded-full ring-2 ring-zinc-900"
+          {sortedUsers.length > 0 ? (
+            sortedUsers.map((user) => (
+              <button
+                key={`user-${user._id}`}
+                onClick={() => handleUserSelect(user)}
+                className={`
+                  w-full py-2 px-1 sm:px-2 mb-1 rounded-lg flex items-center gap-2 sm:gap-3
+                  hover:bg-base-200 transition-colors
+                  ${selectedUser?._id === user._id ? "bg-base-200 ring-1 ring-base-300" : ""}
+                `}
+              >
+                {/* Existing user rendering code remains the same */}
+                <div className="relative mx-auto lg:mx-0">
+                  <img
+                    src={user.profilePic || "/profile.png"}
+                    alt={user.fullName}
+                    className="size-10 rounded-full object-cover"
                   />
-                )}
-              </div>
-              {/* User Info (Only visible when expanded) */}
-              {!isCollapsed && (
-                <div className="text-left min-w-0 flex-1">
-                  <div className="font-medium truncate">{user.fullName}</div>
-                  <div className="text-sm text-zinc-400 truncate">
-                    {user.username}
-                  </div>
+                  {onlineUsers.includes(user._id) && (
+                    <span
+                      className="absolute bottom-0 right-0 size-2.5 bg-green-500 rounded-full ring-2 ring-zinc-900"
+                    />
+                  )}
                 </div>
-              )}
-            </button>
-          ))}
+                {/* User Info (Only visible when expanded) */}
+                {!isCollapsed && (
+                  <div className="text-left min-w-0 flex-1">
+                    <div className="font-medium truncate">{user.fullName}</div>
+                    <div className="text-sm text-zinc-400 truncate">
+                      {user.username}
+                    </div>
+                  </div>
+                )}
+              </button>
+            ))
+          ) : (
+            !isCollapsed && (
+              <div className="text-center text-zinc-400 py-4">
+                No users found
+              </div>
+            )
+          )}
         </div>
       </div>
     </aside>

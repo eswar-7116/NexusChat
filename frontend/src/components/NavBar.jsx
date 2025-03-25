@@ -15,7 +15,6 @@ function Navbar() {
   }, [theme]);
 
   useEffect(() => {
-    console.log(localStorage.getItem("vibration"), canVibrate)
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);

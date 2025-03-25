@@ -43,6 +43,16 @@ const userSchema = new mongoose.Schema({
         type: Date
     },
 
+    recentUsers: {
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        ],
+        default: []
+    },
+
     otp: {
         type: String,
         required: [true, 'OTP is required']

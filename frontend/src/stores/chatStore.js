@@ -3,6 +3,8 @@ import toast from "react-hot-toast";
 import { axiosInstance } from "../helpers/axios";
 import { useAuthStore } from "./authStore";
 
+const replyNotification = new Audio("/notification.mp3");
+
 export const useChatStore = create((set, get) => ({
     messages: [],
     allUsers: [],
@@ -95,7 +97,8 @@ export const useChatStore = create((set, get) => ({
 
     listenToUser: () => {
         const { selectedUser } = get();
-        const { socket } = useAuthStore.getState();
+        const authStore = useAuthStore.getState();
+        const socket = authStore.socket;
         if (!selectedUser || !socket) return;
 
         // Remove previous listeners to prevent duplicates
@@ -106,10 +109,14 @@ export const useChatStore = create((set, get) => ({
 
         // Listen for new messages
         socket.on("newMessage", async (message) => {
+            console.log("New Message");
             // Vibrate
             if (useAuthStore.getState().canVibrate) {
                 navigator.vibrate(120);
             }
+
+            // Notify with sound when app is not on focus
+            replyNotification.play().catch((error) => console.error("Error playing reply notification:", error));
 
             const isMessageSentFromSelectedUser = message.senderId === selectedUser._id;
             if (!isMessageSentFromSelectedUser) return;
@@ -125,7 +132,7 @@ export const useChatStore = create((set, get) => ({
 
         // Listen if new messages are read
         socket.on("messagesRead", (readByUserId) => {
-            const currentUserId = useAuthStore.getState().user._id;
+            const currentUserId = authStore.user._id;
 
             if (readByUserId === get().selectedUser._id) {
                 set((state) => ({

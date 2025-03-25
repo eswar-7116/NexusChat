@@ -26,7 +26,6 @@ function SideBar() {
   const [searchQuery, setSearchQuery] = React.useState('');
 
   React.useEffect(() => {
-    console.log('collapsed = !collapsed');
   }, [isCollapsed]);
 
   React.useEffect(() => {
@@ -36,7 +35,6 @@ function SideBar() {
     const handleResize = () => {
       const isKeyboardOpen = window.innerHeight < window.screen.height * 0.9;
       if (!isKeyboardOpen) {
-        console.log('collapsing in handleResize:', window.innerWidth < 768, "Is keyboard open?", isKeyboardOpen);
         setIsCollapsed(window.innerWidth < 768);
       }
     };
@@ -70,7 +68,6 @@ function SideBar() {
   const handleUserSelect = (user) => {
     setSelectedUser(user);
     fetchMessages(user._id);
-    console.log("Collapsing handleUserSelect:", window.innerWidth < 768);
     setIsCollapsed(window.innerWidth < 768);
   };
 
@@ -78,7 +75,7 @@ function SideBar() {
     return (
       <aside className={`
         h-full border-r border-base-300 flex flex-col transition-all duration-300
-        ${isCollapsed ? 'w-16 md:w-20' : 'w-full md:w-80'}
+        ${isCollapsed ? 'w-16 md:w-20' : 'w-full sm:w-69'}
         relative bg-base-100
       `}>
         {/* Skeleton Loading State */}
@@ -117,11 +114,9 @@ function SideBar() {
       </button>
 
       {/* Mobile Header */}
-      <div className={`md:hidden flex items-center justify-between p-2 border-b border-base-300 ${!isCollapsed && "w-screen"
-        }`}>
+      <div className={`md:hidden flex items-center p-2 border-b border-base-300 ${!isCollapsed && "w-screen"} ${isCollapsed && "justify-center"}`}>
         <button
           onClick={() => {
-            console.log('Collapsing due to toggle:', !isCollapsed)
             setIsCollapsed(!isCollapsed)
           }}
           className="flex items-center"

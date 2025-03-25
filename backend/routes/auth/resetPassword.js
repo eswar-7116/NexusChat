@@ -36,7 +36,6 @@ router.post('/reset-password',
                     });
                 } else {
                     // Find user
-                    console.log("UID: " + userId);
                     const user = await User.findById(userId);
 
                     if (!user || !user.isVerified) {

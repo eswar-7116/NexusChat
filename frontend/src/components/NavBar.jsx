@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { KeyRound, LogOut, ArrowLeft, Sun, Moon, UserRoundPen, Volume2, VolumeOff } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { replyNotification } from '../stores/chatStore';
+import Tilt from 'react-parallax-tilt';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -79,9 +80,11 @@ function Navbar() {
       <div className="flex items-center">
         {location.pathname === '/' ? (
           <>
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-3 sm:p-4">
-              <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="w-full h-full object-contain" />
-            </div>
+            <Tilt scale={1.1} transitionSpeed={1000}>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-3 sm:p-4">
+                <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="w-full h-full object-contain" />
+              </div>
+            </Tilt>
             <span className="text-lg sm:text-xl font-bold ml-1 sm:ml-2">NexusChat</span>
           </>
         ) : (

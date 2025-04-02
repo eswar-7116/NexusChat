@@ -4,6 +4,7 @@ import { User, Mail, Lock, Eye, EyeOff, Loader2, Sun, Moon } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { isPassNotValid } from '../helpers/passwordValidation';
+import Tilt from 'react-parallax-tilt';
 
 function SignUpPage() {
   const [showPass, setShowPass] = useState(false);
@@ -72,9 +73,11 @@ function SignUpPage() {
         <div className="w-full max-w-md space-y-2 p-6 sm:p-12">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-2 group">
-              <div className="w-32 h-30 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-4 scale-80">
-                <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-80"/>
-              </div>
+              <Tilt scale={1.5} transitionSpeed={1000}>
+                <div className="w-32 h-30 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-4 scale-80">
+                  <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-80"/>
+                </div>
+              </Tilt>
               <h1 className="text-2xl font-bold mt-2">Sign Up</h1>
               <p className="text-base-content/60">Sign up to get your free account</p>
             </div>

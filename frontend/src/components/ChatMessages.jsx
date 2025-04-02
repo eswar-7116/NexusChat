@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { MessageCircleOff, Trash2, MoreVertical, Ban } from 'lucide-react';
+import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy } from 'lucide-react';
 import { PropagateLoader } from 'react-spinners';
 import { useAuthStore } from '../stores/authStore';
 import { useChatStore } from '../stores/chatStore';
+import toast from 'react-hot-toast';
 
 function ChatMessages({ messages, isFetchingMessages }) {
   const { user } = useAuthStore();
@@ -34,7 +35,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
     setExpandedMessageId(expandedMessageId === messageId ? null : messageId);
   };
 
-  const toggleDeleteMenu = (e, messageId) => {
+  const toggleMenu = (e, messageId) => {
     e.stopPropagation();
     const isOpening = messageWithOpenMenu !== messageId;
     setMessageWithOpenMenu(messageWithOpenMenu === messageId ? null : messageId);
@@ -48,6 +49,11 @@ function ChatMessages({ messages, isFetchingMessages }) {
         }
       }, 10);
     }
+  };
+
+  const copyMessage = (e, msgContent) => {
+    navigator.clipboard.writeText(msgContent);
+    toast.success("Copied message!");
   };
 
   const handleDeleteForMe = (e, messageId, messageIdx) => {
@@ -150,7 +156,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
 
               <div className="relative ml-1 sm:ml-2">
                 <button
-                  onClick={(e) => toggleDeleteMenu(e, message._id)}
+                  onClick={(e) => toggleMenu(e, message._id)}
                   className="p-1 hover:bg-base-200 rounded-full active:bg-base-300"
                   aria-label="Message options"
                 >
@@ -160,6 +166,18 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 {isMenuOpen && (
                   <div className={`absolute z-10 mt-1 bg-base-100/90 font-bold shadow-lg rounded-lg overflow-hidden border border-base-300 w-40 sm:w-48 ${isUserMessage ? 'right-0' : 'left-0'}`} data-menu-id={message._id}>
                     <ul className="py-1">
+                      {/* Copy */}
+                      <li>
+                        <button
+                          className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2"
+                          onClick={(e) => copyMessage(e, message.content)}
+                        >
+                          <Copy size={12} className="sm:size-5" />
+                          Copy
+                        </button>
+                      </li>
+
+                      {/* Delete for me */}
                       <li>
                         <button
                           className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2 text-red-500"
@@ -169,6 +187,8 @@ function ChatMessages({ messages, isFetchingMessages }) {
                           Delete for me
                         </button>
                       </li>
+
+                      {/* Delete for everyone */}
                       {isUserMessage && !message.deletedForEveryoneBy && (
                         <li>
                           <button
@@ -223,7 +243,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-1 sm:px-2 space-y-3 sm:space-y-4 pb-6 ">
+    <div className="flex-1 overflow-y-auto px-1 sm:px-2 space-y-3 sm:space-y-4 pb-6">
       {renderMessages()}
       <div ref={chatBoxBottomRef} />
     </div>

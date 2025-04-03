@@ -7,6 +7,7 @@ import sendMessage from "../../controllers/messages/sendMessage.js";
 import readUnread from "../../controllers/messages/readUnread.js";
 import deleteForMe from "../../controllers/messages/deleteForMe.js";
 import deleteForEveryone from "../../controllers/messages/deleteForEveryone.js";
+import editMessage from "../../controllers/messages/editMessage.js";
 
 const router = Router();
 
@@ -17,5 +18,6 @@ router.post('/send/:id', sendMessage);
 router.put('/read-unread/:id', readUnread);
 router.put('/delete-for-me/:msgid', deleteForMe);
 router.put('/delete-for-everyone/:msgid', deleteForEveryone);
+router.put('/edit/:id', editMessage);
 
 export default router;

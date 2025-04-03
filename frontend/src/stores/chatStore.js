@@ -65,14 +65,14 @@ export const useChatStore = create((set, get) => ({
         try {
             const { selectedUser, messages, recentUsers, allUsers } = get();
             const res = await axiosInstance.post(`/messaging/send/${selectedUser._id}`, data);
-            
+
             if (res.data.success) {
                 const newChat = res.data.chat;
                 const receiverId = newChat.receiverId;
-    
+
                 // Check if the user is already in recent users
                 const existingUserIndex = recentUsers.findIndex(user => user._id === receiverId);
-    
+
                 let updatedRecentUsers;
                 if (existingUserIndex === -1) {
                     // Find user in allUsers
@@ -81,7 +81,7 @@ export const useChatStore = create((set, get) => ({
                 } else {
                     updatedRecentUsers = recentUsers;
                 }
-    
+
                 set({
                     messages: [...messages, newChat],
                     recentUsers: updatedRecentUsers
@@ -188,7 +188,9 @@ export const useChatStore = create((set, get) => ({
 
     setSelectedUser: async (selectedUser) => {
         set({ selectedUser });
-        await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+        if (selectedUser) {
+            await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+        }
     },
 
     deleteForMe: async (msgId, msgIdx) => {
@@ -196,7 +198,7 @@ export const useChatStore = create((set, get) => ({
             const res = await axiosInstance.put(`/messaging/delete-for-me/${msgId}`);
             if (res.data.success) {
                 toast.success("Deleted the message for you");
-                
+
                 set((state) => {
                     const messages = [...state.messages];
                     messages.splice(msgIdx, 1); // Remove the message at the given index
@@ -216,7 +218,7 @@ export const useChatStore = create((set, get) => ({
             const res = await axiosInstance.put(`/messaging/delete-for-everyone/${messageId}`);
             if (res.data.success) {
                 toast.success("Deleted the message for everyone");
-    
+
                 set((state) => {
                     const messages = [...state.messages];
                     const messageToUpdate = messages.find(msg => msg._id === messageId);
@@ -231,6 +233,26 @@ export const useChatStore = create((set, get) => ({
         } catch (error) {
             console.log("Error while deleting for everyone:", error);
             toast.error("Unable to delete the message");
+        }
+    },
+
+    updateMessage: async (messageId, content) => {
+        try {
+            const res = await axiosInstance.put(`/messaging/edit/${messageId}`, { newContent: content });
+
+            if (res.data.success) {
+                set(state => ({
+                    messages: state.messages.map(msg =>
+                        msg._id === messageId ? { ...msg, content, edited: true } : msg
+                    )
+                }));
+            } else {
+                toast.error("Failed to update message");
+            }
+        } catch (error) {
+            console.error('Failed to update message:', error);
+            toast.error('Failed to update message');
+            throw error;
         }
     }
 }));

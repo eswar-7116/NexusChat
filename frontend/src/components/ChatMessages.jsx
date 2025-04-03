@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy } from 'lucide-react';
+import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy, SquarePen, Check, X } from 'lucide-react';
 import { PropagateLoader } from 'react-spinners';
 import { useAuthStore } from '../stores/authStore';
 import { useChatStore } from '../stores/chatStore';
@@ -7,10 +7,13 @@ import toast from 'react-hot-toast';
 
 function ChatMessages({ messages, isFetchingMessages }) {
   const { user } = useAuthStore();
-  const { selectedUser, deleteForMe, deleteMessageForEveryone } = useChatStore();
+  const { selectedUser, deleteForMe, deleteMessageForEveryone, updateMessage } = useChatStore();
   const chatBoxBottomRef = React.useRef(null);
   const [expandedMessageId, setExpandedMessageId] = useState(null);
   const [messageWithOpenMenu, setMessageWithOpenMenu] = useState(null);
+  const [editingMessageId, setEditingMessageId] = useState(null);
+  const [editedContent, setEditedContent] = useState("");
+  const editInputRef = React.useRef(null);
 
   React.useEffect(() => {
     if (chatBoxBottomRef.current) {
@@ -31,6 +34,15 @@ function ChatMessages({ messages, isFetchingMessages }) {
     };
   }, [messageWithOpenMenu]);
 
+  React.useEffect(() => {
+    if (editingMessageId && editInputRef.current) {
+      editInputRef.current.focus();
+      // Position cursor at the end of text
+      const length = editInputRef.current.value.length;
+      editInputRef.current.setSelectionRange(length, length);
+    }
+  }, [editingMessageId]);
+
   const toggleTimeFormat = (messageId) => {
     setExpandedMessageId(expandedMessageId === messageId ? null : messageId);
   };
@@ -49,6 +61,39 @@ function ChatMessages({ messages, isFetchingMessages }) {
         }
       }, 10);
     }
+  };
+
+  // Function to check if message is within 5 minutes
+  const isWithinFiveMinutes = (timestamp) => {
+    const messageTime = new Date(timestamp).getTime();
+    const currentTime = new Date().getTime();
+    const fiveMinutesInMs = 5 * 60 * 1000;
+    return currentTime - messageTime <= fiveMinutesInMs;
+  };
+
+  const handleEditMessage = (e, message) => {
+    e.stopPropagation();
+    setMessageWithOpenMenu(null);
+    setEditingMessageId(message._id);
+    setEditedContent(message.content);
+  };
+
+  const saveEditedMessage = async (messageId) => {
+    if (editedContent.trim() === '') return;
+    
+    try {
+      await updateMessage(messageId, editedContent);
+      setEditingMessageId(null);
+      setEditedContent('');
+    } catch (error) {
+      toast.error("Failed to update message");
+      console.error(error);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingMessageId(null);
+    setEditedContent('');
   };
 
   const copyMessage = (e, msgContent) => {
@@ -107,6 +152,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
 
       const isExpanded = expandedMessageId === message._id;
       const isMenuOpen = messageWithOpenMenu === message._id;
+      const isEditing = editingMessageId === message._id;
       const messageTime = new Date(message.timestamp).toLocaleString(undefined, {
         hour: 'numeric',
         minute: 'numeric',
@@ -164,7 +210,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 </button>
 
                 {isMenuOpen && (
-                  <div className={`absolute z-10 mt-1 bg-base-100/90 font-bold shadow-lg rounded-lg overflow-hidden border border-base-300 w-40 sm:w-48 ${isUserMessage ? 'right-0' : 'left-0'}`} data-menu-id={message._id}>
+                  <div className={`absolute z-10 mt-1 bg-base-100/90 font-bold shadow-lg rounded-lg overflow-hidden border border-base-300 w-40 sm:w-48 ${isUserMessage ? 'right-0' : 'left-0'} message-menu-container`} data-menu-id={message._id}>
                     <ul className="py-1">
                       {/* Copy */}
                       <li>
@@ -176,6 +222,19 @@ function ChatMessages({ messages, isFetchingMessages }) {
                           Copy
                         </button>
                       </li>
+
+                      {/* Edit - only shown for own messages within 5 minutes */}
+                      {isUserMessage && isWithinFiveMinutes(message.timestamp) && !message.deletedForEveryoneBy && (
+                        <li>
+                          <button
+                            className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2"
+                            onClick={(e) => handleEditMessage(e, message)}
+                          >
+                            <SquarePen size={12} className="sm:size-5" />
+                            Edit
+                          </button>
+                        </li>
+                      )}
 
                       {/* Delete for me */}
                       <li>
@@ -221,8 +280,49 @@ function ChatMessages({ messages, isFetchingMessages }) {
                       ? `${selectedUser.username} deleted this message`
                       : "This message was deleted"}
                 </p>
+              ) : isEditing ? (
+                <div className="flex flex-col gap-2">
+                  <textarea
+                    ref={editInputRef}
+                    className="w-full bg-base-200 text-base-content p-2 rounded border border-base-300 min-h-[60px] resize-none"
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        saveEditedMessage(message._id);
+                      } else if (e.key === 'Escape') {
+                        cancelEdit();
+                      }
+                    }}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button 
+                      onClick={cancelEdit}
+                      className="p-1 hover:bg-base-300 rounded-full"
+                      aria-label="Cancel edit"
+                    >
+                      <X size={18} className="text-error" />
+                    </button>
+                    <button 
+                      onClick={() => saveEditedMessage(message._id)}
+                      className="p-1 hover:bg-base-300 rounded-full"
+                      aria-label="Save edit"
+                      disabled={editedContent.trim() === ''}
+                    >
+                      <Check size={18} className="text-success" />
+                    </button>
+                  </div>
+                </div>
               ) : (
-                <p className="overflow-hidden text-wrap">{message.content}</p>
+                <div>
+                  <p className="overflow-hidden text-wrap">{message.content}</p>
+                  {message.edited && (
+                    <span className="text-xs italic mt-1 opacity-60 ml-1">
+                      (edited)
+                    </span>
+                  )}
+                </div>
               )}
               {isDeletedBySelectedUser && !message.deletedForEveryoneBy && (
                 <div className="text-xs italic mt-1 opacity-70">
@@ -231,7 +331,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
               )}
             </div>
 
-            {isUserMessage && (
+            {isUserMessage && !isEditing && (
               <div className="chat-footer opacity-50 text-xs">
                 {message.isRead ? "Seen" : "Delivered"}
               </div>

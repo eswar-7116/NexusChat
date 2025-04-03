@@ -43,6 +43,11 @@ const messageSchema = new mongoose.Schema({
     deletedForEveryoneBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+
+    edited: {
+        type: Boolean,
+        default: false
     }
 });
 

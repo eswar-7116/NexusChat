@@ -63,7 +63,7 @@ function SideBar() {
   }, [filteredUsers, onlineUsers]);
 
   const handleUserSelect = (user) => {
-    if (selectedUser._id !== user._id) {
+    if (!selectedUser || selectedUser._id !== user._id) {
       setSelectedUser(user);
       fetchMessages(user._id);
       setIsCollapsed(window.innerWidth < 768);

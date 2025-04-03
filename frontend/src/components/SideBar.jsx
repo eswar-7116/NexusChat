@@ -63,9 +63,11 @@ function SideBar() {
   }, [filteredUsers, onlineUsers]);
 
   const handleUserSelect = (user) => {
-    setSelectedUser(user);
-    fetchMessages(user._id);
-    setIsCollapsed(window.innerWidth < 768);
+    if (selectedUser._id !== user._id) {
+      setSelectedUser(user);
+      fetchMessages(user._id);
+      setIsCollapsed(window.innerWidth < 768);
+    }
   };
 
   if (isFetchingUsers) {

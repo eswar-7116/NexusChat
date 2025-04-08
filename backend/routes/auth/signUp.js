@@ -25,13 +25,14 @@ router.post('/signup', [
         // Validate payload
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            const errorArray = errors.array();
             return res.status(400).json({
                 success: false,
-                message: "Input validation failed while signing up",
-                errors: errors.array()
+                message: errorArray[0].msg,
+                errors: errorArray
             });
         }
-        
+
         const { fullName, username, email } = req.body;
         let password = req.body.password;
 
@@ -79,9 +80,9 @@ router.post('/signup', [
             existingUsername.lastSeen = new Date();
             existingUsername.otp = otp;
             existingUsername.otpExpiry = otpExpiry;
-           
+
             await existingUsername.save();
-           
+
             return res.status(200).json({
                 success: true,
                 message: "User registered successfully"
@@ -96,9 +97,9 @@ router.post('/signup', [
             existingEmail.lastSeen = new Date();
             existingEmail.otp = otp;
             existingEmail.otpExpiry = otpExpiry;
-            
+
             await existingEmail.save();
-            
+
             return res.status(200).json({
                 success: true,
                 message: "User registered successfully"

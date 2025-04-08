@@ -41,8 +41,9 @@ function SignUpPage() {
     if (passwordError)
       return toast.error(passwordError);
 
-    if (formData.password !== formData.confirmPassword)
+    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
       return toast.error("Passwords do not match");
+    }
 
     return true;
   }

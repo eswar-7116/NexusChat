@@ -13,8 +13,7 @@ const server = createServer(app); // Socket.io server
 // Socket.io server
 const io = new Server(server, {
     cors: {
-        origin: process.env.FRONTEND_URL,
-        methods: ['GET', 'POST']
+        origin: process.env.FRONTEND_URL
     }
 });
 

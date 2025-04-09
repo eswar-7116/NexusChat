@@ -7,7 +7,7 @@ import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 
 function ChatWindow() {
-  const { selectedUser, messages, isFetchingMessages, sendMessage, listenToUser, stopListeningToUser } = useChatStore();
+  const { selectedUser, messages, isFetchingMessages, sendMessage, listenToSocket, stopListeningToSocket } = useChatStore();
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
@@ -20,9 +20,9 @@ function ChatWindow() {
   };
 
   React.useEffect(() => {
-    listenToUser();
+    listenToSocket();
 
-    return () => stopListeningToUser();
+    return () => stopListeningToSocket();
   }, [selectedUser?._id]);
 
   const handleSendMessage = async (messageData) => {

@@ -86,7 +86,7 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    listenToUser: () => {
+    listenToSocket: () => {
         const { selectedUser } = get();
         const { socket, canVibrate } = useAuthStore.getState();
         if (!selectedUser || !socket) return;
@@ -116,18 +116,6 @@ export const useChatStore = create((set, get) => ({
             if (selectedUser?._id === message.senderId) {
                 await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
             }
-
-            // Get the sender from allUsers
-            const sender = allUsers.find((user) => user._id === message.senderId);
-            if (!sender) return;
-
-            // Update recentUsers
-            const updatedRecentUsers = [
-                sender,
-                ...recentUsers.filter((user) => user._id !== sender._id),
-            ];
-
-            set({ recentUsers: updatedRecentUsers });
         });
 
         socket.on("messagesRead", (readByUserId) => {
@@ -168,7 +156,7 @@ export const useChatStore = create((set, get) => ({
         });
     },
 
-    stopListeningToUser: () => {
+    stopListeningToSocket: () => {
         const { socket } = useAuthStore.getState();
         if (!socket) return;
         socket.off("newMessage");

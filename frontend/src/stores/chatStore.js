@@ -15,14 +15,11 @@ export const useChatStore = create((set, get) => ({
 
     fetchAllUsers: async () => {
         try {
-            const res = await axiosInstance.get("/messaging/get-users");
-            if (res.data.success) {
-                set({ allUsers: res.data.users });
-            } else {
-                toast.error("Failed to get all users");
-            }
+            const { data } = await axiosInstance.get("/messaging/get-users");
+            if (data.success) set({ allUsers: data.users });
+            else toast.error("Failed to get all users");
         } catch (error) {
-            console.log("Error while fetching all users:", error);
+            console.error("Error fetching users:", error);
             toast.error("Error while fetching all users");
         }
     },
@@ -30,15 +27,12 @@ export const useChatStore = create((set, get) => ({
     fetchRecentUsers: async () => {
         set({ isFetchingUsers: true });
         try {
-            const res = await axiosInstance.get(`/messaging/get-recent-users`);
-            if (res.data.success) {
-                set({ recentUsers: res.data.recentUsers });
-            } else {
-                toast.error("Failed to get recent users");
-            }
+            const { data } = await axiosInstance.get("/messaging/get-recent-users");
+            if (data.success) set({ recentUsers: data.recentUsers });
+            else toast.error("Failed to get recent users");
         } catch (error) {
-            console.log("Error while fetching recent users:", error);
-            toast.error("Error while fetching users");
+            console.error("Error fetching recent users:", error);
+            toast.error("Error while fetching recent users");
         } finally {
             set({ isFetchingUsers: false });
         }
@@ -47,14 +41,11 @@ export const useChatStore = create((set, get) => ({
     fetchMessages: async (receiverId) => {
         set({ isFetchingMessages: true });
         try {
-            const res = await axiosInstance.get(`/messaging/get-messages/${receiverId}`);
-            if (res.data.success) {
-                set({ messages: res.data.messages });
-            } else {
-                toast.error("Failed to get messages");
-            }
+            const { data } = await axiosInstance.get(`/messaging/get-messages/${receiverId}`);
+            if (data.success) set({ messages: data.messages });
+            else toast.error("Failed to get messages");
         } catch (error) {
-            console.log("Error while fetching messages:", error);
+            console.error("Error fetching messages:", error);
             toast.error("Error while fetching messages");
         } finally {
             set({ isFetchingMessages: false });
@@ -63,80 +54,87 @@ export const useChatStore = create((set, get) => ({
 
     sendMessage: async (data) => {
         try {
-            const { selectedUser, messages, recentUsers, allUsers } = get();
+            const { selectedUser, messages, recentUsers } = get();
             const res = await axiosInstance.post(`/messaging/send/${selectedUser._id}`, data);
 
-            if (res.data.success) {
-                const newChat = res.data.chat;
-                const receiverId = newChat.receiverId;
-
-                // Check if the user is already in recent users
-                const existingUserIndex = recentUsers.findIndex(user => user._id === receiverId);
-
-                let updatedRecentUsers;
-                if (existingUserIndex === -1) {
-                    // Find user in allUsers
-                    const newUser = allUsers.find(user => user._id === receiverId);
-                    updatedRecentUsers = newUser ? [newUser, ...recentUsers] : recentUsers;
-                } else {
-                    updatedRecentUsers = recentUsers;
-                }
-
-                set({
-                    messages: [...messages, newChat],
-                    recentUsers: updatedRecentUsers
-                });
-            } else {
+            if (!res.data.success) {
                 toast.error("Failed to send message");
+                return;
             }
+
+            const newChat = res.data.chat;
+
+            const isAlreadyPresent = recentUsers.some(user => user._id === selectedUser._id);
+            let updatedRecentUsers;
+
+            if (!isAlreadyPresent) {
+                updatedRecentUsers = [selectedUser, ...recentUsers];
+            } else {
+                updatedRecentUsers = [
+                    selectedUser,
+                    ...recentUsers.filter(user => user._id !== selectedUser._id)
+                ];
+            }
+
+            set({
+                messages: [...messages, newChat],
+                recentUsers: updatedRecentUsers
+            });
         } catch (error) {
-            console.log("Error while sending message:", error);
+            console.error("Error sending message:", error);
             toast.error("Error while sending message");
         }
     },
 
     listenToUser: () => {
         const { selectedUser } = get();
-        const authStore = useAuthStore.getState();
-        const socket = authStore.socket;
+        const { socket, canVibrate } = useAuthStore.getState();
         if (!selectedUser || !socket) return;
 
-        // Remove previous listeners to prevent duplicates
         socket.off("newMessage");
         socket.off("messagesRead");
         socket.off("deleteForMe");
         socket.off("deleteForEveryone");
 
-        // Listen for new messages
         socket.on("newMessage", async (message) => {
-            console.log("New Message");
-            // Vibrate
-            if (useAuthStore.getState().canVibrate) {
-                navigator.vibrate(120);
-            }
+            if (canVibrate) navigator.vibrate(120);
+            replyNotification.play().catch((err) =>
+                console.error("Notification sound error:", err)
+            );
 
-            // Notify with sound when app is not on focus
-            replyNotification.play().catch((error) => console.error("Error playing reply notification:", error));
+            const { recentUsers, allUsers, selectedUser } = get();
 
-            const isMessageSentFromSelectedUser = message.senderId === selectedUser._id;
-            if (!isMessageSentFromSelectedUser) return;
-
+            // Update messages only if message is from currently selected user
             set((state) => ({
-                messages: [...state.messages, message]
+                messages:
+                    message.senderId === selectedUser?._id
+                        ? [...state.messages, message]
+                        : state.messages,
             }));
 
-            if (message.senderId === selectedUser._id) {
+            // Mark messages as read
+            if (selectedUser?._id === message.senderId) {
                 await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
             }
+
+            // Get the sender from allUsers
+            const sender = allUsers.find((user) => user._id === message.senderId);
+            if (!sender) return;
+
+            // Update recentUsers
+            const updatedRecentUsers = [
+                sender,
+                ...recentUsers.filter((user) => user._id !== sender._id),
+            ];
+
+            set({ recentUsers: updatedRecentUsers });
         });
 
-        // Listen if new messages are read
         socket.on("messagesRead", (readByUserId) => {
-            const currentUserId = authStore.user._id;
-
-            if (readByUserId === get().selectedUser._id) {
+            if (readByUserId === get().selectedUser?._id) {
+                const currentUserId = useAuthStore.getState().user._id;
                 set((state) => ({
-                    messages: state.messages.map(msg =>
+                    messages: state.messages.map((msg) =>
                         msg.senderId === currentUserId && !msg.isRead
                             ? { ...msg, isRead: true }
                             : msg
@@ -145,11 +143,9 @@ export const useChatStore = create((set, get) => ({
             }
         });
 
-        // Listen if the other user deleted the msg for himself
-        socket.on("deleteForMe", (data) => {
-            const { msgId, deletedByUserId } = data;
+        socket.on("deleteForMe", ({ msgId, deletedByUserId }) => {
             set((state) => ({
-                messages: state.messages.map(msg =>
+                messages: state.messages.map((msg) =>
                     msg._id === msgId
                         ? {
                             ...msg,
@@ -162,15 +158,11 @@ export const useChatStore = create((set, get) => ({
             }));
         });
 
-        socket.on("deleteForEveryone", (data) => {
-            console.log("Received delete for everyone");
-            const { msgId, deletedByUserId } = data;
+        socket.on("deleteForEveryone", ({ msgId, deletedByUserId }) => {
             set((state) => {
                 const messages = [...state.messages];
-                const messageToUpdate = messages.find(msg => msg._id === msgId);
-                if (messageToUpdate) {
-                    messageToUpdate.deletedForEveryoneBy = deletedByUserId;
-                }
+                const msg = messages.find((m) => m._id === msgId);
+                if (msg) msg.deletedForEveryoneBy = deletedByUserId;
                 return { messages };
             });
         });
@@ -179,7 +171,6 @@ export const useChatStore = create((set, get) => ({
     stopListeningToUser: () => {
         const { socket } = useAuthStore.getState();
         if (!socket) return;
-
         socket.off("newMessage");
         socket.off("messagesRead");
         socket.off("deleteForMe");
@@ -195,20 +186,20 @@ export const useChatStore = create((set, get) => ({
 
     deleteForMe: async (msgId, msgIdx) => {
         try {
-            const res = await axiosInstance.put(`/messaging/delete-for-me/${msgId}`);
-            if (res.data.success) {
-                toast.success("Deleted the message for you");
-
-                set((state) => {
-                    const messages = [...state.messages];
-                    messages.splice(msgIdx, 1); // Remove the message at the given index
-                    return { messages };
-                });
-            } else {
-                toast.error("Failed to get messages");
+            const { data } = await axiosInstance.put(`/messaging/delete-for-me/${msgId}`);
+            if (!data.success) {
+                toast.error("Failed to delete message");
+                return;
             }
+            toast.success("Deleted the message for you");
+
+            set((state) => {
+                const messages = [...state.messages];
+                messages.splice(msgIdx, 1);
+                return { messages };
+            });
         } catch (error) {
-            console.log("Error while deleting for you:", error);
+            console.error("Error deleting message:", error);
             toast.error("Unable to delete the message");
         }
     },
@@ -216,43 +207,44 @@ export const useChatStore = create((set, get) => ({
     deleteMessageForEveryone: async (messageId) => {
         try {
             const res = await axiosInstance.put(`/messaging/delete-for-everyone/${messageId}`);
-            if (res.data.success) {
-                toast.success("Deleted the message for everyone");
-
-                set((state) => {
-                    const messages = [...state.messages];
-                    const messageToUpdate = messages.find(msg => msg._id === messageId);
-                    if (messageToUpdate) {
-                        messageToUpdate.deletedForEveryoneBy = useAuthStore.getState().user._id;
-                    }
-                    return { messages };
-                });
-            } else {
+            if (!res.data.success) {
                 toast.error("Failed to delete message");
+                return;
             }
+
+            toast.success("Deleted the message for everyone");
+
+            set((state) => {
+                const messages = [...state.messages];
+                const msg = messages.find((m) => m._id === messageId);
+                if (msg) msg.deletedForEveryoneBy = useAuthStore.getState().user._id;
+                return { messages };
+            });
         } catch (error) {
-            console.log("Error while deleting for everyone:", error);
+            console.error("Error deleting message:", error);
             toast.error("Unable to delete the message");
         }
     },
 
     updateMessage: async (messageId, content) => {
         try {
-            const res = await axiosInstance.put(`/messaging/edit/${messageId}`, { newContent: content });
+            const res = await axiosInstance.put(`/messaging/edit/${messageId}`, {
+                newContent: content
+            });
 
-            if (res.data.success) {
-                set(state => ({
-                    messages: state.messages.map(msg =>
-                        msg._id === messageId ? { ...msg, content, edited: true } : msg
-                    )
-                }));
-            } else {
+            if (!res.data.success) {
                 toast.error("Failed to update message");
+                return;
             }
+
+            set((state) => ({
+                messages: state.messages.map((msg) =>
+                    msg._id === messageId ? { ...msg, content, edited: true } : msg
+                )
+            }));
         } catch (error) {
-            console.error('Failed to update message:', error);
-            toast.error('Failed to update message');
-            throw error;
+            console.error("Failed to update message:", error);
+            toast.error("Failed to update message");
         }
     }
 }));

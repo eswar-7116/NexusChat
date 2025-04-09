@@ -3,14 +3,17 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
-  Search,
-  X
+  Search
 } from 'lucide-react';
+import debounce from 'lodash.debounce';
 import { useAuthStore } from '../stores/authStore';
 import { useChatStore } from '../stores/chatStore';
 
 function SideBar() {
+  // Accessing online users from auth store
   const { onlineUsers } = useAuthStore();
+
+  // Accessing all chat-related data and actions
   const {
     fetchAllUsers,
     fetchRecentUsers,
@@ -22,9 +25,25 @@ function SideBar() {
     fetchMessages
   } = useChatStore();
 
+  // Sidebar collapse state for responsiveness
   const [isCollapsed, setIsCollapsed] = React.useState(window.innerWidth < 768);
+
+  // For immediate input tracking (used with debounced search)
+  const [searchInput, setSearchInput] = React.useState('');
+  // Actual search query used for filtering (debounced)
   const [searchQuery, setSearchQuery] = React.useState('');
 
+  // Debounced function to update the search query after user stops typing
+  const debouncedSearch = React.useMemo(() =>
+    debounce((value) => setSearchQuery(value), 300), []
+  );
+
+  // Syncing debounced input value with actual search query
+  React.useEffect(() => {
+    debouncedSearch(searchInput);
+  }, [searchInput, debouncedSearch]);
+
+  // Fetching recent and all users on mount
   React.useEffect(() => {
     fetchRecentUsers();
     fetchAllUsers();
@@ -40,6 +59,7 @@ function SideBar() {
     return () => window.removeEventListener('resize', handleResize);
   }, [fetchRecentUsers, fetchAllUsers]);
 
+  // Filtered user list based on search query
   const filteredUsers = React.useMemo(() => {
     if (!searchQuery) return recentUsers;
 
@@ -51,6 +71,7 @@ function SideBar() {
     );
   }, [searchQuery, allUsers, recentUsers]);
 
+  // Sort users to show online users first
   const sortedUsers = React.useMemo(() => {
     return [...filteredUsers].sort((a, b) => {
       const aIsOnline = onlineUsers.includes(a._id);
@@ -62,6 +83,7 @@ function SideBar() {
     });
   }, [filteredUsers, onlineUsers]);
 
+  // When a user is selected, set them as current chat and fetch their messages
   const handleUserSelect = (user) => {
     if (!selectedUser || selectedUser._id !== user._id) {
       setSelectedUser(user);
@@ -70,6 +92,7 @@ function SideBar() {
     }
   };
 
+  // Show loading skeletons while users are being fetched
   if (isFetchingUsers) {
     return (
       <aside className={`
@@ -77,7 +100,6 @@ function SideBar() {
         ${isCollapsed ? 'w-16 md:w-20' : 'w-full sm:w-69'}
         relative bg-base-100
       `}>
-        {/* Skeleton Loading State */}
         <div className="overflow-y-auto w-full py-2">
           {Array(8).fill(null).map((_, idx) => (
             <div key={idx} className="w-full p-2 flex items-center gap-2">
@@ -101,7 +123,7 @@ function SideBar() {
       ${isCollapsed ? 'w-16 md:w-20' : 'w-full sm:w-69'}
       relative bg-base-100
     `}>
-      {/* Desktop Sidebar Toggle */}
+      {/* Sidebar toggle button for larger screens */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3 top-1/2 transform -translate-y-1/2 
@@ -112,12 +134,10 @@ function SideBar() {
         {isCollapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
       </button>
 
-      {/* Mobile Header */}
+      {/* Mobile header */}
       <div className={`md:hidden flex items-center p-2 border-b border-base-300 ${!isCollapsed && "w-screen"} ${isCollapsed && "justify-center"}`}>
         <button
-          onClick={() => {
-            setIsCollapsed(!isCollapsed)
-          }}
+          onClick={() => setIsCollapsed(!isCollapsed)}
           className="flex items-center"
         >
           <Users className="size-5" />
@@ -125,14 +145,14 @@ function SideBar() {
         </button>
       </div>
 
-      {/* Search Bar */}
+      {/* Search input */}
       {!isCollapsed && (
         <div className="px-2 py-2 relative">
           <input
             type="text"
             placeholder="Search users..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="w-full px-3 py-2 pl-8 rounded-lg bg-base-200 
             border border-base-300 focus:outline-none focus:ring-1 focus:ring-primary"
           />
@@ -141,7 +161,7 @@ function SideBar() {
         </div>
       )}
 
-      {/* Contact List */}
+      {/* User list */}
       <div className="overflow-y-auto flex-1 py-2 px-1">
         {sortedUsers.length > 0 ? (
           sortedUsers.map((user) => (

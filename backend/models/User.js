@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
         type: Date
     },
 
-    recentUsers: {
+    recentUserIds: {
         type: [
             {
                 type: mongoose.Schema.Types.ObjectId,

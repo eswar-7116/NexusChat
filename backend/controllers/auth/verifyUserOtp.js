@@ -1,18 +1,7 @@
-import { Router } from 'express';
-import { body, validationResult } from 'express-validator';
-
+import { validationResult } from 'express-validator';
 import User from '../../models/User.js';
 
-const router = Router();
-
-router.post('/verify-user-otp', [
-    body('username')
-        .not().isEmpty().withMessage('Username is required')
-        .matches(/^[a-zA-Z][a-zA-Z0-9._-]{3,32}$/).withMessage('Username must start with a letter and contain only letters, numbers, dots, underscores, or hyphens, and be between 4 and 33 characters long'),
-    body('otp')
-        .isNumeric().withMessage('OTP must contain digits only')
-        .matches(/^\d{6}$/).withMessage('OTP length must be 6')
-], async (req, res) => {
+export default async function verifyUserOtp(req, res) {
     try {
         // Validate payload
         const errors = validationResult(req);
@@ -74,6 +63,4 @@ router.post('/verify-user-otp', [
             message: "Internal Server Error"
         });
     }
-});
-
-export default router;
+}

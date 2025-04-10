@@ -1,11 +1,7 @@
-import { Router } from 'express';
-
 import User from '../../models/User.js';
 import cloudinary from '../../helpers/cloudinaryConfig.js';
 
-const router = Router();
-
-router.post('/edit-profile', async (req, res) => {
+export default async function editProfile(req, res) {
     try {
         const { profilePic } = req.body;
         const userId = req.user._id;
@@ -37,6 +33,4 @@ router.post('/edit-profile', async (req, res) => {
             message: "Internal Server Error"
         });
     }
-});
-
-export default router;
+}

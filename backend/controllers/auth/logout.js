@@ -1,8 +1,4 @@
-import { Router } from 'express';
-
-const router = Router();
-
-router.post('/logout', async (req, res) => {
+export default async function logout(req, res) {
     try {
         // Clear the token in the cookie
         res.clearCookie('jwtToken');
@@ -18,6 +14,4 @@ router.post('/logout', async (req, res) => {
             message: "Internal Server Error"
         });
     }
-});
-
-export default router;
+}

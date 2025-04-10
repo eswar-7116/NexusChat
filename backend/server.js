@@ -1,22 +1,14 @@
 import express from 'express';
-import { config as configDotenv } from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 import { app, server } from './helpers/socketio.js';
 import connectDB from './db/db.js';
-import signup from './routes/auth/signUp.js';
-import verifyUserOtp from './routes/auth/verifyUserOtp.js';
-import login from './routes/auth/login.js';
-import forgotPassword from './routes/auth/forgotPassword.js';
-import resetPassword from './routes/auth/resetPassword.js';
-import logout from './routes/auth/logout.js';
-import changePassword from './routes/auth/changePassword.js';
-import editProfile from './routes/auth/editProfile.js';
+import authRoutes from './routes/authRoutes.js';
 import checkAuth from './middleware/authMiddleware.js';
-import messageRoutes from './routes/messages/routes.js';
+import messageRoutes from './routes/messageRoutes.js';
 
-connectDB();     // Connect to the database
+connectDB();  // Connect to the database
 
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 5000;  // Default to 5000 if PORT is not defined in .env
@@ -40,14 +32,7 @@ app.use('/', (req, _, next) => {
 });
 
 // Auth routes
-app.use('/auth', signup);
-app.use('/auth', verifyUserOtp);
-app.use('/auth', login);
-app.use('/auth', forgotPassword);
-app.use('/auth', resetPassword);
-app.use('/auth', checkAuth, logout);
-app.use('/auth', checkAuth, changePassword);
-app.use('/auth', checkAuth, editProfile);
+app.use('/auth', authRoutes);
 
 // Route that checks if user is logged in
 app.get('/check', checkAuth, (req, res) => {

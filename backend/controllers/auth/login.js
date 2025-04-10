@@ -1,23 +1,9 @@
-import { Router } from 'express';
-import { body, validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
 import User from '../../models/User.js';
 
-const router = Router();
-
-router.post('/login',[
-    // Validate username
-    body('username')
-        .not().isEmpty().withMessage('Username is required')
-        .matches(/^[a-zA-Z][a-zA-Z0-9._-]{3,32}$/).withMessage('Username must start with a letter and contain only letters, numbers, dots, underscores, or hyphens, and be between 4 and 33 characters long'),
-    
-    // Validate password
-    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-        .matches(/[a-zA-Z]/).withMessage('Password must contain at least one alphabet')
-        .matches(/\d/).withMessage('Password must contain at least one number')
-], async (req, res) => {
+export default async function login(req, res) {
     try {
         // Validate input
         const errors = validationResult(req);
@@ -85,6 +71,4 @@ router.post('/login',[
             message: "Internal Server Error"
         });
     }
-});
-
-export default router;
+}

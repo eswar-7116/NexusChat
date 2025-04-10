@@ -1,18 +1,8 @@
-import { Router } from 'express';
-import { body, validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import User from '../../models/User.js';
 
-const router = Router();
-
-router.post('/change-password', [
-    body('oldPassword').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-        .matches(/[a-zA-Z]/).withMessage('Password must contain at least one alphabet')
-        .matches(/\d/).withMessage('Password must contain at least one number'),
-    body('newPassword').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-        .matches(/[a-zA-Z]/).withMessage('Password must contain at least one alphabet')
-        .matches(/\d/).withMessage('Password must contain at least one number')
-], async (req, res) => {
+export default async function changePassword(req, res) {
     try {
         // Validate input
         const errors = validationResult(req);
@@ -64,6 +54,4 @@ router.post('/change-password', [
             message: "Internal Server Error"
         });
     }
-});
-
-export default router;
+}

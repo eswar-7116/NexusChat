@@ -3,17 +3,20 @@ import { axiosInstance } from '../helpers/axios';
 import { toast } from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import { useChatStore } from './chatStore';
-import { replyNotification } from './chatStore';
 
 export const useAuthStore = create((set, get) => ({
     user: null,
     temp: "",
     onlineUsers: [],
     socket: null,
-    theme: localStorage.getItem("theme") === null ? 
-        window.matchMedia("(prefers-color-scheme: dark)").matches ? 
-            "dark" : "light" :
-        localStorage.getItem("theme"),
+    theme: (() => {
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("theme");
+            if (saved) return saved;
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        return "light";
+    })(),
     canVibrate: localStorage.getItem("vibration") === "true" ? true : false,
 
     isCheckingAuth: true,
@@ -44,7 +47,6 @@ export const useAuthStore = create((set, get) => ({
             get().connectSocket();
             useChatStore.getState().listenToSocket();
         } catch (error) {
-            toast.error('Authentication failed. Please try again.');
             set({ user: null });
         } finally {
             set({ isCheckingAuth: false });
@@ -191,8 +193,12 @@ export const useAuthStore = create((set, get) => ({
 
     connectSocket: () => {
         const { user, socket } = get();
-        // If user is not logged in or socket is already connected, return
-        if (!user || socket?.connected) return;
+        // If user is not logged in, return
+        if (!user) return;
+
+        // If socket is already connected, disconnect it
+        if (socket?.connected)
+            socket.disconnect();
 
         const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
             query: { userId: user._id }
@@ -204,7 +210,7 @@ export const useAuthStore = create((set, get) => ({
         });
 
         newSocket.on('newMessage', async (message) => {
-            if (get().canVibrate) navigator.vibrate(120);
+            if (get().canVibrate && "vibrate" in navigator) navigator.vibrate(120);
 
             const { recentUsers, allUsers, selectedUser } = useChatStore.getState();
 
@@ -234,6 +240,43 @@ export const useAuthStore = create((set, get) => ({
             useChatStore.setState({ recentUsers: updatedRecentUsers });
         });
 
+        newSocket.on("messagesRead", (readByUserId) => {
+            if (readByUserId === useChatStore.getState().selectedUser?._id) {
+                const currentUserId = get().user._id;
+                useChatStore.set((state) => ({
+                    messages: state.messages.map((msg) =>
+                        msg.senderId === currentUserId && !msg.isRead
+                            ? { ...msg, isRead: true }
+                            : msg
+                    )
+                }));
+            }
+        });
+
+        newSocket.on("deleteForMe", ({ msgId, deletedByUserId }) => {
+            useChatStore.set((state) => ({
+                messages: state.messages.map((msg) =>
+                    msg._id === msgId
+                        ? {
+                            ...msg,
+                            deletedFor: msg.deletedFor
+                                ? [...msg.deletedFor, deletedByUserId]
+                                : [deletedByUserId]
+                        }
+                        : msg
+                )
+            }));
+        });
+
+        newSocket.on("deleteForEveryone", ({ msgId, deletedByUserId }) => {
+            useChatStore.set((state) => {
+                const messages = [...state.messages];
+                const msg = messages.find((m) => m._id === msgId);
+                if (msg) msg.deletedForEveryoneBy = deletedByUserId;
+                return { messages };
+            });
+        });
+
         set({ socket: newSocket });
     },
 
@@ -242,6 +285,6 @@ export const useAuthStore = create((set, get) => ({
         if (socket?.connected) {
             socket.disconnect();
             set({ socket: null });
-        }
+        }        
     }
 }));

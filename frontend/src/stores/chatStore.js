@@ -102,7 +102,7 @@ export const useChatStore = create((set, get) => ({
                 console.error("Notification sound error:", err)
             );
 
-            const { recentUsers, allUsers, selectedUser } = get();
+            const { selectedUser } = get();
 
             // Update messages only if message is from currently selected user
             set((state) => ({

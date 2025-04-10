@@ -127,6 +127,7 @@ export const useAuthStore = create((set, get) => ({
 
     changePass: async (data, navigate) => {
         set({ isChangingPass: true });
+        let sentToast = false;
         try {
             delete data.confirmPassword;
             const res = await axiosInstance.post('/auth/change-password', data);
@@ -135,9 +136,11 @@ export const useAuthStore = create((set, get) => ({
                 navigate('/');
             } else {
                 toast.error(res.data.message || 'Password change failed');
+                sentToast = true;
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Password change failed');
+            if (!sentToast)
+                toast.error(err.response?.data?.message || 'Password change failed');
         } finally {
             set({ isChangingPass: false });
         }

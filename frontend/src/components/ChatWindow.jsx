@@ -5,9 +5,10 @@ import Modal from './Modal';
 import ChatHeader from './ChatHeader';
 import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
+import { Ban } from 'lucide-react';
 
 function ChatWindow() {
-  const { selectedUser, messages, isFetchingMessages, sendMessage, listenToSocket, stopListeningToSocket } = useChatStore();
+  const { blocked, blockedByUser, selectedUser, messages, isFetchingMessages, sendMessage, listenToSocket, stopListeningToSocket } = useChatStore();
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
@@ -44,7 +45,12 @@ function ChatWindow() {
       />
 
       {/* Message input */}
-      <ChatInput sendMessage={handleSendMessage} />
+      {blocked ? (
+        <div className="p-3 bg-base-200 border-t border-base-300 flex items-center justify-center">
+          <Ban color='grey' />
+          <p className='m-2 text-gray-400'>Blocked by {blockedByUser ? "You" : selectedUser.fullName}</p>
+        </div>
+      ) : (<ChatInput sendMessage={handleSendMessage} />)}
 
       {/* Modal */}
       <Modal

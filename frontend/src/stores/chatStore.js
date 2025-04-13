@@ -12,6 +12,8 @@ export const useChatStore = create((set, get) => ({
     isFetchingUsers: false,
     isFetchingMessages: false,
     selectedUser: null,
+    blocked: false,
+    blockedByUser: false,
 
     fetchAllUsers: async () => {
         try {
@@ -168,7 +170,9 @@ export const useChatStore = create((set, get) => ({
     setSelectedUser: async (selectedUser) => {
         set({ selectedUser });
         if (selectedUser) {
-            await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+            const res = await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+            set({ blocked: res.data.blocked, blockedByUser: res.data.blockedByUser });
+            console.log({ blocked: res.data.blocked, blockedByUser: res.data.blockedByUser });
         }
     },
 
@@ -233,6 +237,25 @@ export const useChatStore = create((set, get) => ({
         } catch (error) {
             console.error("Failed to update message:", error);
             toast.error("Failed to update message");
+        }
+    },
+
+    blockUser: async () => {
+        try {
+            const { blocked, selectedUser } = get();
+            if (blocked) return;
+
+            const res = await axiosInstance.get(`/auth/block/${selectedUser._id}`);
+
+            if (!res.data.success) {
+                toast.error("Failed to block user");
+                return;
+            }
+
+            set({ blocked: true, blockedByUser: true });
+        } catch (error) {
+            console.error("Failed to block user:", error);
+            toast.error("Failed to block user");
         }
     }
 }));

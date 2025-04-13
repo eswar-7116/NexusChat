@@ -10,6 +10,7 @@ import checkAuth from '../middleware/authMiddleware.js';
 import logout from '../controllers/auth/logout.js';
 import changePassword from '../controllers/auth/changePassword.js';
 import editProfile from '../controllers/auth/editProfile.js';
+import block from '../controllers/auth/block.js';
 
 configDotenv();
 const router = Router();
@@ -81,5 +82,7 @@ router.post('/change-password', [
 ], changePassword);
 
 router.post('/edit-profile', checkAuth, editProfile);
+
+router.get('/block/:id', checkAuth, block);
 
 export default router;

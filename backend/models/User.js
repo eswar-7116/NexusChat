@@ -50,7 +50,19 @@ const userSchema = new mongoose.Schema({
                 ref: 'User'
             }
         ],
-        default: []
+        default: [],
+        required: [true, "recentUserIds is required"]
+    },
+
+    blockedUserIds: {
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        ],
+        default: [],
+        required: [true, "blockedUserIds is required"]
     },
 
     otp: {

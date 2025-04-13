@@ -1,19 +1,40 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { X, Ban, MessageSquare } from 'lucide-react';
+import { useChatStore } from '../stores/chatStore';
 
 function Modal({ isOpen, onClose, user, isOnline }) {
   const [isAnimating, setIsAnimating] = React.useState(false);
-  
+  const { blocked, blockUser } = useChatStore();
+
   React.useEffect(() => {
     if (isOpen) {
+      const handleEscape = (e) => {
+        if (e.key === "Escape" || e.key === "Esc") {
+          e.preventDefault();
+          e.stopPropagation();
+          handleClose();
+        }
+      };
       setIsAnimating(true);
+      window.addEventListener("keydown", handleEscape, true);
+
+      return () => {
+        window.removeEventListener("keydown", handleEscape, true);
+      };
     }
   }, [isOpen]);
-  
+
   const handleClose = () => {
-    setIsAnimating(false);
-    setTimeout(() => onClose(), 200);
+    if (isOpen) {
+      setIsAnimating(false);
+      setTimeout(() => onClose(), 200);
+    }
   };
+
+  const handleBlock = () => {
+    blockUser();
+    handleClose();
+  }
 
   if (!isOpen) return null;
 
@@ -22,14 +43,14 @@ function Modal({ isOpen, onClose, user, isOnline }) {
       <div className={`bg-base-100 rounded-xl max-w-xs sm:max-w-md w-full shadow-xl overflow-hidden transform transition-all ${isAnimating ? 'scale-100' : 'scale-95'}`}>
         {/* Modal header */}
         <div className="bg-primary/90 p-4 sm:p-6 text-primary-content relative">
-          <button 
-            onClick={handleClose} 
+          <button
+            onClick={handleClose}
             className="absolute right-2 top-2 sm:right-4 sm:top-4 text-primary-content/80 hover:text-primary-content transition-colors"
             aria-label="Close modal"
           >
             <X className="size-4 sm:size-5 cursor-pointer" />
           </button>
-          
+
           {/* Avatar */}
           <div className="flex justify-center -mb-12 sm:-mb-14">
             <div className="relative">
@@ -44,7 +65,7 @@ function Modal({ isOpen, onClose, user, isOnline }) {
             </div>
           </div>
         </div>
-        
+
         {/* Modal body */}
         <div className="p-4 sm:p-6 pt-14 sm:pt-16 space-y-4 sm:space-y-6">
           {/* User identity */}
@@ -52,7 +73,7 @@ function Modal({ isOpen, onClose, user, isOnline }) {
             <h3 className="text-lg sm:text-xl font-bold truncate">{user.fullName}</h3>
             <p className="text-sm sm:text-base text-base-content/70 truncate">@{user.username}</p>
           </div>
-          
+
           {/* User Details */}
           <div className="space-y-3 sm:space-y-4 bg-base-200 rounded-lg p-3 sm:p-4">
             {/* Status */}
@@ -67,7 +88,7 @@ function Modal({ isOpen, onClose, user, isOnline }) {
                 </p>
               </div>
             </div>
-            
+
             {/* Email */}
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="bg-base-300 p-1.5 sm:p-2 rounded-full">
@@ -81,7 +102,7 @@ function Modal({ isOpen, onClose, user, isOnline }) {
                 <p className="text-xs sm:text-sm text-base-content/70 truncate">{user.email}</p>
               </div>
             </div>
-            
+
             {/* Member Since */}
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="bg-base-300 p-1.5 sm:p-2 rounded-full">
@@ -104,15 +125,25 @@ function Modal({ isOpen, onClose, user, isOnline }) {
               </div>
             </div>
           </div>
-          
-          {/* Action button */}
-          <div className="pt-1 sm:pt-2">
-            <button 
-              className="w-full bg-primary hover:bg-primary-focus text-primary-content py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base"
+
+          {/* Action buttons */}
+          <div className="pt-1 sm:pt-2 flex gap-3">
+            <button
+              className={`bg-primary hover:bg-primary-focus text-primary-content py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base flex items-center justify-center gap-1.5 ${!blocked ? 'w-1/2' : 'w-full'}`}
               onClick={handleClose}
             >
-              Send Message
+              <MessageSquare className="size-4" />
+              <span>Send Message</span>
             </button>
+            {!blocked && (
+              <button
+                className="w-1/2 bg-red-500 hover:bg-red-600 text-white py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base flex items-center justify-center gap-1.5"
+                onClick={handleBlock}
+              >
+                <Ban className="size-4" />
+                <span>Block User</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

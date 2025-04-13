@@ -280,6 +280,18 @@ export const useAuthStore = create((set, get) => ({
             });
         });
 
+        newSocket.on("blocked", (blockedByUserId) => {
+            if (useChatStore.getState().selectedUser?._id === blockedByUserId) {
+                useChatStore.setState({ blocked: true });
+            }
+        });
+
+        newSocket.on("unblocked", (blockedByUserId) => {
+            if (useChatStore.getState().selectedUser?._id === blockedByUserId) {
+                useChatStore.setState({ blocked: false });
+            }
+        });
+
         set({ socket: newSocket });
     },
 
@@ -288,6 +300,6 @@ export const useAuthStore = create((set, get) => ({
         if (socket?.connected) {
             socket.disconnect();
             set({ socket: null });
-        }        
+        }
     }
 }));

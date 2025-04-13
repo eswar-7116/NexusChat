@@ -1,3 +1,4 @@
+import { getSocketId, io } from "../../helpers/socketio.js";
 import User from "../../models/User.js";
 
 export default async function unblock(req, res) {
@@ -29,6 +30,11 @@ export default async function unblock(req, res) {
 
         user.blockedUserIds.pull(idToUnblock);
         await user.save();
+
+        const receipentSocketId = getSocketId(idToUnblock);
+        if (receipentSocketId) {
+            io.to(receipentSocketId).emit('unblocked', req.user._id);
+        }
         
         res.status(200).json({
             success: true,

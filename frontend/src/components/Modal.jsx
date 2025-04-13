@@ -1,10 +1,10 @@
 import React from 'react';
-import { X, Ban, MessageSquare } from 'lucide-react';
+import { X, Ban, MessageSquare, UnlockIcon } from 'lucide-react';
 import { useChatStore } from '../stores/chatStore';
 
 function Modal({ isOpen, onClose, user, isOnline }) {
   const [isAnimating, setIsAnimating] = React.useState(false);
-  const { blocked, blockUser } = useChatStore();
+  const { blocked, blockedByUser, blockUser, unblockUser } = useChatStore();
 
   React.useEffect(() => {
     if (isOpen) {
@@ -33,6 +33,11 @@ function Modal({ isOpen, onClose, user, isOnline }) {
 
   const handleBlock = () => {
     blockUser();
+    handleClose();
+  }
+
+  const handleUnblock = () => {
+    unblockUser();
     handleClose();
   }
 
@@ -135,13 +140,21 @@ function Modal({ isOpen, onClose, user, isOnline }) {
               <MessageSquare className="size-4" />
               <span>Send Message</span>
             </button>
-            {!blocked && (
+            {!blocked ? (
               <button
                 className="w-1/2 bg-red-500 hover:bg-red-600 text-white py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base flex items-center justify-center gap-1.5"
                 onClick={handleBlock}
               >
                 <Ban className="size-4" />
                 <span>Block User</span>
+              </button>
+            ) : blockedByUser && (
+              <button
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base flex items-center justify-center gap-1.5"
+                onClick={handleUnblock}
+              >
+                <Ban className="size-4" />
+                <span>Unblock User</span>
               </button>
             )}
           </div>

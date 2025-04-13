@@ -257,5 +257,24 @@ export const useChatStore = create((set, get) => ({
             console.error("Failed to block user:", error);
             toast.error("Failed to block user");
         }
+    },
+
+    unblockUser: async () => {
+        try {
+            const { blocked, selectedUser } = get();
+            if (!blocked) return;
+
+            const res = await axiosInstance.get(`/auth/unblock/${selectedUser._id}`);
+
+            if (!res.data.success) {
+                toast.error("Failed to unblock user");
+                return;
+            }
+
+            set({ blocked: false, blockedByUser: false });
+        } catch (error) {
+            console.error("Failed to unblock user:", error);
+            toast.error("Failed to unblock user");
+        }
     }
 }));

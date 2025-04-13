@@ -11,6 +11,7 @@ import logout from '../controllers/auth/logout.js';
 import changePassword from '../controllers/auth/changePassword.js';
 import editProfile from '../controllers/auth/editProfile.js';
 import block from '../controllers/auth/block.js';
+import unblock from '../controllers/auth/unblock.js';
 
 configDotenv();
 const router = Router();
@@ -84,5 +85,7 @@ router.post('/change-password', [
 router.post('/edit-profile', checkAuth, editProfile);
 
 router.get('/block/:id', checkAuth, block);
+
+router.get('/unblock/:id', checkAuth, unblock);
 
 export default router;

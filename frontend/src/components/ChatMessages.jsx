@@ -291,7 +291,8 @@ function ChatMessages({ messages, isFetchingMessages }) {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
                         saveEditedMessage(message._id);
-                      } else if (e.key === 'Escape') {
+                      } else if (e.key === 'Escape' || e.key === 'Esc') {
+                        e.stopPropagation();
                         cancelEdit();
                       }
                     }}

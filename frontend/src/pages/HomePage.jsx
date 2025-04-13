@@ -8,8 +8,9 @@ function HomePage() {
   const { selectedUser, setSelectedUser } = useChatStore();
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' || event.key === 'Esc') {
       event.preventDefault();
+      event.stopPropagation();
       setSelectedUser(null);
     }
   };

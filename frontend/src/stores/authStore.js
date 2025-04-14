@@ -117,6 +117,7 @@ export const useAuthStore = create((set, get) => ({
                 toast.success("Successfully logged out");
                 navigate('/login');
                 get().disconnectSocket();
+                useChatStore.setState({ selectedUser: null });
             } else {
                 toast.error(res.data.message || 'Logout failed');
             }

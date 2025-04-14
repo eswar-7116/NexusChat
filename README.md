@@ -34,6 +34,7 @@ A real-time chat application built with Express.js, Node.js, React, Socket.io, a
    
    ```
    VITE_BACKEND_URL=the_backend_url
+   VITE_MODE=development
    ```
 
 ### Option 1: Running Without Docker

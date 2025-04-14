@@ -1,17 +1,22 @@
 export default async function logout(req, res) {
     try {
-        // Clear the token in the cookie
-        res.cookies.jwtToken = "";
+        // Clear the JWT token cookie
+        res.clearCookie("jwtToken", {
+            httpOnly: true,  // Prevents XSS attacks
+            secure: process.env.NODE_ENV !== "development",  // Only allows HTTPS
+            sameSite: "None"
+        });
 
         return res.status(200).json({
             success: true,
-            message: "Logged out successfully"
+            message: "Logged out successfully",
         });
     } catch (error) {
-        console.error("Error while logging out: "+error.message);
+        console.error("Error while logging out:", error.message);
+
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error"
+            message: "Internal Server Error",
         });
     }
 }

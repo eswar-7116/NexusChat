@@ -16,6 +16,7 @@
     "emoji-picker-react": "^4.12.2",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.474.0",
+    "nexuschat": "file:..",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.5.1",

@@ -1,6 +1,9 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import { configDotenv } from 'dotenv';
 
 import { app, server } from './helpers/socketio.js';
 import connectDB from './db/db.js';
@@ -8,6 +11,7 @@ import authRoutes from './routes/authRoutes.js';
 import checkAuth from './middleware/authMiddleware.js';
 import messageRoutes from './routes/messageRoutes.js';
 
+configDotenv();
 connectDB();  // Connect to the database
 
 const host = process.env.HOST || 'localhost';
@@ -32,10 +36,10 @@ app.use('/', (req, _, next) => {
 });
 
 // Auth routes
-app.use('/auth', authRoutes);
+app.use('/backend/auth', authRoutes);
 
 // Route that checks if user is logged in
-app.get('/check', checkAuth, (req, res) => {
+app.get('/backend/check', checkAuth, (req, res) => {
     try {
         res.status(200).json({ success: true, user: req.user });
     } catch(error) {
@@ -48,7 +52,17 @@ app.get('/check', checkAuth, (req, res) => {
 });
 
 // Message routes
-app.use('/messaging', checkAuth, messageRoutes);
+app.use('/backend/messaging', checkAuth, messageRoutes);
+
+if (process.env.NODE_ENV === 'production') {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+    });
+}
 
 // Starting server
 server.listen(port, host, () => {

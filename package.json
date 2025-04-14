@@ -1,0 +1,22 @@
+{
+  "name": "nexuschat",
+  "version": "1.0.0",
+  "description": "A real-time chat application built with Express.js, Node.js, React, Socket.io, and MongoDB.",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eswar-7116/NexusChat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/eswar-7116/NexusChat/issues"
+  },
+  "homepage": "https://github.com/eswar-7116/NexusChat#readme"
+}

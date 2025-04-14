@@ -27,14 +27,13 @@ function ChatInput({ sendMessage }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
     if (!message.trim()) return;
 
     try {
       await sendMessage({
         message,
       });
-
-      setMessage("");
       if (textareaRef.current)
         textareaRef.current.style.height = 'auto';
     } catch (error) {

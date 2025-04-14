@@ -1,7 +1,7 @@
 export default async function logout(req, res) {
     try {
         // Clear the token in the cookie
-        res.clearCookie('jwtToken');
+        res.cookies.jwtToken = "";
 
         return res.status(200).json({
             success: true,

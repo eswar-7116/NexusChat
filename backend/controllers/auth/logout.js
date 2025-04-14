@@ -3,7 +3,7 @@ export default async function logout(req, res) {
         // Clear the JWT token cookie
         res.clearCookie("jwtToken", {
             httpOnly: true,  // Prevents XSS attacks
-            secure: process.env.NODE_ENV !== "development",  // Only allows HTTPS
+            secure: true,
             sameSite: "None"
         });
 

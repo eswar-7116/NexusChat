@@ -55,7 +55,7 @@ export default async function login(req, res) {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,      // Prevents XSS attacks
             sameSite: 'None',
-            secure: process.env.NODE_ENV !== 'development'  // Only allows HTTPS
+            secure: true
         });
 
         res.status(200).json({

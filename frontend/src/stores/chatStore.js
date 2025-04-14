@@ -172,7 +172,6 @@ export const useChatStore = create((set, get) => ({
         if (selectedUser) {
             const res = await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
             set({ blocked: res.data.blocked, blockedByUser: res.data.blockedByUser });
-            console.log({ blocked: res.data.blocked, blockedByUser: res.data.blockedByUser });
         }
     },
 

@@ -8,10 +8,11 @@ export default async function resetPassword(req, res) {
         // Validate payload
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            const errorArray = errors.array();
             return res.status(400).json({
                 success: false,
-                message: "Input validation failed while signing up",
-                errors: errors.array()
+                message: errorArray[0].msg,
+                errors: errorArray
             });
         }
 

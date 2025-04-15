@@ -70,10 +70,6 @@ router.post('/change-password', [
     // Old password validation
     body('oldPassword').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
         .matches(/[a-zA-Z]/).withMessage('Password must contain at least one alphabet')
-        .matches(/\d/).withMessage('Password must contain at least one number'),
-    // New password validation
-    body('newPassword').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-        .matches(/[a-zA-Z]/).withMessage('Password must contain at least one alphabet')
         .matches(/\d/).withMessage('Password must contain at least one number')
 ], changePassword);
 

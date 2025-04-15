@@ -10,7 +10,7 @@ export default async function forgotPassword(req, res) {
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: "Input validation failed while signing up",
+                message: "Invalid email format",
                 errors: errors.array()
             });
         }

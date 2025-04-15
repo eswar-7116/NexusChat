@@ -7,10 +7,11 @@ export default async function changePassword(req, res) {
         // Validate input
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            const errorArray = errors.array();
             return res.status(400).json({
                 success: false,
-                message: "Input validation failed while changing password",
-                errors: errors.array()
+                message: errorArray[0].msg,
+                errors: errorArray
             });
         }
 

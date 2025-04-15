@@ -10,7 +10,7 @@ export default async function login(req, res) {
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: "Input validation failed while logging in",
+                message: "Incorrect password",
                 errors: errors.array()
             });
         }
@@ -23,15 +23,25 @@ export default async function login(req, res) {
             });
         }
 
-        const { username, password } = req.body;
-
-        // Check if username exists
-        const user = await User.findOne({ username });
-        if (!user || !user.isVerified) {
-            return res.status(404).json({
-                status: false,
-                message: 'User not found'
-            });
+        const { unameOrEmail, password } = req.body;
+        
+        let user;
+        if (!unameOrEmail.includes('@')) {  // Check if username exists
+            user = await User.findOne({ username: unameOrEmail });
+            if (!user || !user.isVerified) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'User not found'
+                });
+            }
+        } else {  // Check if email exists
+            user = await User.findOne({ email: unameOrEmail });
+            if (!user || !user.isVerified) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'User not found'
+                });
+            }
         }
 
         // Check if password is correct
@@ -60,7 +70,7 @@ export default async function login(req, res) {
 
         res.status(200).json({
             success: true,
-            message: `${username} logged in`,
+            message: `${user.username} logged in`,
             user,
             token
         });

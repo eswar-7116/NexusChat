@@ -70,13 +70,13 @@ function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium flex"><User />&nbsp;Username</span>
+                <span className="label-text font-medium flex"><User />&nbsp;Username or Email</span>
               </label>
               <div className="relative">
                 <input
                   type="text"
                   className="input input-bordered w-full pl-3"
-                  placeholder="Enter Username"
+                  placeholder="Enter Username or Email"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../stores/authStore';
-import { User, Mail, Lock, Eye, EyeOff, Loader2, Sun, Moon } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, Loader2, Sun, Moon, CircleUserRound } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { isPassNotValid } from '../helpers/passwordValidation';
@@ -87,15 +87,12 @@ function SignUpPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Full Name</span>
+                <span className="label-text font-medium flex"><User />&nbsp;Full Name</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="size-5 text-base-content/40" />
-                </div>
                 <input
                   type="text"
-                  className="input input-bordered w-full pl-10"
+                  className="input input-bordered w-full pl-3"
                   name='fullName'
                   placeholder="Enter Full Name"
                   value={formData.fullName}
@@ -106,15 +103,12 @@ function SignUpPage() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Username</span>
+                <span className="label-text font-medium flex"><User />&nbsp;Username</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="size-5 text-base-content/40" />
-                </div>
                 <input
                   type="text"
-                  className="input input-bordered w-full pl-10"
+                  className="input input-bordered w-full pl-3"
                   name='username'
                   placeholder="Enter Username"
                   value={formData.username}
@@ -125,15 +119,12 @@ function SignUpPage() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Email</span>
+                <span className="label-text font-medium flex"><Mail />&nbsp;Email</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="size-5 text-base-content/40" />
-                </div>
                 <input
                   type="email"
-                  className="input input-bordered w-full pl-10"
+                  className="input input-bordered w-full pl-3"
                   name='email'
                   placeholder="Enter E-mail"
                   value={formData.email}
@@ -144,15 +135,12 @@ function SignUpPage() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Password</span>
+                <span className="label-text font-medium flex"><Lock />&nbsp;Password</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="size-5 text-base-content/40" />
-                </div>
                 <input
                   type={showPass ? "text" : "password"}
-                  className="input input-bordered w-full pl-10"
+                  className="input input-bordered w-full pl-3"
                   name='password'
                   placeholder="Enter Password"
                   value={formData.password}
@@ -174,15 +162,12 @@ function SignUpPage() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Confirm Password</span>
+                <span className="label-text font-medium flex"><Lock />&nbsp;Confirm Password</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="size-5 text-base-content/40" />
-                </div>
                 <input
                   type={showConfirmPass ? "text" : "password"}
-                  className="input input-bordered w-full pl-10"
+                  className="input input-bordered w-full pl-3"
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -201,7 +186,7 @@ function SignUpPage() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
+            <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}><CircleUserRound />
               {isSigningUp ? (
                 <>
                   <Loader2 className="size-5 animate-spin" />

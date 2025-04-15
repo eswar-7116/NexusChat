@@ -19,7 +19,7 @@
     "linkify-react": "^4.2.0",
     "linkifyjs": "^4.2.0",
     "lodash.debounce": "^4.0.8",
-    "lucide-react": "^0.474.0",
+    "lucide-react": "^0.488.0",
     "nexuschat": "file:..",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

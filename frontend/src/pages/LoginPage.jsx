@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Tilt from 'react-parallax-tilt';
 import { Link } from 'react-router-dom';
-import { User, Lock, Eye, EyeOff, Loader2, Sun, Moon } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, Loader2, Sun, Moon, CircleUserRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../stores/authStore';
@@ -70,15 +70,12 @@ function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Username</span>
+                <span className="label-text font-medium flex"><User />&nbsp;Username</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="size-5 text-base-content/40" />
-                </div>
                 <input
                   type="text"
-                  className="input input-bordered w-full pl-10"
+                  className="input input-bordered w-full pl-3"
                   placeholder="Enter Username"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
@@ -88,15 +85,12 @@ function LoginPage() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Password</span>
+                <span className="label-text font-medium flex"><Lock />&nbsp;Password</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="size-5 text-base-content/40" />
-                </div>
                 <input
                   type={showPass ? "text" : "password"}
-                  className="input input-bordered w-full pl-10"
+                  className="input input-bordered w-full pl-3"
                   placeholder="Enter Password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -115,7 +109,7 @@ function LoginPage() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" disabled={isLoggingIn}>
+            <button type="submit" className="btn btn-primary w-full" disabled={isLoggingIn}><CircleUserRound />
               {isLoggingIn ? (
                 <>
                   <Loader2 className="size-5 animate-spin" />

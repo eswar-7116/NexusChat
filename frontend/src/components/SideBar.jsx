@@ -3,7 +3,8 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
-  Search
+  Search,
+  Check
 } from 'lucide-react';
 import debounce from 'lodash.debounce';
 import { useAuthStore } from '../stores/authStore';
@@ -32,6 +33,8 @@ function SideBar() {
   const [searchInput, setSearchInput] = React.useState('');
   // Actual search query used for filtering (debounced)
   const [searchQuery, setSearchQuery] = React.useState('');
+  // Online users filter state
+  const [showOnlineOnly, setShowOnlineOnly] = React.useState(false);
 
   // Debounced function to update the search query after user stops typing
   const debouncedSearch = React.useMemo(() =>
@@ -59,29 +62,27 @@ function SideBar() {
     return () => window.removeEventListener('resize', handleResize);
   }, [fetchRecentUsers, fetchAllUsers]);
 
-  // Filtered user list based on search query
+  // Filtered user list based on search query and online status
   const filteredUsers = React.useMemo(() => {
-    if (!searchQuery) return recentUsers;
+    let users = searchQuery ? allUsers : recentUsers;
 
-    const lowercaseQuery = searchQuery.toLowerCase();
-    return allUsers.filter(user =>
-      user.username.toLowerCase().includes(lowercaseQuery) ||
-      user.fullName.toLowerCase().includes(lowercaseQuery) ||
-      user.email.toLowerCase().includes(lowercaseQuery)
-    );
-  }, [searchQuery, allUsers, recentUsers]);
+    // Apply search filtering if query exists
+    if (searchQuery) {
+      const lowercaseQuery = searchQuery.toLowerCase();
+      users = users.filter(user =>
+        user.username.toLowerCase().includes(lowercaseQuery) ||
+        user.fullName.toLowerCase().includes(lowercaseQuery) ||
+        user.email.toLowerCase().includes(lowercaseQuery)
+      );
+    }
 
-  // Sort users to show online users first
-  const sortedUsers = React.useMemo(() => {
-    return [...filteredUsers].sort((a, b) => {
-      const aIsOnline = onlineUsers.includes(a._id);
-      const bIsOnline = onlineUsers.includes(b._id);
+    // Apply online filter if checkbox is checked
+    if (showOnlineOnly) {
+      users = users.filter(user => onlineUsers.includes(user._id));
+    }
 
-      if (aIsOnline && !bIsOnline) return -1;
-      if (!aIsOnline && bIsOnline) return 1;
-      return 0;
-    });
-  }, [filteredUsers, onlineUsers]);
+    return users;
+  }, [searchQuery, allUsers, recentUsers, showOnlineOnly, onlineUsers]);
 
   // When a user is selected, set them as current chat and fetch their messages
   const handleUserSelect = (user) => {
@@ -145,26 +146,44 @@ function SideBar() {
         </button>
       </div>
 
-      {/* Search input */}
+      {/* Search input and online filter checkbox */}
       {!isCollapsed && (
-        <div className="px-2 py-2 relative">
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full px-3 py-2 pl-8 rounded-lg bg-base-200 
-            border border-base-300 focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 
-          text-zinc-400 size-4" />
+        <div className="px-2 py-2">
+          <div className="relative mb-2">
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-full px-3 py-2 pl-8 rounded-lg bg-base-200 border border-base-300 focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-zinc-400 size-4" />
+          </div>
+
+          <div className="flex items-center">
+            <div className="inline-flex items-center">
+              <label className="relative flex items-center p-1 rounded-full cursor-pointer" htmlFor="onlineOnly">
+                <input
+                  type="checkbox"
+                  id="onlineOnly"
+                  checked={showOnlineOnly}
+                  onChange={(e) => setShowOnlineOnly(e.target.checked)}
+                  className="peer appearance-none size-4 rounded border border-base-300 checked:border-primary checked:bg-primary"
+                />
+                <span className="absolute text-white size-4 flex items-center justify-center opacity-0 peer-checked:opacity-100">
+                  <Check className="size-3" />
+                </span>
+              </label>
+              <span className="ml-2 text-sm text-gray-500">Show online users only</span>
+            </div>
+          </div>
         </div>
       )}
 
       {/* User list */}
       <div className="overflow-y-auto flex-1 py-2 px-1">
-        {sortedUsers.length > 0 ? (
-          sortedUsers.map((user) => (
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user) => (
             <button
               key={user._id}
               onClick={() => handleUserSelect(user)}

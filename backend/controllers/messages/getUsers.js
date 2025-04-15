@@ -8,7 +8,7 @@ export default async function getUsers(req, res) {
                 { _id: { $ne: currentUserId } },
                 { isVerified: true }
             ]
-        }).select("-password");
+        }).select("-password").lean();  // returns plain JS objects for faster, lesser memory
         
         return res.status(200).json({
             success: true,

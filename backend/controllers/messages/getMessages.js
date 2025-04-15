@@ -20,7 +20,7 @@ export default async function getMessages(req, res) {
                 { senderId: currentUserId, receiverId },
                 { senderId: receiverId, receiverId: currentUserId }
             ]
-        });
+        }).lean();  // returns plain JS objects for faster, lesser memory
 
         return res.status(200).json({
             success: true,

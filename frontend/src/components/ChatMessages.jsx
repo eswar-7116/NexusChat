@@ -3,6 +3,7 @@ import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy, SquarePen, Check, X 
 import { PropagateLoader } from 'react-spinners';
 import { useAuthStore } from '../stores/authStore';
 import { useChatStore } from '../stores/chatStore';
+import Linkify from 'linkify-react';
 import toast from 'react-hot-toast';
 
 function ChatMessages({ messages, isFetchingMessages }) {
@@ -80,7 +81,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
 
   const saveEditedMessage = async (messageId) => {
     if (editedContent.trim() === '') return;
-    
+
     try {
       await updateMessage(messageId, editedContent);
       setEditingMessageId(null);
@@ -112,6 +113,12 @@ function ChatMessages({ messages, isFetchingMessages }) {
     setMessageWithOpenMenu(null);
     deleteMessageForEveryone(messageId);
   };
+
+  const linkifyOptions = {
+    target: '_blank',
+    className: 'italic underline text-inherit hover:opacity-80',
+    rel: 'noopener noreferrer'
+  }
 
   if (isFetchingMessages) {
     return (
@@ -190,7 +197,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
             </div>
           )}
 
-          <div className={`chat ${isUserMessage ? 'chat-end' : 'chat-start'} relative`}>
+          <div className={`chat ${isUserMessage ? 'chat-end' : 'chat-start'} relative m-1`}>
             <div className="chat-header mb-1 flex items-center">
               <time
                 dateTime={message.timestamp}
@@ -298,14 +305,14 @@ function ChatMessages({ messages, isFetchingMessages }) {
                     }}
                   />
                   <div className="flex justify-end gap-2">
-                    <button 
+                    <button
                       onClick={cancelEdit}
                       className="p-1 hover:bg-base-300 rounded-full"
                       aria-label="Cancel edit"
                     >
                       <X size={18} className="text-error" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => saveEditedMessage(message._id)}
                       className="p-1 hover:bg-base-300 rounded-full"
                       aria-label="Save edit"
@@ -317,7 +324,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 </div>
               ) : (
                 <div>
-                  <p className="overflow-hidden text-wrap">{message.content}</p>
+                  <Linkify className="overflow-hidden text-wrap" options={linkifyOptions}>{message.content}</Linkify>
                   {message.edited && (
                     <span className="text-xs italic mt-1 opacity-60 ml-1">
                       (edited)

@@ -16,6 +16,8 @@
     "axios": "^1.8.2",
     "daisyui": "^5.0.19",
     "emoji-picker-react": "^4.12.2",
+    "linkify-react": "^4.2.0",
+    "linkifyjs": "^4.2.0",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.474.0",
     "nexuschat": "file:..",
@@ -25,7 +27,6 @@
     "react-parallax-tilt": "^1.7.288",
     "react-router-dom": "^7.1.5",
     "react-spinners": "^0.15.0",
-    "serve": "^14.2.4",
     "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.0.1",
     "zustand": "^5.0.3"

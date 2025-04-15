@@ -54,7 +54,7 @@ export default async function login(req, res) {
         res.cookie("jwtToken", token, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,      // Prevents XSS attacks
-            sameSite: 'None',
+            sameSite: 'Strict',
             secure: true
         });
 

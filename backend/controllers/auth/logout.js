@@ -4,7 +4,7 @@ export default async function logout(req, res) {
         res.clearCookie("jwtToken", {
             httpOnly: true,  // Prevents XSS attacks
             secure: true,
-            sameSite: "None"
+            sameSite: 'Strict'  // Prevents CSRF
         });
 
         return res.status(200).json({

@@ -20,7 +20,9 @@ router.post('/signup', [
     // Username validation
     body('username')
         .not().isEmpty().withMessage('Username is required')
-        .matches(/^[a-zA-Z][a-zA-Z0-9._-]{3,32}$/).withMessage('Username must start with a letter and contain only letters, numbers, dots, underscores, or hyphens, and be between 4 and 33 characters long'),
+        .isLength({ min: 4, max: 33 }).withMessage('Username length should be between 4 to 33 characters')
+        .matches(/^[a-zA-Z]/).withMessage('Username must start with a letter')
+        .matches(/^[a-zA-Z0-9._-]+$/).withMessage('Username can only contain letters, numbers, dots, underscores, or hyphens'),
 
     // Email validation
     body('email').isEmail().withMessage('Invalid email format'),
@@ -31,7 +33,7 @@ router.post('/signup', [
         .matches(/\d/).withMessage('Password must contain at least one number')
 ], signup);
 
-router.post('/login',[
+router.post('/login', [
     // Password validation
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
         .matches(/[a-zA-Z]/).withMessage('Password must contain at least one alphabet')

@@ -56,14 +56,14 @@ export const useAuthStore = create((set, get) => ({
     signup: async (data, navigate) => {
         set({ isSigningUp: true });
         try {
-            delete data.confirmPassword;
             const res = await axiosInstance.post('/auth/signup', data);
             if (res.data.success) {
                 toast.success("Verify the OTP to register");
                 set({ otpSent: true, temp: data.username });
                 navigate('/verify');
             } else {
-                toast.error(res.data.message || 'Signup failed');
+                if (!res.data.errors)
+                    toast.error(res.data.message || 'Signup failed');
             }
         } catch (err) {
             toast.error(err.response?.data?.message || 'Signup failed');

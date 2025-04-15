@@ -324,7 +324,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 </div>
               ) : (
                 <div>
-                  <Linkify className="overflow-hidden text-wrap" options={linkifyOptions}>{message.content}</Linkify>
+                  <Linkify options={linkifyOptions}><p className='overflow-hidden text-wrap'>{message.content}</p></Linkify>
                   {message.edited && (
                     <span className="text-xs italic mt-1 opacity-60 ml-1">
                       (edited)

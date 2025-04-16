@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Lock, Eye, EyeOff, Loader2, Sun, Moon, Check } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../stores/authStore';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 function ResetPasswordPage() {
   const [formData, setFormData] = useState({
@@ -13,23 +14,13 @@ function ResetPasswordPage() {
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetComplete, setResetComplete] = useState(false);
-  const { theme, changeTheme, resetPassword } = useAuthStore();
+  const { resetPassword } = useAuthStore();
   const navigate = useNavigate();
   const { id, token } = useParams();
 
   useEffect(() => {
     document.title = 'Reset Password - NexusChat';
   }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    
-    // Validate token and id existence
-    if (!token || !id) {
-      toast.error("Invalid reset link");
-      navigate('/login');
-    }
-  }, [theme, token, id, navigate]);
 
   const validateForm = () => {
     if (!formData.password.trim()) {
@@ -59,7 +50,7 @@ function ResetPasswordPage() {
     setIsSubmitting(true);
     
     try {
-      if (resetPassword(id, formData.password, token)) {
+      if (await resetPassword(id, formData.password, token)) {
         setResetComplete(true);
       }
     } catch (error) {
@@ -73,16 +64,7 @@ function ResetPasswordPage() {
   return (
     <>
       <div className="absolute top-4 right-4">
-        <button 
-          onClick={changeTheme}
-          className="btn btn-ghost btn-circle hover:bg-base-300"
-        >
-          {theme === 'dark' ? (
-            <Sun className="size-5" />
-          ) : (
-            <Moon className="size-5" />
-          )}
-        </button>
+        <ThemeToggle />
       </div>
 
       <div className="min-h-screen flex items-center justify-center">

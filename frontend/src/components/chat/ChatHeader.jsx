@@ -23,7 +23,7 @@ function ChatHeader({ selectedUser, onProfilePicClick }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
           {/* Avatar with status dot */}
-          <div className="avatar flex-shrink-0" onClick={onProfilePicClick}>
+          <div className="avatar flex-shrink-0 transform transition-transform duration-300 hover:scale-110" onClick={onProfilePicClick}>
             <div className="size-8 sm:size-10 rounded-full relative cursor-pointer">
               <img src={selectedUser.profilePic || "/profile.png"} alt={selectedUser.fullName} />
             </div>

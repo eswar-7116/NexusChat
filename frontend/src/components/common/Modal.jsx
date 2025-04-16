@@ -133,16 +133,19 @@ function Modal({ isOpen, onClose, user, isOnline }) {
 
           {/* Action buttons */}
           <div className="pt-1 sm:pt-2 flex gap-3">
+            {/* Send Message */}
             <button
-              className={`bg-primary hover:bg-primary-focus text-primary-content py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base flex items-center justify-center gap-1.5 ${!blocked ? 'w-1/2' : 'w-full'}`}
+              className={`transform transition-transform duration-200 cursor-pointer hover:scale-105 bg-primary hover:bg-primary-focus text-primary-content py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base flex items-center justify-center gap-1.5 ${!blocked ? 'w-1/2' : 'w-full'}`}
               onClick={handleClose}
             >
               <MessageSquare className="size-4" />
               <span>Send Message</span>
             </button>
+
+            {/* Block User */}
             {!blocked ? (
               <button
-                className="w-1/2 bg-red-500 hover:bg-red-600 text-white py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base flex items-center justify-center gap-1.5"
+                className="transform transition-transform duration-200 cursor-pointer hover:scale-105 w-1/2 bg-red-500 hover:bg-red-600 text-white py-2 sm:py-2.5 rounded-lg transition-colors font-medium text-sm sm:text-base flex items-center justify-center gap-1.5"
                 onClick={handleBlock}
               >
                 <Ban className="size-4" />

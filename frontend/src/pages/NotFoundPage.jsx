@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { UserX, Home } from 'lucide-react';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 const NotFoundPage = () => {
   useEffect(() => {
@@ -9,6 +10,9 @@ const NotFoundPage = () => {
 
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="max-w-md w-full text-center space-y-6">
         {/* Header */}
         <div className="flex justify-center items-center gap-3 animate-bounce">

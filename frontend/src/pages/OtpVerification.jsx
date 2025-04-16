@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Mail, Loader2, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useNavigate } from 'react-router-dom';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 const OtpVerification = () => {
   const [otp, setOtp] = useState('');
@@ -24,6 +25,9 @@ const OtpVerification = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-md space-y-6 p-6 sm:p-12 text-center">
         <div className="flex flex-col items-center gap-2">
           <div className="w-16 h-16 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-4">

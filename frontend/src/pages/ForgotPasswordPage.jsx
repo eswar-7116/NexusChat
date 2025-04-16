@@ -4,19 +4,16 @@ import Tilt from 'react-parallax-tilt';
 import { ArrowLeft, Mail, Loader2, Sun, Moon, SendIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../stores/authStore';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [emailSent, setEmailSent] = useState(false);
-  const { theme, changeTheme, isSendingResetLink, forgotPassword } = useAuthStore();
+  const { isSendingResetLink, forgotPassword } = useAuthStore();
 
   useEffect(() => {
     document.title = 'Forgot Password - NexusChat';
   }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
 
   const validateForm = () => {
     if (!email.trim()) {
@@ -40,16 +37,7 @@ function ForgotPasswordPage() {
   return (
     <>
       <div className="absolute top-4 right-4">
-        <button
-          onClick={changeTheme}
-          className="btn btn-ghost btn-circle hover:bg-base-300"
-        >
-          {theme === 'dark' ? (
-            <Sun className="size-5" />
-          ) : (
-            <Moon className="size-5" />
-          )}
-        </button>
+        <ThemeToggle />
       </div>
 
       <div className="min-h-screen flex items-center justify-center">

@@ -1,4 +1,4 @@
-import React from "react";
+import Tilt from 'react-parallax-tilt';
 
 const NoUserSelected = () => {
   return (
@@ -7,9 +7,11 @@ const NoUserSelected = () => {
         {/* Icon Display */}
         <div className="flex justify-center gap-4 mb-4">
           <div className="relative">
-          <div className="w-32 h-32 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-7 scale-80 animate-bounce">
-              <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-120"/>
-            </div>
+            <Tilt>
+              <div className="w-32 h-32 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-7 scale-80 animate-bounce transform transition-transform duration-300 hover:scale-115">
+                <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-120" />
+              </div>
+            </Tilt>
           </div>
         </div>
 

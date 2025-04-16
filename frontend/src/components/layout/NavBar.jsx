@@ -4,13 +4,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { replyNotification } from '../../stores/chatStore';
 import Tilt from 'react-parallax-tilt';
+import ThemeToggle from '../common/ThemeToggle';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
-  const { logout, user, theme, changeTheme, canVibrate, toggleVibration } = useAuthStore();
+  const { logout, user, canVibrate, toggleVibration } = useAuthStore();
   const [notificationVolume, setNotificationVolume] = useState(Number(localStorage.getItem('notificationVolume')));
   const [isDragging, setIsDragging] = useState(false);
 
@@ -44,10 +45,6 @@ function Navbar() {
       playReplyNotification(newVolume);
     }
   };
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -90,7 +87,7 @@ function Navbar() {
         ) : (
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1 m-1 sm:m-2 text-xs sm:text-sm font-medium opacity-70 hover:opacity-100"
+            className="transform transition-transform duration-150 cursor-pointer hover:scale-110 flex items-center gap-1 m-1 sm:m-2 text-xs sm:text-sm font-medium opacity-70 hover:opacity-100"
           >
             <ArrowLeft className="size-4" /> Back
           </button>
@@ -98,28 +95,18 @@ function Navbar() {
       </div>
 
       <div className="relative flex items-center" ref={dropdownRef}>
-        <button
-          onClick={changeTheme}
-          className="p-2 hover:bg-base-300 rounded-full"
-          aria-label={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
-        >
-          {theme === 'dark' ? (
-            <Sun className="size-4 sm:size-5" />
-          ) : (
-            <Moon className="size-4 sm:size-5" />
-          )}
-        </button>
+        <ThemeToggle />
 
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-1 sm:gap-2 hover:bg-base-300 p-1 sm:p-2 rounded-lg ml-1 sm:ml-2"
+          className="flex items-center gap-1 sm:gap-2 hover:bg-base-300 p-1 sm:p-2 rounded-lg ml-1 sm:ml-2 transform transition-all duration-200 hover:scale-105"
         >
           <img
             src={user.profilePic || "/profile.png"}
             alt="Profile"
             className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
           />
-          <span className="hidden sm:inline text-sm">{user.fullName}</span>
+          <span className="hidden sm:inline text-md font-semibold">{user.fullName}</span>
           <span className="sm:hidden text-xs truncate max-w-20">
             {user.fullName.split(' ')[0]}
           </span>
@@ -128,19 +115,19 @@ function Navbar() {
         {isDropdownOpen && (
           <ul className="menu dropdown-content z-[100] absolute top-full right-0 p-2 shadow-xl bg-base-100 rounded-box w-52 border border-base-200 space-y-1">
             <li>
-              <button onClick={handleEditProfile} className="flex items-center hover:bg-base-200">
+              <button onClick={handleEditProfile} className="flex items-center hover:bg-base-200 transform transition-transform duration-200 hover:scale-103">
                 <UserRoundPen className="size-4 mr-2" />
                 Change Profile Pic
               </button>
             </li>
             <li>
-              <button onClick={handleChangePassword} className="flex items-center hover:bg-base-200">
+              <button onClick={handleChangePassword} className="flex items-center hover:bg-base-200 transform transition-transform duration-200 hover:scale-103">
                 <KeyRound className="size-4 mr-2" />
                 Change Password
               </button>
             </li>
             <li>
-              <div className="flex items-center gap-2 hover:bg-base-200 p-2">
+              <div className="flex items-center gap-2 hover:bg-base-200 p-2 transform transition-transform duration-200 hover:scale-103">
                 {(notificationVolume > 0) && <Volume2 className="size-4 shrink-0" onClick={
                   () => {
                     handleVolumeChange({
@@ -177,7 +164,7 @@ function Navbar() {
               </div>
             </li>
             <li>
-              <label className="flex items-center cursor-pointer hover:bg-base-200 p-2">
+              <label className="flex items-center hover:bg-base-200 p-2 transform transition-transform duration-200 hover:scale-103">
                 <input
                   type="checkbox"
                   checked={canVibrate}
@@ -190,7 +177,7 @@ function Navbar() {
             <li>
               <button
                 onClick={handleLogout}
-                className="flex items-center text-error hover:bg-error hover:bg-opacity-10 hover:text-error-content"
+                className="flex items-center text-error hover:bg-error hover:bg-opacity-10 hover:text-error-content transform transition-transform duration-200 hover:scale-103"
               >
                 <LogOut className="size-4 mr-2" />
                 Logout

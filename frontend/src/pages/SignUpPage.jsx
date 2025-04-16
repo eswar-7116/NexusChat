@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { isPassNotValid } from '../helpers/passwordValidation';
 import Tilt from 'react-parallax-tilt';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 function SignUpPage() {
   const [showPass, setShowPass] = useState(false);
@@ -18,15 +19,11 @@ function SignUpPage() {
   });
 
   const navigate = useNavigate();
-  const { signup, isSigningUp, theme, changeTheme } = useAuthStore();
+  const { signup, isSigningUp } = useAuthStore();
 
   useEffect(() => {
     document.title = 'Sign up - NexusChat';
   }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
 
   const validateForm = () => {
     if (!formData.fullName.trim())
@@ -61,17 +58,7 @@ function SignUpPage() {
   return (
     <>
       <div className="absolute top-4 right-4">
-        <button 
-          onClick={changeTheme}
-          className="btn btn-ghost btn-circle hover:bg-base-300"
-          aria-label="Toggle theme"
-        >
-          {theme === 'dark' ? (
-            <Sun className="size-5" />
-          ) : (
-            <Moon className="size-5" />
-          )}
-        </button>
+        <ThemeToggle />
       </div>
 
       <div className="min-h-screen flex items-center justify-center">

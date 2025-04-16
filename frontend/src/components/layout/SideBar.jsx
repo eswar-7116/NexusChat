@@ -127,9 +127,9 @@ function SideBar() {
       {/* Sidebar toggle button for larger screens */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-1/2 transform -translate-y-1/2 
-        bg-base-100 border border-base-300 rounded-full p-1 
-        shadow-md z-10 hidden md:flex"
+        className="absolute -right-3 top-1/2 transform -translate-y-1/2 bg-base-300 border border-base-300 rounded-full p-1
+        shadow-md z-10 hidden md:flex cursor-pointer transform transition-transform transition-colors duration-300
+        hover:scale-115 hover:bg-base-200"
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {isCollapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
@@ -189,7 +189,7 @@ function SideBar() {
               onClick={() => handleUserSelect(user)}
               className={`
                 w-full py-2 px-2 mb-1 rounded-lg flex items-center 
-                hover:bg-base-200 transition-colors
+                hover:bg-base-200 transition-colors cursor-pointer transform transition-transform duration-200 hover:scale-102
                 ${selectedUser?._id === user._id ? "bg-base-200 ring-1 ring-base-300" : ""}
               `}
             >

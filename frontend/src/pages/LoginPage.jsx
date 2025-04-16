@@ -5,6 +5,7 @@ import { User, Lock, Eye, EyeOff, Loader2, Sun, Moon, CircleUserRound } from 'lu
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../stores/authStore';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 function LoginPage() {
   const [showPass, setShowPass] = useState(false);
@@ -14,22 +15,22 @@ function LoginPage() {
   });
 
   const navigate = useNavigate();
-  const { login, isLoggingIn, theme, changeTheme } = useAuthStore();
+  const { login, isLoggingIn } = useAuthStore();
 
   useEffect(() => {
     document.title = 'Login - NexusChat';
   }, []);
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
   const validateForm = () => {
-    if (!formData.username.trim())
-      return toast.error("Username is required");
+    if (!formData.username.trim()) {
+      toast.error("Username is required");
+      return false;
+    }
 
-    if (!formData.password.trim())
-      return toast.error("Password is required");
+    if (!formData.password.trim()) {
+      toast.error("Password is required");
+      return false;
+    }
 
     return true;
   };
@@ -45,16 +46,7 @@ function LoginPage() {
   return (
     <>
       <div className="absolute top-4 right-4">
-        <button 
-          onClick={changeTheme}
-          className="btn btn-ghost btn-circle hover:bg-base-300"
-        >
-          {theme === 'dark' ? (
-            <Sun className="size-5" />
-          ) : (
-            <Moon className="size-5" />
-          )}
-        </button>
+        <ThemeToggle />
       </div>
 
       <div className="min-h-screen flex items-center justify-center">

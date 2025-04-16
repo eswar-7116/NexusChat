@@ -15,10 +15,14 @@ function SignUpPage() {
     email: "",
     password: "",
     confirmPassword: "",
-  });  
+  });
 
   const navigate = useNavigate();
   const { signup, isSigningUp, theme, changeTheme } = useAuthStore();
+
+  useEffect(() => {
+    document.title = 'Sign up - NexusChat';
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);

@@ -11,6 +11,10 @@ function ForgotPasswordPage() {
   const { theme, changeTheme, isSendingResetLink, forgotPassword } = useAuthStore();
 
   useEffect(() => {
+    document.title = 'Forgot Password - NexusChat';
+  }, []);
+
+  useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 

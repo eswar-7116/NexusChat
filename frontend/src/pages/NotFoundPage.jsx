@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { UserX, Home } from 'lucide-react';
 
 const NotFoundPage = () => {
+  useEffect(() => {
+    document.title = 'Page Not Found - NexusChat';
+  }, []);
+
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full text-center space-y-6">

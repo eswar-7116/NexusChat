@@ -18,6 +18,10 @@ function ResetPasswordPage() {
   const { id, token } = useParams();
 
   useEffect(() => {
+    document.title = 'Reset Password - NexusChat';
+  }, []);
+
+  useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     
     // Validate token and id existence

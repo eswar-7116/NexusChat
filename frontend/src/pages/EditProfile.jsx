@@ -10,6 +10,10 @@ function EditProfile() {
   const [selectedPic, setSelectedPic] = React.useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = 'Profile - NexusChat';
+  }, []);
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;

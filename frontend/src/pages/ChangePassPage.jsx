@@ -18,6 +18,10 @@ function ChangePassPage() {
   const navigate = useNavigate();
   const { changePass, isChangingPass } = useAuthStore();
 
+  useEffect(() => {
+    document.title = 'Change Password - NexusChat';
+  }, []);
+
   const validateForm = () => {
     if (!formData.oldPassword.trim())
       return toast.error("Old Password is required");

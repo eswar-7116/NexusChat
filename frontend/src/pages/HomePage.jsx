@@ -17,6 +17,7 @@ function HomePage() {
 
   React.useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
+    document.title = 'NexusChat'
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 

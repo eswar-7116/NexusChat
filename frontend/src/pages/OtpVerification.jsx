@@ -8,6 +8,10 @@ const OtpVerification = () => {
   const { isVerifying, verify } = useAuthStore();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = 'Verify OTP - NexusChat';
+  }, []);
+
   const handleChange = (e) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 6);
     setOtp(value);

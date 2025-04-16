@@ -17,6 +17,10 @@ function LoginPage() {
   const { login, isLoggingIn, theme, changeTheme } = useAuthStore();
 
   useEffect(() => {
+    document.title = 'Login - NexusChat';
+  }, []);
+
+  useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 

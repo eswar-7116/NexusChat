@@ -1,8 +1,8 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useChatStore } from '../stores/chatStore';
-import SideBar from '../components/SideBar';
-import ChatWindow from '../components/ChatWindow';
-import NoUserSelected from '../components/NoUserSelected';
+import SideBar from '../components/layout/SideBar';
+import ChatWindow from '../components/chat/ChatWindow';
+import NoUserSelected from '../components/layout/NoUserSelected';
 
 function HomePage() {
   const { selectedUser, setSelectedUser } = useChatStore();
@@ -15,7 +15,7 @@ function HomePage() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     document.title = 'NexusChat'
     return () => window.removeEventListener('keydown', handleKeyDown);

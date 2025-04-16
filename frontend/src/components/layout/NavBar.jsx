@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { KeyRound, LogOut, ArrowLeft, Sun, Moon, UserRoundPen, Volume2, VolumeOff } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../stores/authStore';
-import { replyNotification } from '../stores/chatStore';
+import { useAuthStore } from '../../stores/authStore';
+import { replyNotification } from '../../stores/chatStore';
 import Tilt from 'react-parallax-tilt';
 
 function Navbar() {

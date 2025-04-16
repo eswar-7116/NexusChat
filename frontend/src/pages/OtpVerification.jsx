@@ -1,10 +1,10 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Mail, Loader2, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useNavigate } from 'react-router-dom';
 
 const OtpVerification = () => {
-  const [otp, setOtp] = React.useState('');
+  const [otp, setOtp] = useState('');
   const { isVerifying, verify } = useAuthStore();
   const navigate = useNavigate();
 

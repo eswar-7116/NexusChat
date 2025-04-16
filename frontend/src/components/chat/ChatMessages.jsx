@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy, SquarePen, Check, X } from 'lucide-react';
 import { PropagateLoader } from 'react-spinners';
-import { useAuthStore } from '../stores/authStore';
-import { useChatStore } from '../stores/chatStore';
+import { useAuthStore } from '../../stores/authStore';
+import { useChatStore } from '../../stores/chatStore';
 import Linkify from 'linkify-react';
 import toast from 'react-hot-toast';
 

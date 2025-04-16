@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Tilt from 'react-parallax-tilt';
 import { ArrowLeft, Mail, Loader2, Sun, Moon } from 'lucide-react';

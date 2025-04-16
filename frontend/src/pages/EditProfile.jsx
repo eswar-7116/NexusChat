@@ -1,5 +1,5 @@
-import React from "react";
-import { Camera, Loader2, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Camera, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthStore } from "../stores/authStore";
@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 function EditProfile() {
   const { user, isUpdatingProfilePic, updateProfilePic } = useAuthStore();
-  const [selectedPic, setSelectedPic] = React.useState(null);
+  const [selectedPic, setSelectedPic] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {

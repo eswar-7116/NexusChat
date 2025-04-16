@@ -7,8 +7,8 @@ import {
   Check
 } from 'lucide-react';
 import debounce from 'lodash.debounce';
-import { useAuthStore } from '../stores/authStore';
-import { useChatStore } from '../stores/chatStore';
+import { useAuthStore } from '../../stores/authStore';
+import { useChatStore } from '../../stores/chatStore';
 
 function SideBar() {
   // Accessing online users from auth store

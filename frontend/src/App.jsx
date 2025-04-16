@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { PropagateLoader } from 'react-spinners';
 import toast, { Toaster } from 'react-hot-toast';
 
-import NavBar from './components/NavBar';
+import NavBar from './components/layout/NavBar';
 import HomePage from './pages/HomePage';
 import SignUpPage from './pages/SignUpPage';
 import OtpVerification from './pages/OtpVerification';

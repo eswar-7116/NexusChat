@@ -28,7 +28,7 @@ function EditProfile() {
 
   const handleUpdateProfilePic = async () => {
     if (!selectedPic) {
-      toast.error("Please select a photo to update your profile pic");
+      toast.error("Please change the photo to update your profile pic");
       return;
     }
 
@@ -58,7 +58,7 @@ function EditProfile() {
                   absolute bottom-0 right-0 
                   bg-base-content hover:scale-105
                   p-1.5 sm:p-2 rounded-full cursor-pointer 
-                  transition-all duration-200
+                  transition-all duration-200 transform hover:scale-110
                   ${isUpdatingProfilePic ? "animate-pulse pointer-events-none" : ""}
                 `}
               >
@@ -103,7 +103,7 @@ function EditProfile() {
 
           <div className="flex justify-center pt-2">
             <button
-              className="btn btn-primary w-full sm:w-auto"
+              className="btn btn-primary w-full sm:w-auto transform transition-transform duration-300 hover:scale-105"
               onClick={handleUpdateProfilePic}
               disabled={isUpdatingProfilePic}
             >

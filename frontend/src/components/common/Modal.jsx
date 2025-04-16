@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Ban, MessageSquare, UnlockIcon } from 'lucide-react';
-import { useChatStore } from '../stores/chatStore';
+import { useChatStore } from '../../stores/chatStore';
 
 function Modal({ isOpen, onClose, user, isOnline }) {
   const [isAnimating, setIsAnimating] = React.useState(false);

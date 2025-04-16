@@ -73,12 +73,6 @@ function ChatInput({ sendMessage }) {
     }, 10);
   };
 
-
-  // Toggle function for the emoji picker
-  const toggleEmojiPicker = () => {
-    setShowEmojiPicker(prevState => !prevState);
-  };
-
   return (
     <>
       <div className="p-3 bg-base-200 border-t border-base-300">
@@ -87,8 +81,10 @@ function ChatInput({ sendMessage }) {
           {!isMobile && <button
             id="emoji-button"
             type="button"
-            className={`p-2 rounded-full transition-colors ${showEmojiPicker ? 'bg-base-300' : 'bg-base-100 hover:bg-base-300'}`}
-            onClick={toggleEmojiPicker}
+            className={`p-2 rounded-full transition-colors cursor-pointer transform transition-transform duration-300 hover:scale-110 ${showEmojiPicker ? 'bg-base-300' : 'bg-base-100 hover:bg-base-300'}`}
+            onClick={() => {
+              setShowEmojiPicker(prevState => !prevState);
+            }}
             aria-label={showEmojiPicker ? "Close emoji picker" : "Open emoji picker"}
           >
             <Smile size={20} />
@@ -146,7 +142,7 @@ function ChatInput({ sendMessage }) {
           {/* Send button */}
           <button
             type="submit"
-            className={`p-2 rounded-full ${message.trim() ? 'bg-primary text-primary-content' : 'bg-base-300 text-base-content/50'} transition-colors`}
+            className={`p-2 rounded-full ${message.trim() ? 'bg-primary text-primary-content transform transition-transform duration-300 hover:scale-110 cursor-pointer' : 'bg-base-300 text-base-content/50'} transition-colors`}
             disabled={!message.trim()}
             aria-label="Send message"
           >

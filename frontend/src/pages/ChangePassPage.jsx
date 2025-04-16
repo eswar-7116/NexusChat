@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
-import { Lock, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2, KeyRound } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { isPassNotValid } from '../helpers/passwordValidation';
 
@@ -25,18 +25,18 @@ function ChangePassPage() {
   const validateForm = () => {
     if (!formData.oldPassword.trim())
       return toast.error("Old Password is required");
-    
+
     if (!formData.newPassword.trim())
       return toast.error("New Password is required");
-    
+
     const oldPassError = isPassNotValid(formData.oldPassword);
     if (oldPassError)
       return toast.error(oldPassError);
-    
+
     const newPassError = isPassNotValid(formData.newPassword);
     if (newPassError)
       return toast.error(newPassError);
-    
+
     if (formData.newPassword !== formData.confirmPassword)
       return toast.error("New password does not match with confirm password");
 
@@ -48,14 +48,14 @@ function ChangePassPage() {
     const isInputValid = validateForm();
     if (isInputValid) changePass(formData, navigate);
   };
-  
+
   return (
     <div className="h-full flex-grow flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-2">
         <div className="text-center mb-6">
           <div className="flex flex-col items-center gap-2">
             <div className="w-24 h-24 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-3">
-              <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="w-full h-full object-contain"/>
+              <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="w-full h-full object-contain" />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold mt-2">Change Password</h1>
             <p className="text-sm text-base-content/60">Update your account password</p>
@@ -65,15 +65,13 @@ function ChangePassPage() {
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="form-control">
             <label className="label">
+              <Lock />
               <span className="label-text font-medium">Old Password</span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="size-4 sm:size-5 text-base-content/40" />
-              </div>
               <input
                 type={showOldPass ? "text" : "password"}
-                className="input input-bordered w-full pl-10 text-sm sm:text-base py-2"
+                className="input input-bordered w-full pl-3 text-sm sm:text-base py-2"
                 placeholder="Enter Old Password"
                 value={formData.oldPassword}
                 onChange={(e) => setFormData({ ...formData, oldPassword: e.target.value })}
@@ -94,15 +92,13 @@ function ChangePassPage() {
 
           <div className="form-control">
             <label className="label">
+              <Lock />
               <span className="label-text font-medium">New Password</span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="size-4 sm:size-5 text-base-content/40" />
-              </div>
               <input
                 type={showNewPass ? "text" : "password"}
-                className="input input-bordered w-full pl-10 text-sm sm:text-base py-2"
+                className="input input-bordered w-full pl-3 text-sm sm:text-base py-2"
                 placeholder="Enter New Password"
                 value={formData.newPassword}
                 onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
@@ -123,15 +119,13 @@ function ChangePassPage() {
 
           <div className="form-control">
             <label className="label">
+              <Lock />
               <span className="label-text font-medium">Confirm New Password</span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="size-4 sm:size-5 text-base-content/40" />
-              </div>
               <input
                 type={showConfirmPass ? "text" : "password"}
-                className="input input-bordered w-full pl-10 text-sm sm:text-base py-2"
+                className="input input-bordered w-full pl-3 text-sm sm:text-base py-2"
                 placeholder="Confirm New Password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -150,11 +144,12 @@ function ChangePassPage() {
             </div>
           </div>
 
-          <button 
-            type="submit" 
-            className="btn btn-primary w-full mt-6" 
+          <button
+            type="submit"
+            className="btn btn-primary w-full mt-6 transform transition-transform duration-300 hover:scale-105"
             disabled={isChangingPass}
           >
+            <KeyRound />
             {isChangingPass ? (
               <>
                 <Loader2 className="size-4 sm:size-5 animate-spin" />

@@ -170,11 +170,14 @@ export const useAuthStore = create((set, get) => ({
             const res = await axiosInstance.post('/auth/forgot-password', { email });
             if (res.data.success) {
                 toast.success(res.data.message);
+                return true;
             } else {
                 toast.error(res.data.message || 'Sending password reset link failed');
+                return false;
             }
         } catch (err) {
             toast.error(err.response?.data?.message || 'Sending password reset link failed');
+            return false;
         } finally {
             set({ isSendingResetLink: false });
         }

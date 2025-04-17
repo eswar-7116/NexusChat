@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Users,
   ChevronLeft,
@@ -27,27 +27,27 @@ function SideBar() {
   } = useChatStore();
 
   // Sidebar collapse state for responsiveness
-  const [isCollapsed, setIsCollapsed] = React.useState(window.innerWidth < 768);
+  const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768);
 
   // For immediate input tracking (used with debounced search)
-  const [searchInput, setSearchInput] = React.useState('');
+  const [searchInput, setSearchInput] = useState('');
   // Actual search query used for filtering (debounced)
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   // Online users filter state
-  const [showOnlineOnly, setShowOnlineOnly] = React.useState(false);
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
   // Debounced function to update the search query after user stops typing
-  const debouncedSearch = React.useMemo(() =>
+  const debouncedSearch = useMemo(() =>
     debounce((value) => setSearchQuery(value), 300), []
   );
 
   // Syncing debounced input value with actual search query
-  React.useEffect(() => {
+  useEffect(() => {
     debouncedSearch(searchInput);
   }, [searchInput, debouncedSearch]);
 
   // Fetching recent and all users on mount
-  React.useEffect(() => {
+  useEffect(() => {
     fetchRecentUsers();
     fetchAllUsers();
 
@@ -63,7 +63,7 @@ function SideBar() {
   }, [fetchRecentUsers, fetchAllUsers]);
 
   // Filtered user list based on search query and online status
-  const filteredUsers = React.useMemo(() => {
+  const filteredUsers = useMemo(() => {
     let users = searchQuery ? allUsers : recentUsers;
 
     // Apply search filtering if query exists

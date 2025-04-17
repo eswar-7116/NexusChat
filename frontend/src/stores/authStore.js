@@ -46,7 +46,7 @@ export const useAuthStore = create((set, get) => ({
             set({ user: res.data.user });
             get().connectSocket();
             useChatStore.getState().listenToSocket();
-        } catch (error) {
+        } catch (_) {
             set({ user: null });
         } finally {
             set({ isCheckingAuth: false });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy, SquarePen, Check, X, AlertCircle, RefreshCw } from 'lucide-react';
 import { PropagateLoader } from 'react-spinners';
 import { useAuthStore } from '../../stores/authStore';
@@ -19,10 +19,10 @@ function ChatMessages({ messages, isFetchingMessages }) {
   } = useChatStore();
 
   const chatBoxBottomRef = React.useRef(null);
-  const [expandedMessageId, setExpandedMessageId] = useState(null);
-  const [messageWithOpenMenu, setMessageWithOpenMenu] = useState(null);
-  const [editingMessageId, setEditingMessageId] = useState(null);
-  const [editedContent, setEditedContent] = useState("");
+  const [expandedMessageId, setExpandedMessageId] = React.useState(null);
+  const [messageWithOpenMenu, setMessageWithOpenMenu] = React.useState(null);
+  const [editingMessageId, setEditingMessageId] = React.useState(null);
+  const [editedContent, setEditedContent] = React.useState("");
   const editInputRef = React.useRef(null);
 
   // Scroll to bottom when messages change
@@ -376,7 +376,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 {isFailed ? (
                   <div className="flex items-center text-red-500">
                     <AlertCircle size={12} className="mr-1" />
-                    Couldn't send
+                    Couldn&apos;t send
                     <button
                       onClick={() => retryMessage(message)}
                       className="ml-2 p-0.5 bg-base-300 hover:bg-base-200 rounded text-base-content"

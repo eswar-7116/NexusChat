@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useChatStore } from '../../stores/chatStore';
 import { useAuthStore } from '../../stores/authStore';
 import Modal from '../common/Modal';
@@ -10,7 +10,7 @@ import { Ban } from 'lucide-react';
 function ChatWindow() {
   const { blocked, blockedByUser, selectedUser, messages, isFetchingMessages, sendMessage, listenToSocket, stopListeningToSocket } = useChatStore();
 
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleProfilePicClick = () => {
     setIsModalOpen(true);
@@ -20,11 +20,11 @@ function ChatWindow() {
     setIsModalOpen(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     listenToSocket();
 
     return () => stopListeningToSocket();
-  }, [selectedUser?._id]);
+  }, [listenToSocket, stopListeningToSocket, selectedUser?._id]);
 
   const handleSendMessage = async (messageData) => {
     await sendMessage(messageData);

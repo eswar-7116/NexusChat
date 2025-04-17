@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Lock, Eye, EyeOff, Loader2, Sun, Moon, Check } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, Lock, Eye, EyeOff, Loader2, Check } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../stores/authStore';
 import ThemeToggle from '../components/common/ThemeToggle';
@@ -15,7 +15,6 @@ function ResetPasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetComplete, setResetComplete] = useState(false);
   const { resetPassword } = useAuthStore();
-  const navigate = useNavigate();
   const { id, token } = useParams();
 
   useEffect(() => {

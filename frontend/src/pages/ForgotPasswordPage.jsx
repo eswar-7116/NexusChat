@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Tilt from 'react-parallax-tilt';
-import { ArrowLeft, Mail, Loader2, Sun, Moon, SendIcon } from 'lucide-react';
+import { ArrowLeft, Mail, Loader2, SendIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../stores/authStore';
 import ThemeToggle from '../components/common/ThemeToggle';

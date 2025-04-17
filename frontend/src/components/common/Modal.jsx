@@ -1,35 +1,36 @@
-import React from 'react';
-import { X, Ban, MessageSquare, UnlockIcon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Ban, MessageSquare } from 'lucide-react';
 import { useChatStore } from '../../stores/chatStore';
 
 function Modal({ isOpen, onClose, user, isOnline }) {
-  const [isAnimating, setIsAnimating] = React.useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const { blocked, blockedByUser, blockUser, unblockUser } = useChatStore();
 
-  React.useEffect(() => {
-    if (isOpen) {
-      const handleEscape = (e) => {
-        if (e.key === "Escape" || e.key === "Esc") {
-          e.preventDefault();
-          e.stopPropagation();
-          handleClose();
-        }
-      };
-      setIsAnimating(true);
-      window.addEventListener("keydown", handleEscape, true);
-
-      return () => {
-        window.removeEventListener("keydown", handleEscape, true);
-      };
-    }
+  useEffect(() => {
+    if (!isOpen) return;
+  
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        handleClose();
+      }
+    };
+  
+    setIsAnimating(true);
+    window.addEventListener("keydown", handleEscape, true);
+  
+    return () => {
+      window.removeEventListener("keydown", handleEscape, true);
+    };
   }, [isOpen]);
-
+  
   const handleClose = () => {
     if (isOpen) {
       setIsAnimating(false);
-      setTimeout(() => onClose(), 200);
+      setTimeout(() => onClose(), 200); // Delay for exit animation
     }
-  };
+  };  
 
   const handleBlock = () => {
     blockUser();

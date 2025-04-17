@@ -1,17 +1,16 @@
-import React from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send, Smile } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
 
 function ChatInput({ sendMessage }) {
-  const [message, setMessage] = React.useState("");
-  const [isMobile, setIsMobile] = React.useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
-  const [isSending, setIsSending] = React.useState(false);
-  const textareaRef = React.useRef(null);
-  const emojiPickerRef = React.useRef(null);
+  const [message, setMessage] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const textareaRef = useRef(null);
+  const emojiPickerRef = useRef(null);
 
   // Detect if the user is on a mobile device
-  React.useEffect(() => {
+  useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -31,7 +30,6 @@ function ChatInput({ sendMessage }) {
 
     if (!message.trim()) return;
 
-    setIsSending(true);
     const messageContent = message.trim();
     setMessage(""); // Clear input immediately
 
@@ -45,8 +43,6 @@ function ChatInput({ sendMessage }) {
       });
     } catch (error) {
       console.error("Error while sending message:", error);
-    } finally {
-      setIsSending(false);
     }
   };
 

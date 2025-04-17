@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Tilt from 'react-parallax-tilt';
 import { Link } from 'react-router-dom';
-import { User, Lock, Eye, EyeOff, Loader2, Sun, Moon, CircleUserRound } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, Loader2, CircleUserRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '../stores/authStore';
@@ -125,7 +125,7 @@ function LoginPage() {
 
           <div className="text-center mt-4">
             <p className="text-base-content/60">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link to="/signup" className="link link-primary">
                 Sign up
               </Link>

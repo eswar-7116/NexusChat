@@ -26,24 +26,35 @@ function SignUpPage() {
   }, []);
 
   const validateForm = () => {
-    if (!formData.fullName.trim())
-      return toast.error("Full Name is required");
+    if (!formData.fullName.trim()) {
+      toast.error("Full Name is required");
+      return false;
+    }
 
-    if (!formData.username.trim())
-      return toast.error("Username is required");
-    
-    if (!formData.email.trim())
-      return toast.error("Email is required");
+    if (!formData.username.trim()) {
+      toast.error("Username is required");
+      return false;
+    }
 
-    if (!formData.password.trim())
-      return toast.error("Password is required");
+    if (!formData.email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+
+    if (!formData.password.trim()) {
+      toast.error("Password is required");
+      return false;
+    }
 
     const passwordError = isPassNotValid(formData.password);
-    if (passwordError)
-      return toast.error(passwordError);
+    if (passwordError) {
+      toast.error(passwordError);
+      return false;
+    }
 
     if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
-      return toast.error("Passwords do not match");
+      toast.error("Passwords do not match");
+      return false;
     }
 
     return true;
@@ -67,7 +78,7 @@ function SignUpPage() {
             <div className="flex flex-col items-center gap-2 group">
               <Tilt scale={1.5} transitionSpeed={1000}>
                 <div className="w-32 h-30 rounded-xl flex items-center justify-center bg-primary/10 hover:bg-primary/15 transition-colors p-4 scale-80">
-                  <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-80"/>
+                  <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="scale-80" />
                 </div>
               </Tilt>
               <h1 className="text-2xl font-bold mt-2">Sign Up</h1>

@@ -23,22 +23,32 @@ function ChangePassPage() {
   }, []);
 
   const validateForm = () => {
-    if (!formData.oldPassword.trim())
-      return toast.error("Old Password is required");
+    if (!formData.oldPassword.trim()) {
+      toast.error("Old Password is required");
+      return false;
+    }
 
-    if (!formData.newPassword.trim())
-      return toast.error("New Password is required");
+    if (!formData.newPassword.trim()) {
+      toast.error("New Password is required");
+      return false;
+    }
 
     const oldPassError = isPassNotValid(formData.oldPassword);
-    if (oldPassError)
-      return toast.error(oldPassError);
+    if (oldPassError) {
+      toast.error(oldPassError);
+      return false;
+    }
 
     const newPassError = isPassNotValid(formData.newPassword);
-    if (newPassError)
-      return toast.error(newPassError);
+    if (newPassError) {
+      toast.error(newPassError);
+      return false;
+    }
 
-    if (formData.newPassword !== formData.confirmPassword)
-      return toast.error("New password does not match with confirm password");
+    if (formData.newPassword !== formData.confirmPassword) {
+      toast.error("New password does not match with confirm password");
+      return false;
+    }
 
     return true;
   };

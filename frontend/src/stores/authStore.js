@@ -19,7 +19,7 @@ export const useAuthStore = create((set, get) => ({
         }
         return "light";
     })(),
-    canVibrate: localStorage.getItem("vibration") || true,
+    canVibrate: localStorage.getItem("vibration") !== "false",
 
     isCheckingAuth: true,
     isSigningUp: false,

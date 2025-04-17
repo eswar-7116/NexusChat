@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { KeyRound, LogOut, ArrowLeft, UserRoundPen, Volume2, VolumeOff } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
-import { replyNotification } from '../../stores/chatStore';
+import { replyNotification } from '../../stores/authStore';
 import Tilt from 'react-parallax-tilt';
 import ThemeToggle from '../common/ThemeToggle';
 
@@ -12,7 +12,7 @@ function Navbar() {
   const location = useLocation();
   const dropdownRef = useRef(null);
   const { logout, user, canVibrate, toggleVibration } = useAuthStore();
-  const [notificationVolume, setNotificationVolume] = useState(Number(localStorage.getItem('notificationVolume')));
+  const [notificationVolume, setNotificationVolume] = useState(Number(localStorage.getItem('notificationVolume') || 1));
   const [isDragging, setIsDragging] = useState(false);
 
   const playReplyNotification = (newVolume) => {

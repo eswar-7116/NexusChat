@@ -8,7 +8,7 @@ import ChatInput from './ChatInput';
 import { Ban } from 'lucide-react';
 
 function ChatWindow() {
-  const { blocked, blockedByUser, selectedUser, messages, isFetchingMessages, sendMessage, listenToSocket, stopListeningToSocket } = useChatStore();
+  const { blocked, blockedByUser, selectedUser, messages, isFetchingMessages, sendMessage, stopListeningToSocket } = useChatStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -20,12 +20,6 @@ function ChatWindow() {
     setIsModalOpen(false);
   };
 
-  useEffect(() => {
-    listenToSocket();
-
-    return () => stopListeningToSocket();
-  }, [listenToSocket, stopListeningToSocket, selectedUser?._id]);
-
   const handleSendMessage = async (messageData) => {
     await sendMessage(messageData);
   };
@@ -33,13 +27,13 @@ function ChatWindow() {
   return (
     <div className="flex-1 flex flex-col overflow-auto">
       {/* Top bar */}
-      <ChatHeader 
+      <ChatHeader
         selectedUser={selectedUser}
         onProfilePicClick={handleProfilePicClick}
       />
 
       {/* Chat Box */}
-      <ChatMessages 
+      <ChatMessages
         messages={messages}
         isFetchingMessages={isFetchingMessages}
       />

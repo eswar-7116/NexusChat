@@ -4,6 +4,8 @@ import { toast } from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import { useChatStore } from './chatStore';
 
+export const replyNotification = new Audio("/notification.mp3");
+
 export const useAuthStore = create((set, get) => ({
     user: null,
     temp: "",
@@ -17,7 +19,7 @@ export const useAuthStore = create((set, get) => ({
         }
         return "light";
     })(),
-    canVibrate: localStorage.getItem("vibration") === "true" ? true : false,
+    canVibrate: localStorage.getItem("vibration") || true,
 
     isCheckingAuth: true,
     isSigningUp: false,
@@ -45,8 +47,8 @@ export const useAuthStore = create((set, get) => ({
             const res = await axiosInstance.get('/check');
             set({ user: res.data.user });
             get().connectSocket();
-            useChatStore.getState().listenToSocket();
-        } catch (_) {
+        } catch (err) {
+            console.error("Auth check failed:", err?.response?.data?.message || err?.message || "Unknown error");
             set({ user: null });
         } finally {
             set({ isCheckingAuth: false });
@@ -54,6 +56,9 @@ export const useAuthStore = create((set, get) => ({
     },
 
     signup: async (data, navigate) => {
+        // Prevent multiple signup attempts while one is in progress
+        if (get().isSigningUp) return;
+
         set({ isSigningUp: true });
         try {
             const res = await axiosInstance.post('/auth/signup', data);
@@ -66,13 +71,18 @@ export const useAuthStore = create((set, get) => ({
                     toast.error(res.data.message || 'Signup failed');
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Signup failed');
+            const errorMsg = err.response?.data?.message || 'Signup failed';
+            console.error("Signup error:", errorMsg);
+            toast.error(errorMsg);
         } finally {
             set({ isSigningUp: false });
         }
     },
 
     verify: async (otp, navigate) => {
+        // Prevent multiple verify attempts while one is in progress
+        if (get().isVerifying) return;
+
         set({ isVerifying: true });
         try {
             const res = await axiosInstance.post('/auth/verify-user-otp', { otp, username: get().temp });
@@ -83,13 +93,18 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Verification failed');
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Verification failed');
+            const errorMsg = err.response?.data?.message || 'Verification failed';
+            console.error("Verification error:", errorMsg);
+            toast.error(errorMsg);
         } finally {
             set({ isVerifying: false });
         }
     },
 
     login: async (data, navigate) => {
+        // Prevent multiple login attempts while one is in progress
+        if (get().isLoggingIn) return;
+
         set({ isLoggingIn: true });
         try {
             const res = await axiosInstance.post('/auth/login', { unameOrEmail: data.username, password: data.password });
@@ -98,12 +113,13 @@ export const useAuthStore = create((set, get) => ({
                 toast.success('Successfully logged in');
                 navigate('/');
                 get().connectSocket();
-                useChatStore.getState().listenToSocket();
             } else {
                 toast.error(res.data.message || 'Login failed');
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Login failed');
+            const errorMsg = err.response?.data?.message || 'Login failed';
+            console.error("Login error:", errorMsg);
+            toast.error(errorMsg);
         } finally {
             set({ isLoggingIn: false });
         }
@@ -113,22 +129,28 @@ export const useAuthStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post('/auth/logout');
             if (res.data.success) {
+                // Disconnect socket before clearing user data
+                get().disconnectSocket();
+
                 set({ user: null });
                 toast.success("Successfully logged out");
                 navigate('/login');
-                get().disconnectSocket();
                 useChatStore.setState({ selectedUser: null });
             } else {
                 toast.error(res.data.message || 'Logout failed');
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Logout failed');
+            const errorMsg = err.response?.data?.message || 'Logout failed';
+            console.error("Logout error:", errorMsg);
+            toast.error(errorMsg);
         }
     },
 
     changePass: async (data, navigate) => {
+        // Prevent multiple password change attempts while one is in progress
+        if (get().isChangingPass) return;
+
         set({ isChangingPass: true });
-        let sentToast = false;
         try {
             delete data.confirmPassword;
             const res = await axiosInstance.post('/auth/change-password', data);
@@ -137,17 +159,20 @@ export const useAuthStore = create((set, get) => ({
                 navigate('/');
             } else {
                 toast.error(res.data.message || 'Password change failed');
-                sentToast = true;
             }
         } catch (err) {
-            if (!sentToast)
-                toast.error(err.response?.data?.message || 'Password change failed');
+            const errorMsg = err.response?.data?.message || 'Password change failed';
+            console.error("Password change error:", errorMsg);
+            toast.error(errorMsg);
         } finally {
             set({ isChangingPass: false });
         }
     },
 
     updateProfilePic: async (data) => {
+        // Prevent multiple profile pic updates while one is in progress
+        if (get().isUpdatingProfilePic) return;
+
         set({ isUpdatingProfilePic: true });
         try {
             const res = await axiosInstance.post('/auth/edit-profile', data);
@@ -158,13 +183,18 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Profile pic update failed');
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Profile pic update failed');
+            const errorMsg = err.response?.data?.message || 'Profile pic update failed';
+            console.error("Profile pic update error:", errorMsg);
+            toast.error(errorMsg);
         } finally {
             set({ isUpdatingProfilePic: false });
         }
     },
 
     forgotPassword: async (email) => {
+        // Prevent multiple reset link attempts while one is in progress
+        if (get().isSendingResetLink) return;
+
         set({ isSendingResetLink: true });
         try {
             const res = await axiosInstance.post('/auth/forgot-password', { email });
@@ -176,7 +206,9 @@ export const useAuthStore = create((set, get) => ({
                 return false;
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Sending password reset link failed');
+            const errorMsg = err.response?.data?.message || 'Sending password reset link failed';
+            console.error("Reset link error:", errorMsg);
+            toast.error(errorMsg);
             return false;
         } finally {
             set({ isSendingResetLink: false });
@@ -193,7 +225,9 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Password reset failed');
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Password reset failed');
+            const errorMsg = err.response?.data?.message || 'Password reset failed';
+            console.error("Password reset error:", errorMsg);
+            toast.error(errorMsg);
         }
         return false;
     },
@@ -212,14 +246,26 @@ export const useAuthStore = create((set, get) => ({
         });
         newSocket.connect();
 
+        // All socket event handlers
         newSocket.on('getOnlineUsers', (users) => {
             set({ onlineUsers: users });
         });
 
         newSocket.on('newMessage', async (message) => {
+            const { selectedUser } = useChatStore.getState();
+            const shouldNotify = message.senderId !== selectedUser?._id;
+
+            // Vibrate if setting enabled
             if (get().canVibrate && "vibrate" in navigator) navigator.vibrate(120);
 
-            const { recentUsers, allUsers, selectedUser } = useChatStore.getState();
+            // Play notification sound if the message is not from the selected user
+            if (shouldNotify) {
+                replyNotification.play().catch((err) =>
+                    console.error("Notification sound error:", err)
+                );
+            }
+
+            const { recentUsers, allUsers } = useChatStore.getState();
 
             // Update messages only if message is from currently selected user
             useChatStore.setState((state) => ({
@@ -231,7 +277,11 @@ export const useAuthStore = create((set, get) => ({
 
             // Mark messages as read
             if (selectedUser?._id === message.senderId) {
-                await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+                try {
+                    await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+                } catch (err) {
+                    console.error("Error marking messages as read:", err?.message);
+                }
             }
 
             // Get the sender from allUsers
@@ -250,7 +300,7 @@ export const useAuthStore = create((set, get) => ({
         newSocket.on("messagesRead", (readByUserId) => {
             if (readByUserId === useChatStore.getState().selectedUser?._id) {
                 const currentUserId = get().user._id;
-                useChatStore.set((state) => ({
+                useChatStore.setState((state) => ({
                     messages: state.messages.map((msg) =>
                         msg.senderId === currentUserId && !msg.isRead
                             ? { ...msg, isRead: true }

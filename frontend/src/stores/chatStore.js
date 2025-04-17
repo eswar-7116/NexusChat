@@ -3,8 +3,6 @@ import toast from "react-hot-toast";
 import { axiosInstance } from "../helpers/axios";
 import { useAuthStore } from "./authStore";
 
-export const replyNotification = new Audio("/notification.mp3");
-
 export const useChatStore = create((set, get) => ({
     messages: [],
     pendingMessages: [],
@@ -23,19 +21,22 @@ export const useChatStore = create((set, get) => ({
             if (data.success) set({ allUsers: data.users });
             else toast.error("Failed to get all users");
         } catch (error) {
-            console.error("Error fetching users:", error);
+            console.error("Error fetching users:", error?.response?.data?.message || error?.message);
             toast.error("Error while fetching all users");
         }
     },
 
     fetchRecentUsers: async () => {
+        // Prevent duplicate fetches if already in progress
+        if (get().isFetchingUsers) return;
+
         set({ isFetchingUsers: true });
         try {
             const { data } = await axiosInstance.get("/messaging/get-recent-users");
             if (data.success) set({ recentUsers: data.recentUsers });
             else toast.error("Failed to get recent users");
         } catch (error) {
-            console.error("Error fetching recent users:", error);
+            console.error("Error fetching recent users:", error?.response?.data?.message || error?.message);
             toast.error("Error while fetching recent users");
         } finally {
             set({ isFetchingUsers: false });
@@ -43,13 +44,16 @@ export const useChatStore = create((set, get) => ({
     },
 
     fetchMessages: async (receiverId) => {
+        // Prevent duplicate fetches if already in progress
+        if (get().isFetchingMessages) return;
+
         set({ isFetchingMessages: true });
         try {
             const { data } = await axiosInstance.get(`/messaging/get-messages/${receiverId}`);
             if (data.success) set({ messages: data.messages });
             else toast.error("Failed to get messages");
         } catch (error) {
-            console.error("Error fetching messages:", error);
+            console.error("Error fetching messages:", error?.response?.data?.message || error?.message);
             toast.error("Error while fetching messages");
         } finally {
             set({ isFetchingMessages: false });
@@ -59,6 +63,11 @@ export const useChatStore = create((set, get) => ({
     sendMessage: async (data) => {
         try {
             const { selectedUser, messages, recentUsers, pendingMessages, failedMessages } = get();
+
+            if (!selectedUser) {
+                toast.error("No user selected");
+                return;
+            }
 
             // Generate a temporary ID for the pending message
             const tempId = `temp-${Date.now()}`;
@@ -116,7 +125,7 @@ export const useChatStore = create((set, get) => ({
                 failedMessages: failedMessages.filter(msg => msg._id !== tempId)
             });
         } catch (error) {
-            console.error("Error sending message:", error);
+            console.error("Error sending message:", error?.response?.data?.message || error?.message);
 
             // Find the pending message and mark it as failed
             const { pendingMessages, failedMessages } = get();
@@ -148,76 +157,6 @@ export const useChatStore = create((set, get) => ({
         });
     },
 
-    listenToSocket: () => {
-        const { selectedUser } = get();
-        const { socket, canVibrate } = useAuthStore.getState();
-        if (!selectedUser || !socket) return;
-
-        socket.off("newMessage");
-        socket.off("messagesRead");
-        socket.off("deleteForMe");
-        socket.off("deleteForEveryone");
-
-        socket.on("newMessage", async (message) => {
-            if (canVibrate) navigator.vibrate(120);
-            replyNotification.play().catch((err) =>
-                console.error("Notification sound error:", err)
-            );
-
-            const { selectedUser } = get();
-
-            // Update messages only if message is from currently selected user
-            set((state) => ({
-                messages:
-                    message.senderId === selectedUser?._id
-                        ? [...state.messages, message]
-                        : state.messages,
-            }));
-
-            // Mark messages as read
-            if (selectedUser?._id === message.senderId) {
-                await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
-            }
-        });
-
-        socket.on("messagesRead", (readByUserId) => {
-            if (readByUserId === get().selectedUser?._id) {
-                const currentUserId = useAuthStore.getState().user._id;
-                set((state) => ({
-                    messages: state.messages.map((msg) =>
-                        msg.senderId === currentUserId && !msg.isRead
-                            ? { ...msg, isRead: true }
-                            : msg
-                    )
-                }));
-            }
-        });
-
-        socket.on("deleteForMe", ({ msgId, deletedByUserId }) => {
-            set((state) => ({
-                messages: state.messages.map((msg) =>
-                    msg._id === msgId
-                        ? {
-                            ...msg,
-                            deletedFor: msg.deletedFor
-                                ? [...msg.deletedFor, deletedByUserId]
-                                : [deletedByUserId]
-                        }
-                        : msg
-                )
-            }));
-        });
-
-        socket.on("deleteForEveryone", ({ msgId, deletedByUserId }) => {
-            set((state) => {
-                const messages = [...state.messages];
-                const msg = messages.find((m) => m._id === msgId);
-                if (msg) msg.deletedForEveryoneBy = deletedByUserId;
-                return { messages };
-            });
-        });
-    },
-
     stopListeningToSocket: () => {
         const { socket } = useAuthStore.getState();
         if (!socket) return;
@@ -230,8 +169,13 @@ export const useChatStore = create((set, get) => ({
     setSelectedUser: async (selectedUser) => {
         set({ selectedUser });
         if (selectedUser) {
-            const res = await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
-            set({ blocked: res.data.blocked, blockedByUser: res.data.blockedByUser });
+            try {
+                const res = await axiosInstance.put(`/messaging/read-unread/${selectedUser._id}`);
+                set({ blocked: res.data.blocked, blockedByUser: res.data.blockedByUser });
+            } catch (error) {
+                console.error("Error updating read status:", error?.response?.data?.message || error?.message);
+                toast.error("Failed to update read status");
+            }
         }
     },
 
@@ -250,7 +194,7 @@ export const useChatStore = create((set, get) => ({
                 return { messages };
             });
         } catch (error) {
-            console.error("Error deleting message:", error);
+            console.error("Error deleting message:", error?.response?.data?.message || error?.message);
             toast.error("Unable to delete the message");
         }
     },
@@ -272,7 +216,7 @@ export const useChatStore = create((set, get) => ({
                 return { messages };
             });
         } catch (error) {
-            console.error("Error deleting message:", error);
+            console.error("Error deleting message:", error?.response?.data?.message || error?.message);
             toast.error("Unable to delete the message");
         }
     },
@@ -294,7 +238,7 @@ export const useChatStore = create((set, get) => ({
                 )
             }));
         } catch (error) {
-            console.error("Failed to update message:", error);
+            console.error("Failed to update message:", error?.response?.data?.message || error?.message);
             toast.error("Failed to update message");
         }
     },
@@ -302,7 +246,7 @@ export const useChatStore = create((set, get) => ({
     blockUser: async () => {
         try {
             const { blocked, selectedUser } = get();
-            if (blocked) return;
+            if (blocked || !selectedUser) return;
 
             const res = await axiosInstance.get(`/auth/block/${selectedUser._id}`);
 
@@ -313,7 +257,7 @@ export const useChatStore = create((set, get) => ({
 
             set({ blocked: true, blockedByUser: true });
         } catch (error) {
-            console.error("Failed to block user:", error);
+            console.error("Failed to block user:", error?.response?.data?.message || error?.message);
             toast.error("Failed to block user");
         }
     },
@@ -321,7 +265,7 @@ export const useChatStore = create((set, get) => ({
     unblockUser: async () => {
         try {
             const { blocked, selectedUser } = get();
-            if (!blocked) return;
+            if (!blocked || !selectedUser) return;
 
             const res = await axiosInstance.get(`/auth/unblock/${selectedUser._id}`);
 
@@ -332,7 +276,7 @@ export const useChatStore = create((set, get) => ({
 
             set({ blocked: false, blockedByUser: false });
         } catch (error) {
-            console.error("Failed to unblock user:", error);
+            console.error("Failed to unblock user:", error?.response?.data?.message || error?.message);
             toast.error("Failed to unblock user");
         }
     }

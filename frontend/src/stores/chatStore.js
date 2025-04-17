@@ -7,6 +7,8 @@ export const replyNotification = new Audio("/notification.mp3");
 
 export const useChatStore = create((set, get) => ({
     messages: [],
+    pendingMessages: [],
+    failedMessages: [],
     allUsers: [],
     recentUsers: [],
     isFetchingUsers: false,
@@ -56,16 +58,44 @@ export const useChatStore = create((set, get) => ({
 
     sendMessage: async (data) => {
         try {
-            const { selectedUser, messages, recentUsers } = get();
+            const { selectedUser, messages, recentUsers, pendingMessages, failedMessages } = get();
+
+            // Generate a temporary ID for the pending message
+            const tempId = `temp-${Date.now()}`;
+
+            // Create the pending message object
+            const pendingMessage = {
+                _id: tempId,
+                senderId: useAuthStore.getState().user._id,
+                receiverId: selectedUser._id,
+                content: data.message,
+                timestamp: new Date().toISOString(),
+                status: 'sending'
+            };
+
+            // Add to pending messages
+            set({
+                pendingMessages: [...pendingMessages, pendingMessage],
+                // If this was a retry, remove from failed messages
+                failedMessages: failedMessages.filter(msg => msg._id !== pendingMessage._id)
+            });
+
+            // Send to server
             const res = await axiosInstance.post(`/messaging/send/${selectedUser._id}`, data);
 
             if (!res.data.success) {
+                // Move from pending to failed
+                set({
+                    pendingMessages: pendingMessages.filter(msg => msg._id !== tempId),
+                    failedMessages: [...failedMessages, { ...pendingMessage, status: 'failed' }]
+                });
                 toast.error("Failed to send message");
                 return;
             }
 
             const newChat = res.data.chat;
 
+            // Update recent users list
             const isAlreadyPresent = recentUsers.some(user => user._id === selectedUser._id);
             let updatedRecentUsers;
 
@@ -78,14 +108,44 @@ export const useChatStore = create((set, get) => ({
                 ];
             }
 
+            // Remove from pending and add to messages
             set({
                 messages: [...messages, newChat],
-                recentUsers: updatedRecentUsers
+                recentUsers: updatedRecentUsers,
+                pendingMessages: pendingMessages.filter(msg => msg._id !== tempId),
+                failedMessages: failedMessages.filter(msg => msg._id !== tempId)
             });
         } catch (error) {
             console.error("Error sending message:", error);
+
+            // Find the pending message and mark it as failed
+            const { pendingMessages, failedMessages } = get();
+            const failedMsg = pendingMessages.find(msg => msg.content === data.message);
+
+            if (failedMsg) {
+                set({
+                    pendingMessages: pendingMessages.filter(msg => msg._id !== failedMsg._id),
+                    failedMessages: [...failedMessages, { ...failedMsg, status: 'failed' }]
+                });
+            }
+
             toast.error("Error while sending message");
         }
+    },
+
+    // Retry sending failed messages
+    retryMessage: async (failedMessage) => {
+        const { failedMessages } = get();
+
+        // Remove from the failed messages list
+        set({
+            failedMessages: failedMessages.filter(msg => msg._id !== failedMessage._id)
+        });
+
+        // Try sending again
+        await get().sendMessage({
+            message: failedMessage.content
+        });
     },
 
     listenToSocket: () => {

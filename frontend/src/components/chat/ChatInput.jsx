@@ -6,6 +6,7 @@ function ChatInput({ sendMessage }) {
   const [message, setMessage] = React.useState("");
   const [isMobile, setIsMobile] = React.useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
+  const [isSending, setIsSending] = React.useState(false);
   const textareaRef = React.useRef(null);
   const emojiPickerRef = React.useRef(null);
 
@@ -14,30 +15,38 @@ function ChatInput({ sendMessage }) {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     // Check initially
     checkIfMobile();
-    
+
     // Add event listener for window resize
     window.addEventListener('resize', checkIfMobile);
-    
+
     // Clean up
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
+
     if (!message.trim()) return;
+
+    setIsSending(true);
+    const messageContent = message.trim();
+    setMessage(""); // Clear input immediately
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
 
     try {
       await sendMessage({
-        message,
+        message: messageContent,
       });
-      if (textareaRef.current)
-        textareaRef.current.style.height = 'auto';
     } catch (error) {
       console.error("Error while sending message:", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -46,17 +55,17 @@ function ChatInput({ sendMessage }) {
     if (!textareaRef.current) {
       return;
     }
-    
+
     // Get cursor position
     const cursorPosition = textareaRef.current.selectionStart;
     const endPosition = textareaRef.current.selectionEnd;
-    
+
     // Insert emoji at cursor position
     const newMessage = message.substring(0, cursorPosition) + emojiData.emoji + message.substring(endPosition);
-    
+
     // Update the message
     setMessage(newMessage);
-    
+
     // Calculate new cursor position
     const newCursorPosition = cursorPosition + emojiData.emoji.length;
 
@@ -77,7 +86,7 @@ function ChatInput({ sendMessage }) {
     <>
       <div className="p-3 bg-base-200 border-t border-base-300">
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          {/* Emoji button - now acts as a pure toggle */}
+          {/* Emoji button */}
           {!isMobile && <button
             id="emoji-button"
             type="button"
@@ -89,7 +98,7 @@ function ChatInput({ sendMessage }) {
           >
             <Smile size={20} />
           </button>}
-          
+
           {/* Input field */}
           <div className="flex-1 relative">
             <textarea
@@ -120,10 +129,10 @@ function ChatInput({ sendMessage }) {
               rows="1"
               className="text-sm sm:text-md w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
             />
-            
-            {/* Emoji picker from the library */}
+
+            {/* Emoji picker */}
             {showEmojiPicker && !isMobile && (
-              <div 
+              <div
                 ref={emojiPickerRef}
                 className="absolute bottom-full mb-2 z-10"
               >

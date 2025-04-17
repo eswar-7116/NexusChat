@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy, SquarePen, Check, X } from 'lucide-react';
+import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy, SquarePen, Check, X, AlertCircle, RefreshCw } from 'lucide-react';
 import { PropagateLoader } from 'react-spinners';
 import { useAuthStore } from '../../stores/authStore';
 import { useChatStore } from '../../stores/chatStore';
@@ -8,7 +8,16 @@ import toast from 'react-hot-toast';
 
 function ChatMessages({ messages, isFetchingMessages }) {
   const { user } = useAuthStore();
-  const { selectedUser, deleteForMe, deleteMessageForEveryone, updateMessage } = useChatStore();
+  const {
+    selectedUser,
+    deleteForMe,
+    deleteMessageForEveryone,
+    updateMessage,
+    pendingMessages,
+    failedMessages,
+    retryMessage
+  } = useChatStore();
+
   const chatBoxBottomRef = React.useRef(null);
   const [expandedMessageId, setExpandedMessageId] = useState(null);
   const [messageWithOpenMenu, setMessageWithOpenMenu] = useState(null);
@@ -16,11 +25,12 @@ function ChatMessages({ messages, isFetchingMessages }) {
   const [editedContent, setEditedContent] = useState("");
   const editInputRef = React.useRef(null);
 
+  // Scroll to bottom when messages change
   React.useEffect(() => {
     if (chatBoxBottomRef.current) {
       chatBoxBottomRef.current.scrollIntoView({ behavior: 'auto' });
     }
-  }, [messages, isFetchingMessages]);
+  }, [messages, pendingMessages, failedMessages, isFetchingMessages]);
 
   React.useEffect(() => {
     const handleClickOutside = (event) => {
@@ -120,6 +130,25 @@ function ChatMessages({ messages, isFetchingMessages }) {
     rel: 'noopener noreferrer'
   }
 
+  const getMessageStatus = (message) => {
+    if (message.status === 'sending') return "Sending...";
+    if (message.status === 'failed') return "Couldn't send";
+    if (message.isRead) return "Seen";
+    return "Delivered";
+  };
+
+  // Filter messages and combine with pending/failed messages
+  const getAllMessages = () => {
+    // Filter out deleted messages
+    const visibleMessages = messages.filter(message =>
+      !message.deletedFor || !message.deletedFor.includes(user._id)
+    );
+
+    // Combine all message types and sort by timestamp
+    return [...visibleMessages, ...pendingMessages, ...failedMessages]
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  };
+
   if (isFetchingMessages) {
     return (
       <div className='flex items-center justify-center h-full w-full'>
@@ -128,14 +157,9 @@ function ChatMessages({ messages, isFetchingMessages }) {
     );
   }
 
-  // Filter messages - hiding deleted ones for current user
-  const visibleMessages = messages
-    .filter(message =>
-      !message.deletedFor || !message.deletedFor.includes(user._id)
-    )
-    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));  // Sort by timestamp
+  const allMessages = getAllMessages();
 
-  if (visibleMessages.length === 0) {
+  if (allMessages.length === 0) {
     return (
       <div className="flex items-center justify-center h-full w-full">
         <div className="flex flex-col items-center gap-2">
@@ -149,7 +173,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
   const renderMessages = () => {
     let currentDate = null;
 
-    return visibleMessages.map((message, idx) => {
+    return allMessages.map((message, idx) => {
       const messageDate = new Date(message.timestamp).toLocaleDateString('en-IN');
       const showDateDivider = messageDate !== currentDate;
 
@@ -176,6 +200,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
       });
 
       const isUserMessage = message.senderId === user._id;
+      const isFailed = message.status === 'failed';
       const isDeletedBySelectedUser = message.deletedFor &&
         selectedUser &&
         message.deletedFor.includes(selectedUser._id);
@@ -207,74 +232,81 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 {isExpanded ? messageFullTime : messageTime}
               </time>
 
-              <div className="relative ml-1 sm:ml-2">
-                <button
-                  onClick={(e) => toggleMenu(e, message._id)}
-                  className="p-1 hover:bg-base-200 rounded-full active:bg-base-300"
-                  aria-label="Message options"
-                >
-                  <MoreVertical size={15} className="sm:size-4" />
-                </button>
+              {/* Only show menu for sent messages, not pending/failed ones */}
+              {!message.status && (
+                <div className="relative ml-1 sm:ml-2">
+                  <button
+                    onClick={(e) => toggleMenu(e, message._id)}
+                    className="p-1 hover:bg-base-200 rounded-full active:bg-base-300"
+                    aria-label="Message options"
+                  >
+                    <MoreVertical size={15} className="sm:size-4" />
+                  </button>
 
-                {isMenuOpen && (
-                  <div className={`absolute z-10 mt-1 bg-base-100/90 font-bold shadow-lg rounded-lg overflow-hidden border border-base-300 w-40 sm:w-48 ${isUserMessage ? 'right-0' : 'left-0'} message-menu-container`} data-menu-id={message._id}>
-                    <ul className="py-1">
-                      {/* Copy */}
-                      <li>
-                        <button
-                          className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2"
-                          onClick={(e) => copyMessage(e, message.content)}
-                        >
-                          <Copy size={12} className="sm:size-5" />
-                          Copy
-                        </button>
-                      </li>
-
-                      {/* Edit - only shown for own messages within 5 minutes */}
-                      {isUserMessage && isWithinFiveMinutes(message.timestamp) && !message.deletedForEveryoneBy && (
+                  {isMenuOpen && (
+                    <div className={`absolute z-10 mt-1 bg-base-100/90 font-bold shadow-lg rounded-lg overflow-hidden border border-base-300 w-40 sm:w-48 ${isUserMessage ? 'right-0' : 'left-0'} message-menu-container`} data-menu-id={message._id}>
+                      <ul className="py-1">
+                        {/* Copy */}
                         <li>
                           <button
                             className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2"
-                            onClick={(e) => handleEditMessage(e, message)}
+                            onClick={(e) => copyMessage(e, message.content)}
                           >
-                            <SquarePen size={12} className="sm:size-5" />
-                            Edit
+                            <Copy size={12} className="sm:size-5" />
+                            Copy
                           </button>
                         </li>
-                      )}
 
-                      {/* Delete for me */}
-                      <li>
-                        <button
-                          className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2 text-red-500"
-                          onClick={(e) => handleDeleteForMe(e, message._id, messages.indexOf(message))}
-                        >
-                          <Trash2 size={12} className="sm:size-5" />
-                          Delete for me
-                        </button>
-                      </li>
+                        {/* Edit - only shown for own messages within 5 minutes */}
+                        {isUserMessage && isWithinFiveMinutes(message.timestamp) && !message.deletedForEveryoneBy && (
+                          <li>
+                            <button
+                              className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2"
+                              onClick={(e) => handleEditMessage(e, message)}
+                            >
+                              <SquarePen size={12} className="sm:size-5" />
+                              Edit
+                            </button>
+                          </li>
+                        )}
 
-                      {/* Delete for everyone */}
-                      {isUserMessage && !message.deletedForEveryoneBy && (
+                        {/* Delete for me */}
                         <li>
                           <button
-                            className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2 text-red-600"
-                            onClick={(e) => handleDeleteForEveryone(e, message._id)}
+                            className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2 text-red-500"
+                            onClick={(e) => handleDeleteForMe(e, message._id, messages.indexOf(message))}
                           >
                             <Trash2 size={12} className="sm:size-5" />
-                            Delete for everyone
+                            Delete for me
                           </button>
                         </li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
+
+                        {/* Delete for everyone */}
+                        {isUserMessage && !message.deletedForEveryoneBy && (
+                          <li>
+                            <button
+                              className="w-full text-left px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm hover:bg-base-200/75 active:bg-base-300/75 flex items-center gap-2 text-red-600"
+                              onClick={(e) => handleDeleteForEveryone(e, message._id)}
+                            >
+                              <Trash2 size={12} className="sm:size-5" />
+                              Delete for everyone
+                            </button>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div
               className={`chat-bubble text-sm sm:text-base whitespace-pre-wrap break-words max-w-56 sm:max-w-xs md:max-w-lg ${isUserMessage
-                ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
+                ? isFailed
+                  ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
+                  : message.status === 'sending'
+                    ? 'bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-gray-200'
+                    : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
                 : 'bg-blue-600 text-white dark:bg-blue-700'
                 }`}
             >
@@ -340,8 +372,22 @@ function ChatMessages({ messages, isFetchingMessages }) {
             </div>
 
             {isUserMessage && !isEditing && (
-              <div className="chat-footer opacity-50 text-xs">
-                {message.isRead ? "Seen" : "Delivered"}
+              <div className="chat-footer opacity-50 text-xs flex items-center">
+                {isFailed ? (
+                  <div className="flex items-center text-red-500">
+                    <AlertCircle size={12} className="mr-1" />
+                    Couldn't send
+                    <button
+                      onClick={() => retryMessage(message)}
+                      className="ml-2 p-0.5 bg-base-300 hover:bg-base-200 rounded text-base-content"
+                      aria-label="Retry sending message"
+                    >
+                      <RefreshCw size={10} />
+                    </button>
+                  </div>
+                ) : (
+                  getMessageStatus(message)
+                )}
               </div>
             )}
           </div>

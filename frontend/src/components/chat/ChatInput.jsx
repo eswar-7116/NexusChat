@@ -27,6 +27,39 @@ function ChatInput({ sendMessage }) {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
+  // Close emoji picker when clicked outside or pressed Escape key
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        showEmojiPicker && 
+        emojiPickerRef.current && 
+        !emojiPickerRef.current.contains(event.target) &&
+        event.target.id !== 'emoji-button'
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && showEmojiPicker) {
+        event.stopPropagation();
+        setShowEmojiPicker(false);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleEscKey);  
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscKey);
+      
+      // Focus back on input field
+      if (textareaRef?.current)
+        textareaRef.current.focus();
+    }
+  }, [showEmojiPicker]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -59,7 +92,7 @@ function ChatInput({ sendMessage }) {
     const endPosition = textareaRef.current.selectionEnd;
 
     // Insert emoji at cursor position
-    const newMessage = message.substring(0, cursorPosition) + emojiData.emoji + message.substring(endPosition);
+    const newMessage = textareaRef.current.textContent.substring(0, cursorPosition) + emojiData.emoji + textareaRef.current.textContent.substring(endPosition);
 
     // Update the message
     setMessage(newMessage);

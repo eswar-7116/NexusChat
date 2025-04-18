@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Smile } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
+import { useAuthStore } from "../../stores/authStore";
 
 function ChatInput({ sendMessage }) {
   const [message, setMessage] = useState("");
@@ -8,6 +9,7 @@ function ChatInput({ sendMessage }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef(null);
   const emojiPickerRef = useRef(null);
+  const { theme } = useAuthStore();
 
   // Detect if the user is on a mobile device
   useEffect(() => {
@@ -127,10 +129,11 @@ function ChatInput({ sendMessage }) {
             />
 
             {/* Emoji picker */}
-            {showEmojiPicker && !isMobile && (
-              <div
+            <div
                 ref={emojiPickerRef}
-                className="absolute bottom-full mb-2 z-10"
+                className={`absolute bottom-full mb-2 z-10 ${
+                  showEmojiPicker && !isMobile ? "" : "hidden"
+                }`}
               >
                 <EmojiPicker
                   onEmojiClick={handleEmojiClick}
@@ -139,9 +142,10 @@ function ChatInput({ sendMessage }) {
                   width={300}
                   height={400}
                   previewConfig={{ showPreview: false }}
+                  theme={theme}
+                  emojiStyle='native'
                 />
               </div>
-            )}
           </div>
 
           {/* Send button */}

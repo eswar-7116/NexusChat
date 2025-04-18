@@ -323,7 +323,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 <div className="flex flex-col gap-2">
                   <textarea
                     ref={editInputRef}
-                    className="w-full bg-base-200 text-base-content p-2 rounded border border-base-300 min-h-[60px] resize-none"
+                    className="font-noto-color-emoji w-full bg-base-200 text-base-content p-2 rounded border border-base-300 min-h-[60px] resize-none"
                     value={editedContent}
                     onChange={(e) => setEditedContent(e.target.value)}
                     onKeyDown={(e) => {
@@ -356,7 +356,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 </div>
               ) : (
                 <div>
-                  <Linkify options={linkifyOptions}><p className='overflow-hidden text-wrap'>{message.content}</p></Linkify>
+                  <Linkify options={linkifyOptions}><p className='font-noto-color-emoji overflow-hidden text-wrap'>{message.content}</p></Linkify>
                   {message.edited && (
                     <span className="text-xs italic mt-1 opacity-60 ml-1">
                       (edited)

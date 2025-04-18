@@ -125,7 +125,7 @@ function ChatInput({ sendMessage }) {
               }}
               placeholder={isMobile ? "Type a message..." : "Type a message (press Enter to send, Shift+Enter for new line)"}
               rows="1"
-              className="text-sm sm:text-md w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
+              className="font-noto-color-emoji text-sm sm:text-md w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
             />
 
             {/* Emoji picker */}
@@ -143,7 +143,7 @@ function ChatInput({ sendMessage }) {
                   height={400}
                   previewConfig={{ showPreview: false }}
                   theme={theme}
-                  emojiStyle='native'
+                  emojiStyle='google'
                 />
               </div>
           </div>

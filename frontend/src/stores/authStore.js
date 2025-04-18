@@ -8,7 +8,7 @@ export const replyNotification = new Audio("/notification.mp3");
 
 export const useAuthStore = create((set, get) => ({
     user: null,
-    temp: "",
+    usernameToVerify: "",
     onlineUsers: [],
     socket: null,
     theme: (() => {
@@ -64,14 +64,14 @@ export const useAuthStore = create((set, get) => ({
             const res = await axiosInstance.post('/auth/signup', data);
             if (res.data.success) {
                 toast.success("Verify the OTP to register");
-                set({ otpSent: true, temp: data.username });
+                set({ otpSent: true, usernameToVerify: data.username });
                 navigate('/verify');
             } else {
                 if (!res.data.errors)
                     toast.error(res.data.message || 'Signup failed');
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Signup failed';
+            const errorMsg = err.message || 'Signup failed';
             console.error("Signup error:", errorMsg);
             toast.error(errorMsg);
         } finally {
@@ -85,7 +85,7 @@ export const useAuthStore = create((set, get) => ({
 
         set({ isVerifying: true });
         try {
-            const res = await axiosInstance.post('/auth/verify-user-otp', { otp, username: get().temp });
+            const res = await axiosInstance.post('/auth/verify-user-otp', { otp, username: get().usernameToVerify });
             if (res.data.success) {
                 toast.success(res.data.message);
                 navigate('/login');
@@ -93,7 +93,7 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Verification failed');
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Verification failed';
+            const errorMsg = err.message || 'Verification failed';
             console.error("Verification error:", errorMsg);
             toast.error(errorMsg);
         } finally {
@@ -117,7 +117,7 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Login failed');
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Login failed';
+            const errorMsg = err.message || 'Login failed';
             console.error("Login error:", errorMsg);
             toast.error(errorMsg);
         } finally {
@@ -140,7 +140,7 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Logout failed');
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Logout failed';
+            const errorMsg = err.message || 'Logout failed';
             console.error("Logout error:", errorMsg);
             toast.error(errorMsg);
         }
@@ -161,7 +161,7 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Password change failed');
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Password change failed';
+            const errorMsg = err.message || 'Password change failed';
             console.error("Password change error:", errorMsg);
             toast.error(errorMsg);
         } finally {
@@ -183,7 +183,7 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Profile pic update failed');
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Profile pic update failed';
+            const errorMsg = err.message || 'Profile pic update failed';
             console.error("Profile pic update error:", errorMsg);
             toast.error(errorMsg);
         } finally {
@@ -206,7 +206,7 @@ export const useAuthStore = create((set, get) => ({
                 return false;
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Sending password reset link failed';
+            const errorMsg = err.message || 'Sending password reset link failed';
             console.error("Reset link error:", errorMsg);
             toast.error(errorMsg);
             return false;
@@ -225,11 +225,26 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Password reset failed');
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'Password reset failed';
+            const errorMsg = err.message || 'Password reset failed';
             console.error("Password reset error:", errorMsg);
             toast.error(errorMsg);
         }
         return false;
+    },
+
+    resendOtp: async (userId) => {
+        try {
+            const res = await axiosInstance.get(`/auth/resend-otp/${get().usernameToVerify}`);
+            if (res.data.success) {
+                toast.success(res.data.message);
+            } else {
+                toast.error(res.data.message || 'else Couldn\'t resend OTP');
+            }
+        } catch (err) {
+            const errorMsg = err.message || 'Couldn\'t resend OTP';
+            console.error("Error while resending OTP: ", errorMsg);
+            toast.error(errorMsg);
+        }
     },
 
     connectSocket: () => {

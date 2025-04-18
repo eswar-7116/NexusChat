@@ -12,6 +12,7 @@ import changePassword from '../controllers/auth/changePassword.js';
 import editProfile from '../controllers/auth/editProfile.js';
 import block from '../controllers/auth/block.js';
 import unblock from '../controllers/auth/unblock.js';
+import resendOTP from '../controllers/auth/resendOtp.js';
 
 configDotenv();
 const router = Router();
@@ -80,5 +81,7 @@ router.post('/edit-profile', checkAuth, editProfile);
 router.get('/block/:id', checkAuth, block);
 
 router.get('/unblock/:id', checkAuth, unblock);
+
+router.get('/resend-otp/:username', resendOTP);
 
 export default router;

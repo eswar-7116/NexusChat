@@ -1,17 +1,28 @@
 import { useEffect, useState } from 'react';
-import { Mail, Loader2, ArrowRight } from 'lucide-react';
+import { Mail, Loader2, ArrowRight, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/common/ThemeToggle';
 
 const OtpVerification = () => {
   const [otp, setOtp] = useState('');
-  const { isVerifying, verify } = useAuthStore();
+  const [countdown, setCountdown] = useState(0);
+  const { isVerifying, verify, resendOtp } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'Verify OTP - NexusChat';
+    setCountdown(30);
   }, []);
+
+  // Countdown timer effect
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   const handleChange = (e) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 6);
@@ -21,6 +32,11 @@ const OtpVerification = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     verify(otp, navigate);
+  };
+
+  const handleResendOTP = async () => {
+    setCountdown(30);  // Reset countdown to 30 seconds
+    await resendOtp();
   };
 
   return (
@@ -63,6 +79,25 @@ const OtpVerification = () => {
               </>
             )}
           </button>
+          
+          {/* Resend OTP */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={handleResendOTP}
+              disabled={countdown > 0}
+              className="btn btn-link btn-sm text-base-content/70 hover:text-primary transition-colors"
+            >
+              {countdown > 0 ? (
+                <span>Resend OTP in {countdown}s</span>
+              ) : (
+                <span className="flex items-center gap-1">
+                  <RefreshCw className="size-4" />
+                  Resend OTP
+                </span>
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>

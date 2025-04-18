@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 
 import User from '../../models/User.js';
 import { sendVerificationOtp } from "../../helpers/mailers.js";
+import generateOTP from '../../helpers/otpGenerator.js';
 
 const OTP_EXPIRY_MINUTES = 10;
 
@@ -43,7 +44,7 @@ export default async function signup(req, res) {
 
         // Hash password and generate OTP
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
-        const otp = String(Math.floor(100000 + Math.random() * 900000));
+        const otp = generateOTP();
         const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000);
 
         // Send OTP

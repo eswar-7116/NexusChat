@@ -41,7 +41,7 @@ export default async function block(req, res) {
             message: "User blocked successfully"
         });
     } catch (error) {
-        console.error('Error while blocking user: ', error.message);
+        console.error('Error while blocking user: ', error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

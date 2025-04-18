@@ -35,7 +35,7 @@ export default async function deleteForEveryone(req, res) {
             message: "Message deleted for everyone by " + req.user.username
         });
     } catch (error) {
-        console.error(`Error while deleting for everyone by ${req.user.username}: ${error.message}`);
+        console.error(`Error while deleting for everyone by ${req.user.username}: ` + error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

@@ -37,7 +37,7 @@ export default async function deleteForMe(req, res) {
             message: "Message deleted for " + req.user.username
         });
     } catch (error) {
-        console.error(`Error while deleting for ${req.user.username}: ${error.message}`);
+        console.error(`Error while deleting for ${req.user.username}: ` + error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

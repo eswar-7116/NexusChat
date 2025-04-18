@@ -15,44 +15,40 @@ export default async function changePassword(req, res) {
             });
         }
 
-        // Check if no user is logged in
-        if (!req.cookies.jwtToken) {
-            return res.status(401).json({
-                status: false,
-                message: 'Unauthorized - No login detected'
-            });
-        }
+        const { oldPassword, newPassword } = req.body;
 
-        const { oldPassword } = req.body;
-        let newPassword = req.body.newPassword;
-
+        // Fetch user from DB
         const user = await User.findById(req.user._id);
-
-        // Check if old password is correct
-        const isPasswordCorrect = await bcrypt.compare(oldPassword, user.password);
-        if (!isPasswordCorrect) {
-            return res.status(401).json({
-                status: false,
-                message: 'Incorrect password'
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
             });
         }
 
-        // Hash the new password
-        newPassword = await bcrypt.hash(newPassword, 10);
+        // Verify old password
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'Incorrect old password'
+            });
+        }
 
-        // Update the new password
-        user.password = newPassword;
+        // Hash and update new password
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedNewPassword;
         await user.save();
 
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
             message: 'Password changed successfully'
         });
     } catch (error) {
-        console.error('Error while changing password: ', error.message);
+        console.error('Error while changing password:', error);
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error"
+            message: 'Internal Server Error'
         });
     }
 }

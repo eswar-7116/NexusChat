@@ -24,7 +24,7 @@ export default async function getMessages(req, res) {
             success: true
         });
     } catch (error) {
-        console.error("Error while updating message: " + error.message);
+        console.error("Error while updating message: " + error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

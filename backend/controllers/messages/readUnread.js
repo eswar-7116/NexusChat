@@ -42,7 +42,7 @@ export default async function readUnread(req, res) {
             message: `Read unread messages b/w ${userId}" & ${senderId}`
         });
     } catch (error) {
-        console.error("Error while reading unread messages: "+error.message)
+        console.error("Error while reading unread messages: "+error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

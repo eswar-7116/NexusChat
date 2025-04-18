@@ -41,7 +41,7 @@ export default async function unblock(req, res) {
             message: "User unblocked successfully"
         });
     } catch (error) {
-        console.error('Error while unblocking user: ', error.message);
+        console.error('Error while unblocking user: ', error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

@@ -33,7 +33,7 @@ export async function sendVerificationOtp(fullname, toEmail, otp) {
         return { success: true, message: "OTP Sent successfully" };
     } catch (err) {
         // Catch and log any errors that occur while sending the email
-        console.error("Error sending verification OTP: " + err.message);
+        console.error("Error sending verification OTP: " + err);
         return { success: false, message: "Internal Server Error" };
     }
 }
@@ -64,7 +64,7 @@ export async function sendPasswordResetLink(fullname, toEmail, link) {
         return { success: true, message: "Password reset link sent successfully" };
     } catch (err) {
         // Catch and log any errors that occur while sending the email
-        console.error("Error sending reset link: " + err.message);
+        console.error("Error sending reset link: " + err);
         return { success: false, message: "Internal Server Error" };
     }
 }

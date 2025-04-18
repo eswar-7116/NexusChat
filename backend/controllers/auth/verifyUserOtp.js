@@ -57,7 +57,7 @@ export default async function verifyUserOtp(req, res) {
             message: "User verified"
         });
     } catch (error) {
-        console.error('Error while verifying user:', error.message);
+        console.error('Error while verifying user:', error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

@@ -3,47 +3,50 @@ import Message from "../../models/Message.js";
 
 export default async function getRecentUsers(req, res) {
     try {
-        // Return early if no recent users are there
-        if (!req.user.recentUserIds || req.user.recentUserIds.length === 0) {
+        const { recentUserIds, _id: currentUserId } = req.user;
+
+        if (!recentUserIds || recentUserIds.length === 0) {
             return res.status(200).json({ success: true, recentUsers: [] });
         }
 
-        // Fetch the recent users
-        const recentUserDetails = await User.find(
-            { _id: { $in: req.user.recentUserIds } },
+        // Fetch data of recent users
+        const recentUsers = await User.find(
+            { _id: { $in: recentUserIds } },
             '-password'
         ).lean();
 
-        // Fetch the last message for each user
-        const recentUsersWithLastMessage = await Promise.all(
-            recentUserDetails.map(async (user) => {
-                // Find the latest message between current user and this user
+        // Attach the last message timestamp for each user
+        const usersWithLastMessage = await Promise.all(
+            recentUsers.map(async (user) => {
                 const lastMessage = await Message.findOne({
                     $or: [
-                        { senderId: req.user._id, receiverId: user._id },
-                        { senderId: user._id, receiverId: req.user._id }
+                        { senderId: currentUserId, receiverId: user._id },
+                        { senderId: user._id, receiverId: currentUserId }
                     ],
-                    deletedFor: { $ne: req.user._id } // Don't include messages deleted by the requesting user
-                }).select('timestamp').sort({ timestamp: -1 }).lean();
+                    deletedFor: { $ne: currentUserId }
+                })
+                    .select('timestamp')
+                    .sort({ timestamp: -1 })
+                    .lean();
 
                 return {
                     ...user,
-                    lastMessageAt: lastMessage ? lastMessage.timestamp : user.createdAt
+                    lastMessageAt: lastMessage?.timestamp || user.createdAt
                 };
             })
         );
 
-        // Sort by the timestamp of the last message
-        const sortedRecentUsers = recentUsersWithLastMessage.sort((a, b) =>
+        // Sort by last message time in descendingn order
+        usersWithLastMessage.sort((a, b) =>
             new Date(b.lastMessageAt) - new Date(a.lastMessageAt)
         );
 
         return res.status(200).json({
             success: true,
-            recentUsers: sortedRecentUsers
+            recentUsers: usersWithLastMessage
         });
     } catch (error) {
-        console.error("Error while getting recent users: " + error.message);
+        console.error("Error while getting recent users:", error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

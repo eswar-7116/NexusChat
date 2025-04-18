@@ -12,7 +12,7 @@ export default async function logout(req, res) {
             message: "Logged out successfully",
         });
     } catch (error) {
-        console.error("Error while logging out:", error.message);
+        console.error("Error while logging out:", error);
 
         return res.status(500).json({
             success: false,

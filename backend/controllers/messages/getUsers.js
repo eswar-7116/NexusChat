@@ -15,7 +15,7 @@ export default async function getUsers(req, res) {
             users
         });
     } catch (error) {
-        console.error("Error while getting users: "+error.message);
+        console.error("Error while getting users: "+error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

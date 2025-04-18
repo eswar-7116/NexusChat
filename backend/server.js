@@ -43,7 +43,7 @@ app.get('/backend/check', checkAuth, (req, res) => {
     try {
         res.status(200).json({ success: true, user: req.user });
     } catch(error) {
-        console.error('Error while checking user login:', error.message);
+        console.error('Error while checking user login:', error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

@@ -75,7 +75,7 @@ export default async function login(req, res) {
             token
         });
     } catch (error) {
-        console.error('Error while logging in:', error.message);
+        console.error('Error while logging in:', error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

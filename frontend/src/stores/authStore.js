@@ -71,8 +71,8 @@ export const useAuthStore = create((set, get) => ({
                     toast.error(res.data.message || 'Signup failed');
             }
         } catch (err) {
-            const errorMsg = err.message || 'Signup failed';
-            console.error("Signup error:", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Signup failed';
+            console.error("Signup error:", err);
             toast.error(errorMsg);
         } finally {
             set({ isSigningUp: false });
@@ -93,8 +93,8 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Verification failed');
             }
         } catch (err) {
-            const errorMsg = err.message || 'Verification failed';
-            console.error("Verification error:", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Verification failed';
+            console.error("Verification error:", err);
             toast.error(errorMsg);
         } finally {
             set({ isVerifying: false });
@@ -117,8 +117,8 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Login failed');
             }
         } catch (err) {
-            const errorMsg = err.message || 'Login failed';
-            console.error("Login error:", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Login failed';
+            console.error("Login error:", err);
             toast.error(errorMsg);
         } finally {
             set({ isLoggingIn: false });
@@ -140,8 +140,8 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Logout failed');
             }
         } catch (err) {
-            const errorMsg = err.message || 'Logout failed';
-            console.error("Logout error:", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Logout failed';
+            console.error("Logout error:", err);
             toast.error(errorMsg);
         }
     },
@@ -161,8 +161,8 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Password change failed');
             }
         } catch (err) {
-            const errorMsg = err.message || 'Password change failed';
-            console.error("Password change error:", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Password change failed';
+            console.error("Password change error:", err);
             toast.error(errorMsg);
         } finally {
             set({ isChangingPass: false });
@@ -183,8 +183,8 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Profile pic update failed');
             }
         } catch (err) {
-            const errorMsg = err.message || 'Profile pic update failed';
-            console.error("Profile pic update error:", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Profile pic update failed';
+            console.error("Profile pic update error:", err);
             toast.error(errorMsg);
         } finally {
             set({ isUpdatingProfilePic: false });
@@ -206,8 +206,8 @@ export const useAuthStore = create((set, get) => ({
                 return false;
             }
         } catch (err) {
-            const errorMsg = err.message || 'Sending password reset link failed';
-            console.error("Reset link error:", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Sending password reset link failed';
+            console.error("Reset link error:", err);
             toast.error(errorMsg);
             return false;
         } finally {
@@ -225,8 +225,8 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'Password reset failed');
             }
         } catch (err) {
-            const errorMsg = err.message || 'Password reset failed';
-            console.error("Password reset error:", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Password reset failed';
+            console.error("Password reset error:", err);
             toast.error(errorMsg);
         }
         return false;
@@ -241,8 +241,8 @@ export const useAuthStore = create((set, get) => ({
                 toast.error(res.data.message || 'else Couldn\'t resend OTP');
             }
         } catch (err) {
-            const errorMsg = err.message || 'Couldn\'t resend OTP';
-            console.error("Error while resending OTP: ", errorMsg);
+            const errorMsg = err.response?.data?.message || 'Couldn\'t resend OTP';
+            console.error("Error while resending OTP: ", err);
             toast.error(errorMsg);
         }
     },

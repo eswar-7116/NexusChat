@@ -82,7 +82,13 @@ function Navbar() {
                 <img src="/nexuschat_bgremoved.png" alt="NexusChat logo" className="w-full h-full object-contain" />
               </div>
             </Tilt>
-            <span className="text-lg sm:text-xl font-bold ml-1 sm:ml-2">NexusChat</span>
+            <div 
+              className="ml-1 sm:ml-2 group" 
+              onClick={() => navigate('/')}
+            >
+              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent transition-all duration-300 group-hover:from-secondary group-hover:to-primary group-hover:scale-105 transform origin-left">NexusChat</h1>
+              <p className="text-xs text-gray-500 hidden sm:block transition-all duration-300 group-hover:text-primary">Connect. Chat. Collaborate.</p>
+            </div>
           </>
         ) : (
           <button
@@ -101,11 +107,13 @@ function Navbar() {
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="flex items-center gap-1 sm:gap-2 hover:bg-base-300 p-1 sm:p-2 rounded-lg ml-1 sm:ml-2 transform transition-all duration-200 hover:scale-105"
         >
-          <img
-            src={user.profilePic || "/profile.png"}
-            alt="Profile"
-            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
-          />
+          <div className="rounded-full border-2 border-primary shadow-md overflow-hidden">
+            <img
+              src={user.profilePic || "/profile.png"}
+              alt="Profile"
+              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
+            />
+          </div>
           <span className="hidden sm:inline text-md font-semibold">{user.fullName}</span>
           <span className="sm:hidden text-xs truncate max-w-20">
             {user.fullName.split(' ')[0]}

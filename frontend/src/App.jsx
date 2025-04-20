@@ -1,6 +1,6 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { PropagateLoader } from 'react-spinners';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -17,6 +17,9 @@ import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const { user, checkAuth, isCheckingAuth, otpSent } = useAuthStore();
+
+  const location = useLocation();
+  const isNot404 = location.pathname !== '/404';
 
   useEffect(() => {
     function handleOffline() {
@@ -50,7 +53,7 @@ function App() {
 
   return (
     <div>
-      { user && <NavBar /> }
+      { user && isNot404 && <NavBar /> }
 
       <Routes>
         <Route path='/' element={user ? <HomePage /> : <Navigate to="/login" />} />
@@ -78,7 +81,9 @@ function App() {
 
         <Route path='/reset-password/:id/:token' element={!user ? <ResetPasswordPage /> : <Navigate to="/" />} />
 
-        <Route path='*' element={<NotFoundPage />} />
+        {/* 404 Not Found Page */}
+        <Route path='/404' element={<NotFoundPage />} />
+        <Route path='*' element={<Navigate to="/404" replace />} />
       </Routes>
 
       <Toaster />

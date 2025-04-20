@@ -29,7 +29,7 @@ const NotFoundPage = () => {
           </h2>
 
           <p className="text-sm sm:text-base text-base-content/60">
-            This page seems to have wandered off. Let’s get you back to the chat!
+            This page seems to have wandered off. Let&apos;s get you back to the chat!
           </p>
         </div>
 

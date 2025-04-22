@@ -1,8 +1,8 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-.font-noto-color-emoji {
-    font-family: "Noto Color Emoji", sans-serif;
+.font-for-emoji {
+    font-family: system-ui, "Noto Color Emoji";
     font-weight: 400;
     font-style: normal;
 }

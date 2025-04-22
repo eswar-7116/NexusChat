@@ -86,7 +86,7 @@ function Navbar() {
               className="ml-1 sm:ml-2 group" 
               onClick={() => navigate('/')}
             >
-              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent transition-all duration-300 group-hover:from-secondary group-hover:to-primary group-hover:scale-105 transform origin-left">NexusChat</h1>
+              <h1 className="text-lg sm:text-xl font-bold transition-all duration-300 group-hover:from-secondary group-hover:to-primary group-hover:scale-105 transform origin-left">NexusChat</h1>
               <p className="text-xs text-gray-500 hidden sm:block transition-all duration-300 group-hover:text-primary">Connect. Chat. Collaborate.</p>
             </div>
           </>

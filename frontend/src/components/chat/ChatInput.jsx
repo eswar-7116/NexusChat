@@ -158,7 +158,7 @@ function ChatInput({ sendMessage }) {
               }}
               placeholder={isMobile ? "Type a message..." : "Type a message (press Enter to send, Shift+Enter for new line)"}
               rows="1"
-              className="font-noto-color-emoji text-sm sm:text-md w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
+              className="font-for-emoji text-sm sm:text-md w-full py-2 px-4 bg-base-100 rounded border-none focus:ring-2 focus:ring-primary focus:outline-none resize-none min-h-10 max-h-32 overflow-y-auto"
             />
 
             {/* Emoji picker */}

@@ -323,7 +323,7 @@ function ChatMessages({ messages, isFetchingMessages }) {
                 <div className="flex flex-col gap-2">
                   <textarea
                     ref={editInputRef}
-                    className="font-noto-color-emoji w-full bg-base-200 text-base-content p-2 rounded border border-base-300 min-h-[60px] resize-none"
+                    className="font-for-emoji w-full bg-base-200 text-base-content p-2 rounded border border-base-300 min-h-[60px] resize-none"
                     value={editedContent}
                     onChange={(e) => setEditedContent(e.target.value)}
                     onKeyDown={(e) => {

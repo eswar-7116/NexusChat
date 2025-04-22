@@ -50,13 +50,13 @@ function EditProfile() {
               <img
                 src={selectedPic || user.profilePic || "/profile.png"}
                 alt="Profile"
-                className="size-24 sm:size-32 rounded-full object-cover border-4"
+                className="size-24 sm:size-32 rounded-full object-cover border-4 border-primary"
               />
               <label
                 htmlFor="avatar-upload"
                 className={`
                   absolute bottom-0 right-0 
-                  bg-base-content hover:scale-105
+                  bg-primary hover:scale-105
                   p-1.5 sm:p-2 rounded-full cursor-pointer 
                   transition-all duration-200 transform hover:scale-110
                   ${isUpdatingProfilePic ? "animate-pulse pointer-events-none" : ""}

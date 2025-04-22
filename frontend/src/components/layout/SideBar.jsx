@@ -89,7 +89,8 @@ function SideBar() {
     if (!selectedUser || selectedUser._id !== user._id) {
       setSelectedUser(user);
       fetchMessages(user._id);
-      setIsCollapsed(window.innerWidth < 768);
+      if (window.innerWidth < 768)
+        setIsCollapsed(true);
     }
   };
 

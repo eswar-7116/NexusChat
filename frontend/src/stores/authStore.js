@@ -361,6 +361,12 @@ export const useAuthStore = create((set, get) => ({
             }
         });
 
+        newSocket.on("userAdded", (user) => {
+            useChatStore.setState({
+                allUsers: [...useChatStore.getState().allUsers, user]
+            });
+        });
+
         set({ socket: newSocket });
     },
 

@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator';
 import User from '../../models/User.js';
+import { io } from '../../helpers/socketio.js';
 
 export default async function verifyUserOtp(req, res) {
     try {
@@ -16,7 +17,7 @@ export default async function verifyUserOtp(req, res) {
         const { username, otp } = req.body;
 
         // Check if user exists
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ username }).select('-password');
         if (!user) {
             return res.status(400).json({
                 success: false,
@@ -51,6 +52,8 @@ export default async function verifyUserOtp(req, res) {
         // Set isVerified to true for the user and save
         user.isVerified = true;
         await user.save();
+
+        io.emit('userAdded', user);
 
         return res.status(200).json({
             success: true,

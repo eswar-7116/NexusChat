@@ -17,7 +17,7 @@
     "daisyui": "^5.0.19",
     "emoji-picker-react": "^4.12.2",
     "linkify-react": "^4.2.0",
-    "linkifyjs": "^4.2.0",
+    "linkifyjs": "^4.3.2",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.488.0",
     "nexuschat": "file:..",

@@ -74,7 +74,6 @@ export default async function login(req, res) {
       success: true,
       message: `${user.username} logged in`,
       user,
-      token,
     });
   } catch (error) {
     console.error("Error while logging in:", error);

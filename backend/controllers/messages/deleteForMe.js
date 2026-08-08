@@ -27,7 +27,7 @@ export default async function deleteForMe(req, res) {
             deletedByUserId = senderId;
         }
         
-        const recipientSocketId = getSocketId(recipientId);
+        const recipientSocketId = await getSocketId(recipientId);
 
         if (recipientId)
             io.to(recipientSocketId).emit("deleteForMe", {msgId, deletedByUserId});

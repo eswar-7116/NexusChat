@@ -31,7 +31,7 @@ export default async function unblock(req, res) {
         user.blockedUserIds.pull(idToUnblock);
         await user.save();
 
-        const receipentSocketId = getSocketId(idToUnblock);
+        const receipentSocketId = await getSocketId(idToUnblock);
         if (receipentSocketId) {
             io.to(receipentSocketId).emit('unblocked', req.user._id);
         }

@@ -26,7 +26,7 @@ export default async function deleteForEveryone(req, res) {
             deletedByUserId = receiverId;
         }
         
-        const recipientSocketId = getSocketId(recipientId);
+        const recipientSocketId = await getSocketId(recipientId);
         if (recipientId)
             io.to(recipientSocketId).emit("deleteForEveryone", { msgId, deletedByUserId });
 

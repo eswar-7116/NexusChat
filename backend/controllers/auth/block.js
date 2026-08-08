@@ -31,7 +31,7 @@ export default async function block(req, res) {
         user.blockedUserIds.push(idToBlock);
         await user.save();
 
-        const receipentSocketId = getSocketId(idToBlock);
+        const receipentSocketId = await getSocketId(idToBlock);
         if (receipentSocketId) {
             io.to(receipentSocketId).emit('blocked', req.user._id);
         }

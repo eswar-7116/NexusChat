@@ -13,7 +13,7 @@ export default async function readUnread(req, res) {
             { $set: { isRead: true } } // Update isRead to true
         );
         
-        const senderSocketId = getSocketId(senderId);
+        const senderSocketId = await getSocketId(senderId);
         if (senderSocketId)
             io.to(senderSocketId).emit("messagesRead", userId);
         

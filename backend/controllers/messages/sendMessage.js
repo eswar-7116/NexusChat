@@ -53,7 +53,7 @@ export default async function sendMessage(req, res) {
         });
 
         // Emit message to receiver if online
-        const receiverSocketId = getSocketId(receiverId);
+        const receiverSocketId = await getSocketId(receiverId);
         if (receiverSocketId) {
             io.to(receiverSocketId).emit('newMessage', newMessage);
         }

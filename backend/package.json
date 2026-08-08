@@ -7,7 +7,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "start": "node server.js"
   },
   "dependencies": {
@@ -24,5 +24,9 @@
     "nexuschat": "file:..",
     "nodemailer": "^6.10.0",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.10"
   }
 }

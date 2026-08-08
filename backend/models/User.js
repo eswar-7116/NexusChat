@@ -65,16 +65,6 @@ const userSchema = new mongoose.Schema({
         required: [true, "blockedUserIds is required"]
     },
 
-    otp: {
-        type: String,
-        required: [true, 'OTP is required']
-    },
-
-    otpExpiry: {
-        type: Date,
-        required: [true, 'OTP Expiry is required']
-    },
-
     isVerified: {
         type: Boolean,
         default: false,

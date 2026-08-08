@@ -4,8 +4,7 @@ import bcrypt from 'bcryptjs';
 import User from '../../models/User.js';
 import { sendVerificationOtp } from "../../helpers/mailers.js";
 import generateOTP from '../../helpers/otpGenerator.js';
-
-const OTP_EXPIRY_MINUTES = 10;
+import redis, { OTP_EXPIRY_SECONDS } from '../../helpers/redis.js';
 
 export default async function signup(req, res) {
     try {
@@ -45,7 +44,6 @@ export default async function signup(req, res) {
         // Hash password and generate OTP
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
         const otp = generateOTP();
-        const otpExpiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000);
 
         // Send OTP
         const senderResponse = await sendVerificationOtp(fullName, email, otp);
@@ -62,8 +60,6 @@ export default async function signup(req, res) {
             user.username = username;
             user.email = email;
             user.password = hashedPassword;
-            user.otp = otp;
-            user.otpExpiry = otpExpiry;
             user.createdAt = new Date();
             user.lastSeen = new Date();
             await user.save();
@@ -81,11 +77,12 @@ export default async function signup(req, res) {
                 password: hashedPassword,
                 createdAt: new Date(),
                 lastSeen: new Date(),
-                otp,
-                otpExpiry,
                 isVerified: false
             }).save();
         }
+
+        // Store OTP in Redis with TTL
+        await redis.set(`otp:${username}`, otp, { ex: OTP_EXPIRY_SECONDS });
 
         return res.status(201).json({
             success: true,

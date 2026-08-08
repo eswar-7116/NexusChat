@@ -9,3 +9,5 @@ const redis = new Redis({
 });
 
 export default redis;
+
+export const OTP_EXPIRY_SECONDS = 10 * 60;  // 10 minutes

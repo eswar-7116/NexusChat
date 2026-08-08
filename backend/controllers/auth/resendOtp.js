@@ -1,6 +1,7 @@
 import User from '../../models/User.js';
 import { sendVerificationOtp } from "../../helpers/mailers.js";
 import generateOTP from '../../helpers/otpGenerator.js';
+import redis, { OTP_EXPIRY_SECONDS } from '../../helpers/redis.js';
 
 export default async function resendOTP(req, res) {
     try {
@@ -25,15 +26,9 @@ export default async function resendOTP(req, res) {
 
         // Generate a new OTP
         const otp = generateOTP();
-        
-        // Set OTP expiration time (10 minutes from now)
-        const otpExpiry = new Date();
-        otpExpiry.setMinutes(otpExpiry.getMinutes() + 10);
 
-        // Update the user with the new OTP
-        user.otp = otp;
-        user.otpExpiry = otpExpiry;
-        await user.save();
+        // Store OTP in Redis with TTL
+        await redis.set(`otp:${user.username}`, otp, { ex: OTP_EXPIRY_SECONDS });
 
         // Send the OTP via email
         const emailResult = await sendVerificationOtp(

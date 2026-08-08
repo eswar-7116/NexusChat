@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator';
 import User from '../../models/User.js';
 import { io } from '../../helpers/socketio.js';
+import redis from '../../helpers/redis.js';
 
 export default async function verifyUserOtp(req, res) {
     try {
@@ -33,8 +34,10 @@ export default async function verifyUserOtp(req, res) {
             });
         }
 
-        // Check if OTP is expired
-        if ((new Date()) > user.otpExpiry) {
+        // Get OTP from Redis
+        const storedOtp = await redis.get(`otp:${username}`);
+
+        if (!storedOtp) {
             return res.status(401).json({
                 success: false,
                 message: "OTP expired! Generate a new OTP"
@@ -42,12 +45,15 @@ export default async function verifyUserOtp(req, res) {
         }
 
         // Verify OTP
-        if (user.otp !== otp) {
+        if (storedOtp !== otp) {
             return res.status(401).json({
                 success: false,
                 message: "Incorrect OTP!"
             });
         }
+
+        // Delete OTP from Redis after successful verification
+        await redis.del(`otp:${username}`);
 
         // Set isVerified to true for the user and save
         user.isVerified = true;

@@ -65,6 +65,9 @@ messageSchema.methods.deleteForEveryone = async function(userId) {
     }
 };
 
+// Compound index for efficient paginated conversation queries
+messageSchema.index({ senderId: 1, receiverId: 1, timestamp: -1 });
+
 const Message = mongoose.models.Message || mongoose.model('Message', messageSchema);
 
 export default Message;

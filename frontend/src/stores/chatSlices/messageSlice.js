@@ -2,21 +2,35 @@ import toast from "react-hot-toast";
 import { axiosInstance } from "../../helpers/axios";
 import { useAuthStore } from "../authStore";
 
+const MESSAGES_PER_PAGE = 30;
+
 export const createMessageSlice = (set, get) => ({
     messages: [],
     pendingMessages: [],
     failedMessages: [],
     isFetchingMessages: false,
+    hasMore: false,
+    nextCursor: null,
+    isFetchingOlderMessages: false,
 
     fetchMessages: async (receiverId) => {
         // Prevent duplicate fetches if already in progress
         if (get().isFetchingMessages) return;
 
-        set({ isFetchingMessages: true });
+        set({ isFetchingMessages: true, messages: [], hasMore: false, nextCursor: null });
         try {
-            const { data } = await axiosInstance.get(`/messaging/get-messages/${receiverId}`);
-            if (data.success) set({ messages: data.messages });
-            else toast.error("Failed to get messages");
+            const { data } = await axiosInstance.get(
+                `/messaging/get-messages/${receiverId}?limit=${MESSAGES_PER_PAGE}`
+            );
+            if (data.success) {
+                set({
+                    messages: data.messages,
+                    hasMore: data.hasMore,
+                    nextCursor: data.nextCursor
+                });
+            } else {
+                toast.error("Failed to get messages");
+            }
         } catch (error) {
             console.error("Error fetching messages:", error?.response?.data?.message || error?.message);
             toast.error("Error while fetching messages");
@@ -24,6 +38,33 @@ export const createMessageSlice = (set, get) => ({
             set({ isFetchingMessages: false });
         }
     },
+
+    fetchOlderMessages: async (receiverId) => {
+        const { hasMore, nextCursor, isFetchingOlderMessages } = get();
+        if (!hasMore || !nextCursor || isFetchingOlderMessages) return;
+
+        set({ isFetchingOlderMessages: true });
+        try {
+            const { data } = await axiosInstance.get(
+                `/messaging/get-messages/${receiverId}?limit=${MESSAGES_PER_PAGE}&before=${encodeURIComponent(nextCursor)}`
+            );
+            if (data.success) {
+                set((state) => ({
+                    messages: [...data.messages, ...state.messages],
+                    hasMore: data.hasMore,
+                    nextCursor: data.nextCursor
+                }));
+            } else {
+                toast.error("Failed to load older messages");
+            }
+        } catch (error) {
+            console.error("Error fetching older messages:", error?.response?.data?.message || error?.message);
+            toast.error("Error loading older messages");
+        } finally {
+            set({ isFetchingOlderMessages: false });
+        }
+    },
+
 
     sendMessage: async (data) => {
         try {

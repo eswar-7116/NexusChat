@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy, SquarePen, Check, X, AlertCircle, RefreshCw } from 'lucide-react';
+import { MessageCircleOff, Trash2, MoreVertical, Ban, Copy, SquarePen, Check, X, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 import { PropagateLoader } from 'react-spinners';
 import { useAuthStore } from '../../stores/authStore';
 import { useChatStore } from '../../stores/chatStore';
@@ -15,22 +15,82 @@ function ChatMessages({ messages, isFetchingMessages }) {
     updateMessage,
     pendingMessages,
     failedMessages,
-    retryMessage
+    retryMessage,
+    fetchOlderMessages,
+    hasMore,
+    isFetchingOlderMessages
   } = useChatStore();
 
   const chatBoxBottomRef = React.useRef(null);
+  const containerRef = React.useRef(null);
   const [expandedMessageId, setExpandedMessageId] = React.useState(null);
   const [messageWithOpenMenu, setMessageWithOpenMenu] = React.useState(null);
   const [editingMessageId, setEditingMessageId] = React.useState(null);
   const [editedContent, setEditedContent] = React.useState("");
   const editInputRef = React.useRef(null);
 
-  // Scroll to bottom when messages change
+  // Track whether we should auto-scroll to bottom (only for new messages, not older ones)
+  const shouldScrollToBottom = React.useRef(true);
+  const prevMessagesLength = React.useRef(0);
+
+  // Scroll to bottom when new messages arrive (not when loading older messages)
   React.useEffect(() => {
-    if (chatBoxBottomRef.current) {
+    if (shouldScrollToBottom.current && chatBoxBottomRef.current) {
       chatBoxBottomRef.current.scrollIntoView({ behavior: 'auto' });
     }
+    // Reset the flag — new messages from the bottom should scroll
+    shouldScrollToBottom.current = true;
   }, [messages, pendingMessages, failedMessages, isFetchingMessages]);
+
+  // Preserve scroll position when older messages are prepended
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const currentLength = messages.length;
+    const prevLength = prevMessagesLength.current;
+
+    // If messages were prepended (length grew but we were already showing messages)
+    if (currentLength > prevLength && prevLength > 0 && !shouldScrollToBottom.current) {
+      // The scroll position is already preserved by the browser in most cases,
+      // but we need to ensure we don't auto-scroll to bottom
+    }
+
+    prevMessagesLength.current = currentLength;
+  }, [messages]);
+
+  // Handle scroll to detect when user is near the top
+  const handleScroll = React.useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // If scrolled near the top (within 100px), load older messages
+    if (container.scrollTop < 100 && hasMore && !isFetchingOlderMessages && selectedUser) {
+      shouldScrollToBottom.current = false;
+
+      // Save current scroll height to restore position after prepend
+      const prevScrollHeight = container.scrollHeight;
+
+      fetchOlderMessages(selectedUser._id).then(() => {
+        // After older messages load, restore scroll position
+        requestAnimationFrame(() => {
+          if (container) {
+            const newScrollHeight = container.scrollHeight;
+            container.scrollTop = newScrollHeight - prevScrollHeight;
+          }
+        });
+      });
+    }
+  }, [hasMore, isFetchingOlderMessages, selectedUser, fetchOlderMessages]);
+
+  // Attach scroll listener
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   React.useEffect(() => {
     const handleClickOutside = (event) => {
@@ -397,7 +457,19 @@ function ChatMessages({ messages, isFetchingMessages }) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-1 sm:px-2 space-y-3 sm:space-y-4 pb-6">
+    <div ref={containerRef} className="flex-1 overflow-y-auto px-1 sm:px-2 space-y-3 sm:space-y-4 pb-6">
+      {/* Loading indicator for older messages */}
+      {isFetchingOlderMessages && (
+        <div className="flex justify-center py-3">
+          <Loader2 size={20} className="animate-spin text-base-content/50" />
+        </div>
+      )}
+      {/* Hint when there are more messages to load */}
+      {hasMore && !isFetchingOlderMessages && (
+        <div className="flex justify-center py-2">
+          <span className="text-xs text-base-content/40">Scroll up for older messages</span>
+        </div>
+      )}
       {renderMessages()}
       <div ref={chatBoxBottomRef} />
     </div>
